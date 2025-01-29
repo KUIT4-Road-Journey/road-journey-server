@@ -1,6 +1,6 @@
 package com.road_journey.road_journey.items.controller;
 
-import com.road_journey.road_journey.items.dto.ItemDto;
+import com.road_journey.road_journey.auth.UserDetail;
 import com.road_journey.road_journey.items.service.ItemShopService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/items/shop")
+@RequestMapping("/items")
 public class ItemShopController {
 
     private final ItemShopService itemShopService;
@@ -17,14 +17,24 @@ public class ItemShopController {
         this.itemShopService = itemShopService;
     }
 
-    @GetMapping
-    public ResponseEntity<?> getShopItems(@RequestParam(required = false, defaultValue = "all") String category) {
-        return ResponseEntity.ok(Map.of("availableGold", itemShopService.getUserGold(), "shopItems", itemShopService.getShopItems(category)));
+    @GetMapping("/shop")
+    public ResponseEntity<Map<String, Object>> getShopItems(UserDetail userDetail,
+                                                            @RequestParam(required = false, defaultValue = "all") String category) {
+        Map<String, Object> response = Map.of(
+                "availableGold", itemShopService.getUserGold(userDetail),
+                "shopItems", itemShopService.getShopItems(userDetail, category));
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/order")
-    public ResponseEntity<?> purchaseItem(@RequestBody ItemDto itemDto) {
-        int remainingGold = itemShopService.purchaseItem(itemDto);
-        return ResponseEntity.ok(Map.of("status", "success", "availableGold", remainingGold));
+    public ResponseEntity<Map<String, Object>> purchaseItem(UserDetail userDetail,
+                                                            @RequestBody Integer itemId) {
+        if (itemId == null) {
+            throw new IllegalArgumentException("아이템 ID가 필요합니다.");
+        }
+        Map<String, Object> response = itemShopService.purchaseItem(userDetail, itemId);
+
+        return ResponseEntity.ok(response);
     }
 }

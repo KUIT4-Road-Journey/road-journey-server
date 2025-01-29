@@ -7,12 +7,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItemDto {
+public class ShopItemDto {
     private Long itemId;
     private String itemName;
+    private String category;
     private String description;
     private int gold;
-    private String category;
-    private boolean isSpecial;
-    private String status;
+    private boolean isSelected;
+    private boolean isOwned;
 }
