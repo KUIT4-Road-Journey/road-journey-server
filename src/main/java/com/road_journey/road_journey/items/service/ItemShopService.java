@@ -1,6 +1,5 @@
 package com.road_journey.road_journey.items.service;
 
-import com.road_journey.road_journey.auth.UserDetail;
 import com.road_journey.road_journey.items.dto.ShopItemDto;
 import com.road_journey.road_journey.items.repository.ItemShopRepository;
 import org.springframework.stereotype.Service;
@@ -16,28 +15,28 @@ public class ItemShopService {
         this.itemShopRepository = itemShopRepository;
     }
 
-    public List<ShopItemDto> getShopItems(UserDetail userDetail, String category) {
-        return itemShopRepository.findShopItemsByCategory(userDetail.getUserId(), category);
+    public List<ShopItemDto> getShopItems(Long userId, String category) {
+        return itemShopRepository.findShopItemsByCategory(userId, category);
     }
 
-    public int getUserGold(UserDetail userDetail) {
-        return itemShopRepository.getUserGold(userDetail.getUserId());
+    public int getUserGold(Long userId) {
+        return itemShopRepository.getUserGold(userId);
     }
 
-    public Map<String, Object> purchaseItem(UserDetail userDetail, int itemId) {
+    public Map<String, Object> purchaseItem(Long userId, int itemId) {
         int itemPrice = itemShopRepository.getItemPrice(itemId);
-        int userGold = itemShopRepository.getUserGold(userDetail.getUserId());
+        int userGold = itemShopRepository.getUserGold(userId);
 
         if (userGold < itemPrice) {
             throw new IllegalArgumentException("골드가 부족합니다.");
         }
 
         int remainingGold = userGold - itemPrice;
-        itemShopRepository.updateUserGold(userDetail.getUserId(), remainingGold);
+        itemShopRepository.updateUserGold(userId, remainingGold);
 
         String category = itemShopRepository.getItemCategory(itemId);
         boolean isCharacter = "character".equalsIgnoreCase(category);
-        itemShopRepository.purchaseItem(userDetail.getUserId(), itemId, isCharacter);
+        itemShopRepository.purchaseItem(userId, itemId, isCharacter);
 
         return Map.of(
                 "status", "success",

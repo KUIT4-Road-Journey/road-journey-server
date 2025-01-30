@@ -1,9 +1,12 @@
 package com.road_journey.road_journey.items.controller;
 
-import com.road_journey.road_journey.items.dto.ItemDto;
+import com.road_journey.road_journey.auth.UserDetail;
 import com.road_journey.road_journey.items.service.ItemSpecialService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
@@ -18,13 +21,12 @@ public class ItemSpecialController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getSpecialItems() {
-        return ResponseEntity.ok(Map.of("availableGold", itemSpecialService.getUserGold(), "specialItems", itemSpecialService.getSpecialItems()));
+    public ResponseEntity<Map<String, Object>> getSpecialItems(UserDetail userDetail) {
+        return ResponseEntity.ok(itemSpecialService.getSpecialItems(userDetail.getUserId()));
     }
 
     @PostMapping("/order")
-    public ResponseEntity<?> purchaseSpecialItem(@RequestBody ItemDto itemDto) {
-        int remainingGold = itemSpecialService.purchaseSpecialItem(itemDto);
-        return ResponseEntity.ok(Map.of("status", "success", "availableGold", remainingGold, "selectedItem", itemDto));
+    public ResponseEntity<Map<String, Object>> purchaseSpecialItem(UserDetail userDetail) {
+        return ResponseEntity.ok(itemSpecialService.purchaseSpecialItem(userDetail.getUserId()));
     }
 }

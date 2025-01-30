@@ -2,12 +2,15 @@ package com.road_journey.road_journey.items.repository;
 
 import com.road_journey.road_journey.items.dto.ItemDto;
 import com.road_journey.road_journey.items.dto.ShopItemDto;
+import com.road_journey.road_journey.items.dto.SpecialItemDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 
 @Repository
 @RequiredArgsConstructor
@@ -35,7 +38,7 @@ public class ItemShopRepository {
     }
     public List<ShopItemDto> findShopItemsByCategory(Long userId, String category) {
         String sql = "SELECT i.item_id AS itemId, i.item_name AS itemName, i.category, " +
-                "i.descriptoin AS description, i.gold, " +
+                "i.description AS description, i.gold, " +
                 "CASE WHEN ui.user_id IS NOT NULL THEN true ELSE false END AS isOwned, " +
                 "CASE WHEN ui.is_selected = true THEN true ELSE false END AS isSelected " +
                 "FROM item i " +
@@ -75,7 +78,39 @@ public class ItemShopRepository {
         jdbcTemplate.update(sql, userId, itemId, growthPoint, growthLevel);
     }
 
-    //todo : my 쪽에 있는게 좋지 않나? 사용하기 번거롭나?
+    public List<SpecialItemDto> findSpecialItems(Long userId) {
+        String sql = "SELECT i.item_id AS itemId, i.item_name AS name, i.category, " +
+                "i.descriptoin AS description, " +
+                "CASE WHEN ui.user_id IS NOT NULL THEN true ELSE false END AS isOwned " +
+                "FROM item i " +
+                "LEFT JOIN user_item ui ON i.item_id = ui.item_id2 AND ui.user_id = ? " +
+                "WHERE i.is_special = true AND i.status = 'active'";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new SpecialItemDto(
+                rs.getLong("itemId"),
+                rs.getString("name"),
+                rs.getString("category"),
+                rs.getString("description"),
+                rs.getBoolean("isOwned")
+        ), userId);
+    }
+
+    public Optional<Integer> getRandomSpecialItemId(Long userId) {
+        String sql = "SELECT item_id FROM item " +
+                "WHERE is_special = true AND status = 'active' " +
+                "AND item_id NOT IN (SELECT item_id2 FROM user_item WHERE user_id = ?)";
+
+        List<Integer> specialItemIds = jdbcTemplate.queryForList(sql, Integer.class, userId);
+
+        if (specialItemIds.isEmpty()) {
+            System.out.println("사용자 " + userId + " 가 모든 특별 아이템을 보유 중입니다.");
+            return Optional.empty();
+        }
+
+        return Optional.of(specialItemIds.get(new Random().nextInt(specialItemIds.size())));
+    }
+
+    //todo : my 쪽에 있는게 좋지 않나?
     public int getUserGold(Long userId) {
         String sql = "SELECT gold FROM user WHERE user_id = ?";
 

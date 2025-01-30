@@ -21,8 +21,8 @@ public class ItemShopController {
     public ResponseEntity<Map<String, Object>> getShopItems(UserDetail userDetail,
                                                             @RequestParam(required = false, defaultValue = "all") String category) {
         Map<String, Object> response = Map.of(
-                "availableGold", itemShopService.getUserGold(userDetail),
-                "shopItems", itemShopService.getShopItems(userDetail, category));
+                "availableGold", itemShopService.getUserGold(userDetail.getUserId()),
+                "shopItems", itemShopService.getShopItems(userDetail.getUserId(), category));
 
         return ResponseEntity.ok(response);
     }
@@ -33,7 +33,7 @@ public class ItemShopController {
         if (itemId == null) {
             throw new IllegalArgumentException("아이템 ID가 필요합니다.");
         }
-        Map<String, Object> response = itemShopService.purchaseItem(userDetail, itemId);
+        Map<String, Object> response = itemShopService.purchaseItem(userDetail.getUserId(), itemId);
 
         return ResponseEntity.ok(response);
     }
