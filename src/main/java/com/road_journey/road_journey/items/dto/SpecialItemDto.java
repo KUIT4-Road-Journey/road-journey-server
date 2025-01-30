@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SpecialItemDto {
     private Long itemId;
-    private String name;
+    private String itemName;
     private String category;
     private String description;
     private boolean isOwned;

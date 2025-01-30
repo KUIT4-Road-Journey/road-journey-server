@@ -1,6 +1,6 @@
 package com.road_journey.road_journey.items.service;
 
-import com.road_journey.road_journey.items.dto.ShopItemDto;
+import com.road_journey.road_journey.items.dto.ItemDto;
 import com.road_journey.road_journey.items.repository.ItemShopRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ public class ItemShopService {
         this.itemShopRepository = itemShopRepository;
     }
 
-    public List<ShopItemDto> getShopItems(Long userId, String category) {
+    public List<ItemDto> getShopItems(Long userId, String category) {
         return itemShopRepository.findShopItemsByCategory(userId, category);
     }
 

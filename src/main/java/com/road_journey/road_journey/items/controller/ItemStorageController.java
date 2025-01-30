@@ -1,6 +1,6 @@
 package com.road_journey.road_journey.items.controller;
 
-import com.road_journey.road_journey.items.dto.ItemDto;
+import com.road_journey.road_journey.auth.UserDetail;
 import com.road_journey.road_journey.items.service.ItemStorageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,15 +18,19 @@ public class ItemStorageController {
         this.itemStorageService = itemStorageService;
     }
 
+    //보유 아이템 조회 (카테고리별)
     @GetMapping
-    public ResponseEntity<List<ItemDto>> getUserItems(@RequestParam(required = false, defaultValue = "all") String category) {
-        return ResponseEntity.ok(itemStorageService.getUserItems(category));
+    public ResponseEntity<Map<String, Object>> getUserItems(UserDetail userDetail,
+                                                            @RequestParam(defaultValue = "all") String category) {
+        return ResponseEntity.ok(itemStorageService.getUserItems(userDetail.getUserId(), category));
     }
 
+    //아이템 장착/해제
     @PatchMapping("/{userItemId}/equip")
-    public ResponseEntity<?> equipItem(@PathVariable Long userItemId, @RequestBody Map<String, Boolean> request) {
-        boolean isEquipped = request.getOrDefault("isEquipped", false);
-        itemStorageService.equipItem(userItemId, isEquipped);
-        return ResponseEntity.ok(Map.of("status", "success", "message", "Item equipped successfully."));
+    public ResponseEntity<Map<String, Object>> equipItem(UserDetail userDetail,
+                                                         @PathVariable Long userItemId,
+                                                         @RequestBody Map<String, Boolean> request) {
+        boolean isEquipped = request.get("isEquipped");
+        return ResponseEntity.ok(itemStorageService.toggleEquipItem(userDetail.getUserId(), userItemId, isEquipped));
     }
 }

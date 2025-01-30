@@ -1,7 +1,6 @@
 package com.road_journey.road_journey.items.repository;
 
 import com.road_journey.road_journey.items.dto.ItemDto;
-import com.road_journey.road_journey.items.dto.ShopItemDto;
 import com.road_journey.road_journey.items.dto.SpecialItemDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -18,25 +17,7 @@ public class ItemShopRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public ItemDto getItemById(long itemId) {
-        String sql = "SELECT item_id AS itemId, item_name AS itemName, description, gold, category, is_special AS isSpecial, status " +
-                "FROM item WHERE item_id = ?";
-
-        try {
-            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new ItemDto(
-                    rs.getLong("itemId"),
-                    rs.getString("itemName"),
-                    rs.getString("description"),
-                    rs.getInt("gold"),
-                    rs.getString("category"),
-                    rs.getBoolean("isSpecial"),
-                    rs.getString("status")
-            ), itemId);
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
-    }
-    public List<ShopItemDto> findShopItemsByCategory(Long userId, String category) {
+    public List<ItemDto> findShopItemsByCategory(Long userId, String category) {
         String sql = "SELECT i.item_id AS itemId, i.item_name AS itemName, i.category, " +
                 "i.description AS description, i.gold, " +
                 "CASE WHEN ui.user_id IS NOT NULL THEN true ELSE false END AS isOwned, " +
@@ -45,7 +26,7 @@ public class ItemShopRepository {
                 "LEFT JOIN user_item ui ON i.item_id = ui.item_id2 AND ui.user_id = ? " +
                 "WHERE (i.category = ? OR ? = 'all') AND i.status = 'active'";
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new ShopItemDto(
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new ItemDto(
                 rs.getLong("itemId"),
                 rs.getString("itemName"),
                 rs.getString("category"),
@@ -79,7 +60,7 @@ public class ItemShopRepository {
     }
 
     public List<SpecialItemDto> findSpecialItems(Long userId) {
-        String sql = "SELECT i.item_id AS itemId, i.item_name AS name, i.category, " +
+        String sql = "SELECT i.item_id AS itemId, i.item_name AS itemName, i.category, " +
                 "i.descriptoin AS description, " +
                 "CASE WHEN ui.user_id IS NOT NULL THEN true ELSE false END AS isOwned " +
                 "FROM item i " +
@@ -88,7 +69,7 @@ public class ItemShopRepository {
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> new SpecialItemDto(
                 rs.getLong("itemId"),
-                rs.getString("name"),
+                rs.getString("itemName"),
                 rs.getString("category"),
                 rs.getString("description"),
                 rs.getBoolean("isOwned")
