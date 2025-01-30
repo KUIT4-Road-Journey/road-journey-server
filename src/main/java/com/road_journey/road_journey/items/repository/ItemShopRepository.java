@@ -18,7 +18,7 @@ public class ItemShopRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public ItemDto getItemById(int itemId) {
+    public ItemDto getItemById(long itemId) {
         String sql = "SELECT item_id AS itemId, item_name AS itemName, description, gold, category, is_special AS isSpecial, status " +
                 "FROM item WHERE item_id = ?";
 
@@ -56,19 +56,19 @@ public class ItemShopRepository {
         ), userId, category, category);
     }
 
-    public int getItemPrice(int itemId) {
+    public int getItemPrice(Long itemId) {
         String sql = "SELECT gold FROM item WHERE item_id = ?";
 
         return jdbcTemplate.queryForObject(sql, Integer.class, itemId);
     }
 
-    public String getItemCategory(int itemId) {
+    public String getItemCategory(Long itemId) {
         String sql = "SELECT category FROM item WHERE item_id = ?";
 
         return jdbcTemplate.queryForObject(sql, String.class, itemId);
     }
 
-    public void purchaseItem(Long userId, int itemId, boolean isCharacter) {
+    public void purchaseItem(Long userId, Long itemId, boolean isCharacter) {
         String sql = "INSERT INTO user_item (user_id, item_id2, is_selected, status, growthPoint, growthlevel) " +
                 "VALUES (?, ?, false, 'active', ?, ?)";
 

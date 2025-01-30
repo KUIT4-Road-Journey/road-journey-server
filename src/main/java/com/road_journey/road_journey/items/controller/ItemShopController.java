@@ -29,7 +29,7 @@ public class ItemShopController {
 
     @PostMapping("/order")
     public ResponseEntity<Map<String, Object>> purchaseItem(UserDetail userDetail,
-                                                            @RequestBody Integer itemId) {
+                                                            @RequestBody Long itemId) {
         if (itemId == null) {
             throw new IllegalArgumentException("아이템 ID가 필요합니다.");
         }

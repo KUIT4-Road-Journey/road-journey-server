@@ -23,7 +23,7 @@ public class ItemShopService {
         return itemShopRepository.getUserGold(userId);
     }
 
-    public Map<String, Object> purchaseItem(Long userId, int itemId) {
+    public Map<String, Object> purchaseItem(Long userId, Long itemId) {
         int itemPrice = itemShopRepository.getItemPrice(itemId);
         int userGold = itemShopRepository.getUserGold(userId);
 

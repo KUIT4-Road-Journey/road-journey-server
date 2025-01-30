@@ -46,7 +46,7 @@ public class ItemSpecialService {
             );
         }
 
-        int itemId = optionalItemId.get();
+        Long itemId = optionalItemId.get().longValue();
         String category = itemShopRepository.getItemCategory(itemId);
         boolean isCharacter = "character".equalsIgnoreCase(category);
 
