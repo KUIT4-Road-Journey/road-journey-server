@@ -20,28 +20,39 @@ public class SubGoal {
     private Long subGoalId;
 
     // @ManyToOne
-    // @JoinColumn(name = "goal_id2")
-    @Column(name = "goal_id2")
+    // @JoinColumn(name = "goal_id")
+    @Column
     private Long goalId;
 
-    @Column(name = "field2")
-    private int index; // 순번
+    @Column
+    private int subGoalIndex; // 순번
 
-    @Column(name = "field3")
+    @Column
     private String description; // 내용
 
-    @Column(name = "field4")
-    private int isCompleted; // 달성여부
+    @Column
+    private boolean isCompleted; // 달성여부
 
-    @Column(name = "field")
+    @Column
     private int difficulty; // 난이도
 
-    @Column(name = "status")
+    @Column
     private String status; // 상태
 
-    @Column(name = "created_at")
+    @Column(updatable = false)
     private LocalDateTime createdAt; // 생성일
 
-    @Column(name = "updated_at")
+    @Column
     private LocalDateTime updatedAt; // 수정일
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

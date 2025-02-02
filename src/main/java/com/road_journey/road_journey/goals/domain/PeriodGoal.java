@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,24 +25,35 @@ public class PeriodGoal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long repeatedGoalId; // 기간목표아이디
 
-    @Column(name = "goal_id2")
+    @Column
     private Long goalId; // 목표아이디
 
-    @Column(name = "field")
+    @Column
     private LocalDateTime startAt; // 시작일
 
-    @Column(name = "field3")
+    @Column
     private LocalDateTime expireAt; // 종료일
 
-    @Column(name = "field2")
+    @Column
     private LocalDateTime completedAt; // 달성일
 
-    @Column(name = "status")
+    @Column
     private String status; // 상태
 
-    @Column(name = "created_at")
+    @Column(updatable = false)
     private LocalDateTime createdAt; // 생성일
 
-    @Column(name = "updated_at")
+    @Column
     private LocalDateTime updatedAt; // 수정일
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

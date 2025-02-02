@@ -20,13 +20,7 @@ public class GoalController {
 
     @PostMapping("")
     public String addGoal(@RequestBody AddGoalRequestDto addGoalRequest) {
-        System.out.println("Title: " + addGoalRequest.getTitle());
-        System.out.println("Difficulty: " + addGoalRequest.getDifficulty());
-        System.out.println("Start Date: " + addGoalRequest.getDateInfo().getStartDate());
-        System.out.println("Friend List: " + addGoalRequest.getFriendList().size());
-
-        goalService.createGoal(addGoalRequest);
-
+        goalService.createGoals(addGoalRequest);
         return "Goal Added";
     }
 
