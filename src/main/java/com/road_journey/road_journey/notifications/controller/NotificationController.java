@@ -1,5 +1,6 @@
 package com.road_journey.road_journey.notifications.controller;
 
+import com.road_journey.road_journey.auth.UserDetail;
 import com.road_journey.road_journey.notifications.dto.DeleteResponseDTO;
 import com.road_journey.road_journey.notifications.dto.NotificationDTO;
 import com.road_journey.road_journey.notifications.service.NotificationService;
