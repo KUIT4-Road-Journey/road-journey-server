@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -29,10 +30,16 @@ public class PeriodGoal {
     private Long goalId; // 목표아이디
 
     @Column
-    private LocalDateTime startAt; // 시작일
+    private LocalDate startAt; // 시작일
 
     @Column
-    private LocalDateTime expireAt; // 종료일
+    private LocalDate expireAt; // 종료일
+
+    @Column
+    private LocalDate periodStartAt; // 주기 시작일
+
+    @Column
+    private LocalDate periodExpireAt; // 주기 종료일
 
     @Column
     private LocalDateTime completedAt; // 달성일
