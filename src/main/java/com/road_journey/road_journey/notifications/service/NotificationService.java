@@ -22,14 +22,7 @@ public class NotificationService {
 
     public List<NotificationDTO> getNotifications(Long userId) {
         return notificationRepository.findByUserIdAndStatus(userId, "active").stream()
-                .map(notification -> new NotificationDTO(
-                        notification.getId(),
-                        notification.getMessage(),
-                        notification.getCreatedAt().toString(),
-                        notification.getCategory(),
-                        notification.getRelatedId(),
-                        notification.getStatus()
-                ))
+                .map(NotificationDTO::new)
                 .collect(Collectors.toList());
     }
 
