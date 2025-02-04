@@ -1,14 +1,15 @@
 package com.road_journey.road_journey.items.controller;
 
-import com.road_journey.road_journey.auth.UserDetail;
+import com.road_journey.road_journey.items.dto.ItemDto;
 import com.road_journey.road_journey.items.service.ItemShopService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/items")
+@RequestMapping("/items/shop")
 public class ItemShopController {
 
     private final ItemShopService itemShopService;
@@ -17,24 +18,13 @@ public class ItemShopController {
         this.itemShopService = itemShopService;
     }
 
-    @GetMapping("/shop")
-    public ResponseEntity<Map<String, Object>> getShopItems(UserDetail userDetail,
-                                                            @RequestParam(required = false, defaultValue = "all") String category) {
-        Map<String, Object> response = Map.of(
-                "availableGold", itemShopService.getUserGold(userDetail.getUserId()),
-                "shopItems", itemShopService.getShopItems(userDetail.getUserId(), category));
-
-        return ResponseEntity.ok(response);
+    @GetMapping
+    public ResponseEntity<List<ItemDto>> getShopItems(@RequestParam(required = false, defaultValue = "all") String category) {
+        return ResponseEntity.ok(itemShopService.getShopItems(category));
     }
 
     @PostMapping("/order")
-    public ResponseEntity<Map<String, Object>> purchaseItem(UserDetail userDetail,
-                                                            @RequestBody Long itemId) {
-        if (itemId == null) {
-            throw new IllegalArgumentException("아이템 ID가 필요합니다.");
-        }
-        Map<String, Object> response = itemShopService.purchaseItem(userDetail.getUserId(), itemId);
-
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Map<String, Object>> purchaseItem(@RequestParam Long userId, @RequestParam Long itemId) {
+        return ResponseEntity.ok(itemShopService.purchaseItem(userId, itemId));
     }
 }

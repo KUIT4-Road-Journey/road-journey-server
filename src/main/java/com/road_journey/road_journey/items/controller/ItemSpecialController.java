@@ -1,12 +1,8 @@
 package com.road_journey.road_journey.items.controller;
 
-import com.road_journey.road_journey.auth.UserDetail;
 import com.road_journey.road_journey.items.service.ItemSpecialService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -21,12 +17,12 @@ public class ItemSpecialController {
     }
 
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getSpecialItems(UserDetail userDetail) {
-        return ResponseEntity.ok(itemSpecialService.getSpecialItems(userDetail.getUserId()));
+    public ResponseEntity<Map<String, Object>> getSpecialItems(@RequestParam Long userId) {
+        return ResponseEntity.ok(itemSpecialService.getSpecialItems(userId));
     }
 
     @PostMapping("/order")
-    public ResponseEntity<Map<String, Object>> purchaseSpecialItem(UserDetail userDetail) {
-        return ResponseEntity.ok(itemSpecialService.purchaseSpecialItem(userDetail.getUserId()));
+    public ResponseEntity<Map<String, Object>> purchaseSpecialItem(@RequestParam Long userId) {
+        return ResponseEntity.ok(itemSpecialService.purchaseSpecialItem(userId));
     }
 }
