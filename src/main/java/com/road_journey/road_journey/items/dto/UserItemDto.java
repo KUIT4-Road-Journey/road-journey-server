@@ -13,7 +13,7 @@ public class UserItemDto {
     private Long itemId;
     private String itemName;
     private String description;
-    private int gold;
+    private long gold;
     private String category;
     private Long growthPoint;
     private Long growthLevel;

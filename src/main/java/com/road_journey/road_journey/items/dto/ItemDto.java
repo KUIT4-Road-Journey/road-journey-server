@@ -13,7 +13,7 @@ public class ItemDto {
     private String itemName;
     private String category;
     private String description;
-    private int gold;
+    private long gold;
     private boolean isSelected;
     private boolean isOwned;
 

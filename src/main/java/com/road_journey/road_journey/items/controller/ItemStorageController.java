@@ -16,14 +16,12 @@ public class ItemStorageController {
         this.itemStorageService = itemStorageService;
     }
 
-    // 보유 아이템 조회 (카테고리별)
     @GetMapping
     public ResponseEntity<Map<String, Object>> getUserItems(@RequestParam Long userId,
                                                             @RequestParam(defaultValue = "all") String category) {
         return ResponseEntity.ok(itemStorageService.getUserItems(userId, category));
     }
 
-    // 아이템 장착/해제
     @PatchMapping("/{userItemId}/equip")
     public ResponseEntity<Map<String, Object>> equipItem(@RequestParam Long userId,
                                                          @PathVariable Long userItemId,

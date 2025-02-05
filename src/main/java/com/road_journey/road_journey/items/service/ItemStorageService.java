@@ -43,11 +43,10 @@ public class ItemStorageService {
         UserItem userItem = userItemRepository.findById(userItemId)
                 .orElseThrow(() -> new IllegalArgumentException("아이템 없음"));
 
-        // itemId를 기반으로 아이템 조회하여 카테고리 가져오기
         Item item = itemRepository.findById(userItem.getItemId())
                 .orElseThrow(() -> new IllegalArgumentException("아이템 정보 없음"));
 
-        if (isEquipped) {
+        if (!"ornament".equalsIgnoreCase(item.getCategory()) && isEquipped) {
             unequipSameCategoryItems(userId, item.getCategory());
         }
 
