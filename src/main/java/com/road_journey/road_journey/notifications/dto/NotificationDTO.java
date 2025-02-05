@@ -15,7 +15,7 @@ public class NotificationDTO {
     private String status;
 
     public NotificationDTO(Notification notification) {
-        this.notificationId = notification.getId();
+        this.notificationId = notification.getNotificationId();
         this.message = notification.getMessage();
         this.createdAt = notification.getCreatedAt().toString();
         this.category = notification.getCategory();

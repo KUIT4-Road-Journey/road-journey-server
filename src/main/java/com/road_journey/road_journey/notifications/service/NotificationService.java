@@ -28,7 +28,7 @@ public class NotificationService {
 
     @Transactional
     public DeleteResponseDTO deleteNotification(Long userId, Long notificationId) {
-        Optional<Notification> notification = notificationRepository.findByUserIdAndId(userId, notificationId);
+        Optional<Notification> notification = notificationRepository.findByUserIdAndNotificationId(userId, notificationId);
 
         if (notification.isPresent()) {
             Notification notif = notification.get();

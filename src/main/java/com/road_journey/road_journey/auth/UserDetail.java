@@ -12,5 +12,4 @@ public class UserDetail {
     private String accountId;  // 사용자 계정 ID
     private String email;      // 이메일
     private String nickname;   // 닉네임
-    private String role;       // 사용자 역할
 }

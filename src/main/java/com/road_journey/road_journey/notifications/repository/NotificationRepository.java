@@ -12,11 +12,11 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     List<Notification> findByUserIdAndStatus(Long userId, String status);
 
-    Optional<Notification> findByUserIdAndId(Long userId, Long id);
+    Optional<Notification> findByUserIdAndNotificationId(Long userId, Long notificationId);
 
     @Modifying
     @Transactional
-    @Query("UPDATE Notification n SET n.status = :status WHERE n.userId = :userId AND n.id = :notificationId")
+    @Query("UPDATE Notification n SET n.status = :status WHERE n.userId = :userId AND n.notificationId = :notificationId")
     void updateStatusByUserIdAndId(Long userId, Long notificationId, String status);
 
     @Modifying
