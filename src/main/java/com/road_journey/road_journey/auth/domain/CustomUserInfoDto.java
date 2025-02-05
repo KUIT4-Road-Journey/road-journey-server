@@ -1,0 +1,24 @@
+package com.road_journey.road_journey.auth.domain;
+
+import lombok.*;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+public class CustomUserInfoDto {
+
+    private Long memberId;
+
+    private String accountId;
+
+    private String password;
+
+    private String email;
+
+    private String nickname;
+
+    private String role;
+
+}
