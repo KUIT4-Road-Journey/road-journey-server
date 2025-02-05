@@ -26,7 +26,7 @@ public class ItemStorageService {
     }
 
     public Map<String, Object> getUserItems(Long userId, String category) {
-        List<UserItemDto> items = userItemRepository.findByUserIdAndItemCategory(userId, category)
+        List<UserItemDto> items = userItemRepository.findByUserIdAndCategory(userId, category)
                 .stream()
                 .map(userItem -> {
                     Item item = itemRepository.findById(userItem.getItemId())
@@ -61,7 +61,7 @@ public class ItemStorageService {
     }
 
     private void unequipSameCategoryItems(Long userId, String category) {
-        List<UserItem> sameCategoryItems = userItemRepository.findByUserIdAndItemCategory(userId, category);
+        List<UserItem> sameCategoryItems = userItemRepository.findByUserIdAndCategory(userId, category);
         sameCategoryItems.forEach(item -> item.setSelected(false));
         userItemRepository.saveAll(sameCategoryItems);
     }

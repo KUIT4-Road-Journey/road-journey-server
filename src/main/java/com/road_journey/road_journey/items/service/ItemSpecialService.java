@@ -37,7 +37,7 @@ public class ItemSpecialService {
                 .stream()
                 .map(item -> new SpecialItemDto(
                         item,
-                        userItemRepository.findByUserIdAndItemCategory(userId, item.getCategory()).size() > 0
+                        userItemRepository.findByUserIdAndCategory(userId, item.getCategory()).size() > 0
                 ))
                 .collect(Collectors.toList());
 
