@@ -19,13 +19,14 @@ public class User {
     private String accountId;
 
     @Column(name = "PASSWORD", nullable = false)
-    private String password;
+    private String accountPassword;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "NICKNAME", nullable = false)
     private String nickname;
+    private String profileImage;
+    private String statusMessage;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "ROLE", nullable = false)
