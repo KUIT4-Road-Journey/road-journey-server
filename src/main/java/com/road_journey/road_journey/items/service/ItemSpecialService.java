@@ -10,6 +10,7 @@ import com.road_journey.road_journey.items.repository.UserItemRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -20,7 +21,7 @@ public class ItemSpecialService {
     private final UserRepository userRepository;
     private final UserItemRepository userItemRepository;
 
-    private final int SPECIAL_PRICE = 1500;
+    private static final int SPECIAL_PRICE = 1500;
 
     public ItemSpecialService(ItemRepository itemRepository, UserRepository userRepository, UserItemRepository userItemRepository) {
         this.itemRepository = itemRepository;
@@ -36,7 +37,7 @@ public class ItemSpecialService {
                 .stream()
                 .map(item -> new SpecialItemDto(
                         item,
-                        userItemRepository.findByUserAndItemCategory(user, item.getCategory()).size() > 0
+                        userItemRepository.findByUserIdAndItemCategory(userId, item.getCategory()).size() > 0
                 ))
                 .collect(Collectors.toList());
 
@@ -58,33 +59,57 @@ public class ItemSpecialService {
             );
         }
 
-        // 사용자가 보유하지 않은 특별 아이템 조회
-        List<Item> availableSpecialItems = itemRepository.findByIsSpecialTrue();
-        availableSpecialItems.removeIf(item -> userItemRepository.findByUserAndItemCategory(user, item.getCategory()).size() > 0);
-
-        if (availableSpecialItems.isEmpty()) {
+        // 모든 특별 아이템 조회
+        List<Item> specialItems = itemRepository.findByIsSpecialTrue();
+        if (specialItems.isEmpty()) {
             return Map.of(
                     "status", "failed",
-                    "message", "모든 특별 아이템을 보유 중입니다.",
+                    "message", "구매 가능한 특별 아이템이 없습니다.",
                     "availableGold", user.getGold()
             );
         }
 
         // 랜덤한 특별 아이템 선택
-        Item selectedItem = availableSpecialItems.get(new Random().nextInt(availableSpecialItems.size()));
+        Item selectedItem = specialItems.get(new Random().nextInt(specialItems.size()));
 
         // 골드 차감 후 저장
         user.setGold(user.getGold() - SPECIAL_PRICE);
         userRepository.save(user);
 
-        // 특별 아이템 지급
+        // 해당 아이템을 이미 보유한 경우 → 골드만 차감 (아이템 지급 없음)
+        boolean alreadyOwned = userItemRepository.existsByUserIdAndItemId(userId, selectedItem.getItemId());
+
+        if (alreadyOwned) {
+            return Map.of(
+                    "status", "success",
+                    "message", "이미 보유한 아이템이 선택되었습니다. 골드만 차감됩니다.",
+                    "availableGold", user.getGold(),
+                    "selectedItemId", selectedItem.getItemId()
+            );
+        }
+
+        // 보유하지 않은 경우 → 아이템 지급
         UserItem userItem = new UserItem();
-        userItem.setUser(user);
-        userItem.setItem(selectedItem);
+        userItem.setUserId(userId);
+        userItem.setItemId(selectedItem.getItemId());
+        userItem.setSelected(false);
+        userItem.setStatus("active");
+        userItem.setCreatedAt(LocalDateTime.now());
+
+        // 선택된 아이템이 "character" 카테고리인 경우 growthPoint=0, growthLevel=1
+        if ("character".equalsIgnoreCase(selectedItem.getCategory())) {
+            userItem.setGrowthPoint(0L);
+            userItem.setGrowthLevel(1L);
+        } else {
+            userItem.setGrowthPoint(null);
+            userItem.setGrowthLevel(null);
+        }
+
         userItemRepository.save(userItem);
 
         return Map.of(
                 "status", "success",
+                "message", "새로운 특별 아이템이 지급되었습니다.",
                 "availableGold", user.getGold(),
                 "selectedItemId", selectedItem.getItemId()
         );

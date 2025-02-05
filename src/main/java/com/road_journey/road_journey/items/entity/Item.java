@@ -26,5 +26,6 @@ public class Item {
     @Column(nullable = false)
     private int gold;
 
+    @Column(nullable = false)
     private boolean isSpecial;
 }

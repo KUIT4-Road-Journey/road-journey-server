@@ -7,5 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface UserItemRepository extends JpaRepository<UserItem, Long> {
-    List<UserItem> findByUserAndItemCategory(User user, String category);
+    List<UserItem> findByUserIdAndItemCategory(Long userId, String category);
+    boolean existsByUserIdAndItemId(Long userId, Long itemId);
 }

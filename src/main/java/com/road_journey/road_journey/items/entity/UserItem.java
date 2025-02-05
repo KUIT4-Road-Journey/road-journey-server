@@ -4,6 +4,8 @@ import com.road_journey.road_journey.auth.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "user_item")
 @Getter @Setter
@@ -15,15 +17,24 @@ public class UserItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userItemId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(nullable = false)
+    private Long userId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "item_id", nullable = false)
-    private Item item;
+    @Column(nullable = false)
+    private Long itemId;
 
+    @Column(nullable = false)
     private boolean isSelected;
-    private int growthPoint;
-    private int growthLevel;
+
+    @Column
+    private Long growthPoint;
+
+    @Column
+    private Long growthLevel;
+
+    @Column(nullable = false, length = 50)
+    private String status = "active";
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

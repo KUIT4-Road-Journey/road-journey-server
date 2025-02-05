@@ -3,7 +3,9 @@ package com.road_journey.road_journey.items.service;
 import com.road_journey.road_journey.auth.User;
 import com.road_journey.road_journey.auth.UserRepository;
 import com.road_journey.road_journey.items.dto.UserItemDto;
+import com.road_journey.road_journey.items.entity.Item;
 import com.road_journey.road_journey.items.entity.UserItem;
+import com.road_journey.road_journey.items.repository.ItemRepository;
 import com.road_journey.road_journey.items.repository.UserItemRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,20 +18,21 @@ import java.util.stream.Collectors;
 public class ItemStorageService {
 
     private final UserItemRepository userItemRepository;
-    private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
 
-    public ItemStorageService(UserItemRepository userItemRepository, UserRepository userRepository) {
+    public ItemStorageService(UserItemRepository userItemRepository, ItemRepository itemRepository) {
         this.userItemRepository = userItemRepository;
-        this.userRepository = userRepository;
+        this.itemRepository = itemRepository;
     }
 
     public Map<String, Object> getUserItems(Long userId, String category) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
-
-        List<UserItemDto> items = userItemRepository.findByUserAndItemCategory(user, category)
+        List<UserItemDto> items = userItemRepository.findByUserIdAndItemCategory(userId, category)
                 .stream()
-                .map(userItem -> new UserItemDto(userItem))  // 직접 생성자 호출
+                .map(userItem -> {
+                    Item item = itemRepository.findById(userItem.getItemId())
+                            .orElseThrow(() -> new IllegalArgumentException("아이템 정보 없음"));
+                    return new UserItemDto(userItem, item);
+                })
                 .collect(Collectors.toList());
 
         return Map.of("items", items);
@@ -37,12 +40,15 @@ public class ItemStorageService {
 
     @Transactional
     public Map<String, Object> toggleEquipItem(Long userId, Long userItemId, boolean isEquipped) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
         UserItem userItem = userItemRepository.findById(userItemId)
                 .orElseThrow(() -> new IllegalArgumentException("아이템 없음"));
 
+        // itemId를 기반으로 아이템 조회하여 카테고리 가져오기
+        Item item = itemRepository.findById(userItem.getItemId())
+                .orElseThrow(() -> new IllegalArgumentException("아이템 정보 없음"));
+
         if (isEquipped) {
-            unequipSameCategoryItems(user, userItem.getItem().getCategory());
+            unequipSameCategoryItems(userId, item.getCategory());
         }
 
         userItem.setSelected(isEquipped);
@@ -54,8 +60,8 @@ public class ItemStorageService {
         );
     }
 
-    private void unequipSameCategoryItems(User user, String category) {
-        List<UserItem> sameCategoryItems = userItemRepository.findByUserAndItemCategory(user, category);
+    private void unequipSameCategoryItems(Long userId, String category) {
+        List<UserItem> sameCategoryItems = userItemRepository.findByUserIdAndItemCategory(userId, category);
         sameCategoryItems.forEach(item -> item.setSelected(false));
         userItemRepository.saveAll(sameCategoryItems);
     }
