@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 public class CustomUserInfoDto {
 
-    private Long memberId;
+    private Long userId;
 
     private String accountId;
 

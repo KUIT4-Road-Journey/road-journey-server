@@ -34,24 +34,24 @@ public class JwtUtil {
 
     /**
      * Access Token 생성
-     * @param member 사용자 정보 담는 DTO
+     * @param user 사용자 정보 담는 DTO
      * @return Access Token String
      */
-    public String createAccessToken(CustomUserInfoDto member) {
-        return createToken(member, accessTokenExpTime);
+    public String createAccessToken(CustomUserInfoDto user) {
+        return createToken(user, accessTokenExpTime);
     }
 
 
     /**
      * JWT 생성
-     * @param member 사용자 정보 담는 DTO
+     * @param user 사용자 정보 담는 DTO
      * @param expireTime 토큰 만료 시간
      * @return JWT String
      */
-    private String createToken(CustomUserInfoDto member, long expireTime) {
+    private String createToken(CustomUserInfoDto user, long expireTime) {
         Claims claims = Jwts.claims();
-        claims.put("memberId", member.getMemberId());
-        claims.put("email", member.getEmail());
+        claims.put("userId", user.getUserId());
+        claims.put("email", user.getEmail());
 
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime tokenValidity = now.plusSeconds(expireTime);
@@ -72,7 +72,7 @@ public class JwtUtil {
      * @return User ID
      */
     public Long getUserId(String token) {
-        return parseClaims(token).get("memberId", Long.class);
+        return parseClaims(token).get("userId", Long.class);
     }
 
 

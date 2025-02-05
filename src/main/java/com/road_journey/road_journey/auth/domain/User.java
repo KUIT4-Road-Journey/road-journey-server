@@ -5,15 +5,15 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "MEMBER")
+@Table(name = "users")
 @Getter
 @Setter
-public class Member {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MEMBER_ID")
-    private Long memberId;
+    @Column(name = "USER_ID")
+    private Long userId;
 
     @Column(name = "ACCOUNT_ID", nullable = false, unique = true)
     private String accountId;

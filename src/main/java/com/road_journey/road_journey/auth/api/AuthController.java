@@ -19,7 +19,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<String> getMemberProfile(
+    public ResponseEntity<String> getUserProfile(
             @Valid @RequestBody LoginRequestDto request
     ) {
         String token = this.authService.login(request);

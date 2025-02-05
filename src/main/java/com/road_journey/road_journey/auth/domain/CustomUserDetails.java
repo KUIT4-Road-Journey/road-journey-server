@@ -15,17 +15,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
-    private final CustomUserInfoDto member;
+    private final CustomUserInfoDto user;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<String> roles = new ArrayList<>();
 
         // 기본 역할 설정
-        if (member.getRole() == null) {
+        if (user.getRole() == null) {
             roles.add("ROLE_USER");  // 기본적으로 사용자에게 "ROLE_USER" 부여
         } else {
-            roles.add("ROLE_" + member.getRole());
+            roles.add("ROLE_" + user.getRole());
         }
 
         return roles.stream()
@@ -35,12 +35,12 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return member.getPassword();
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return member.getMemberId().toString();
+        return user.getUserId().toString();
     }
 
     @Override
