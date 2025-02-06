@@ -31,7 +31,7 @@ public class ArchiveController {
 
     @GetMapping("/{goalId}")
     public GoalResponseDto getArchive(@PathVariable Long goalId) {
-        return goalService.getGoalResponse(goalId);
+        return goalService.getGoalResponseByGoalId(goalId);
     }
 
 }
