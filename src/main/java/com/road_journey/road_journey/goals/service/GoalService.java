@@ -5,6 +5,7 @@ import com.road_journey.road_journey.goals.domain.PeriodGoal;
 import com.road_journey.road_journey.goals.domain.RepeatedGoal;
 import com.road_journey.road_journey.goals.domain.SubGoal;
 import com.road_journey.road_journey.goals.dto.AddGoalRequestDto;
+import com.road_journey.road_journey.goals.dto.GoalListResponseDto;
 import com.road_journey.road_journey.goals.dto.GoalResponseDto;
 import com.road_journey.road_journey.goals.repository.GoalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class GoalService {
@@ -99,14 +101,19 @@ public class GoalService {
                 .build();
     }
 
-    public GoalResponseDto getGoalResponse(Long goalId) {
+    public GoalResponseDto getGoalResponseByGoalId(Long goalId) {
         Optional<Goal> goal = getGoalById(goalId);
+        return getGoalResponse(goal.get());
+    }
+
+    public GoalResponseDto getGoalResponse(Goal goal) {
+        Long goalId = goal.getGoalId();
         Optional<PeriodGoal> periodGoal = periodGoalService.getPeriodGoalByGoalId(goalId);
         Optional<RepeatedGoal> repeatedGoal = repeatedGoalService.getRepeatedGoalByGoalId(goalId);
         List<SubGoal> subGoalList = subGoalService.getSubGoalsByGoalId(goalId);
-        List<Long> friendIdList = getFriendIdList(goal.get().getOriginalGoalId());
+        List<Long> friendIdList = getFriendIdList(goal.getOriginalGoalId());
 
-        return new GoalResponseDto(goal.get(), periodGoal, repeatedGoal, subGoalList, friendIdList);
+        return new GoalResponseDto(goal, periodGoal, repeatedGoal, subGoalList, friendIdList);
     }
 
     public List<Goal> getAllGoals() {
@@ -131,4 +138,17 @@ public class GoalService {
         return friendIdList;
     }
 
+
+
+    public GoalListResponseDto getGoalListResponse(Long userId, String category) {
+        // TODO 목표 리스트에 출력되는 정확한 기준 반영 필요
+        List<Goal> goalList = goalRepository.findByUserIdAndCategory(userId, category);
+        System.out.println(goalList.size());
+
+        List<GoalResponseDto> goalResponseList = goalList.stream()
+                .map(this::getGoalResponse)
+                .collect(Collectors.toList());
+
+        return new GoalListResponseDto(goalResponseList);
+    }
 }

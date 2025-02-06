@@ -1,9 +1,12 @@
 package com.road_journey.road_journey.goals.controller;
 
 import com.road_journey.road_journey.goals.dto.AddGoalRequestDto;
+import com.road_journey.road_journey.goals.dto.GoalListResponseDto;
 import com.road_journey.road_journey.goals.dto.GoalResponseDto;
 import com.road_journey.road_journey.goals.service.GoalService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RequestMapping("/goals")
 @RestController
@@ -26,19 +32,19 @@ public class GoalController {
     }
 
     @GetMapping("/list/{userId}")
-    public String getGoalList(@PathVariable Long userId,
-                              @RequestParam String category) {
-        return "Goal List of " + userId + "\n" +
-                "category : " + category;
+    public GoalListResponseDto getGoalList(@PathVariable Long userId,
+                                           @RequestParam String category) {
+        return goalService.getGoalListResponse(userId, category);
     }
 
     @GetMapping("/{goalId}")
     public GoalResponseDto getGoalList(@PathVariable Long goalId) {
-        return goalService.getGoalResponse(goalId);
+        return goalService.getGoalResponseByGoalId(goalId);
     }
 
     @PostMapping("/{goalId}/accept")
     public String acceptGoal(@PathVariable Long goalId) {
+
         return "Goal " + goalId + " Accepted";
     }
 

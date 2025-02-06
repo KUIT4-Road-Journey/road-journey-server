@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface GoalRepository extends JpaRepository<Goal, Long> {
     List<Goal> findGoalsByOriginalGoalId(Long originalGoalId);
+    List<Goal> findByUserIdAndCategory(Long userId, String category);
 }

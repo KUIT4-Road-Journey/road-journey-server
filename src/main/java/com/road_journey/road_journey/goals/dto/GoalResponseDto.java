@@ -70,7 +70,7 @@ public class GoalResponseDto {
                 count ++;
             }
         }
-        return (int)(((count + 1) / (double)subGoalList.size()) * 100);
+        return (int)(count / (double)(subGoalList.size() + 1) * 100);
     }
 
     @Getter
@@ -85,8 +85,8 @@ public class GoalResponseDto {
             this.expireAt = periodGoal.get().getPeriodExpireAt();
 
             if (repeatedGoal.isPresent()) {
-                this.repetitionPeriod = repeatedGoal.get().getPeriod();
-                this.repetitionNumber = repeatedGoal.get().getNumber();
+                this.repetitionPeriod = repeatedGoal.get().getRepetitionPeriod();
+                this.repetitionNumber = repeatedGoal.get().getRepetitionNumber();
                 return;
             }
             this.repetitionPeriod = -1;
