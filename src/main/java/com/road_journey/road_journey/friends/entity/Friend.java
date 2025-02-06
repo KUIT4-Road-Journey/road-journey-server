@@ -1,14 +1,20 @@
 package com.road_journey.road_journey.friends.entity;
 
+
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "friend")
 @Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Friend {
 
     @Id
@@ -23,45 +29,32 @@ public class Friend {
     private Long friendUserId;
 
     @Column(name = "is_like", nullable = false)
-    private boolean isLike;
+    private Boolean isLike;
 
-    @Column(name = "status", length = 50, nullable = false)
+    @Column(name = "status", nullable = false, length = 50)
     private String status;
 
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    // 생성자 (빌더 패턴 없이 사용)
-    public Friend(Long userId, Long friendUserId, boolean isLike, String status) {
-        this.userId = userId;
-        this.friendUserId = friendUserId;
-        this.isLike = isLike;
-        this.status = status;
-    }
-
-    // 엔티티가 저장될 때 자동으로 실행
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
-    // 엔티티가 업데이트될 때 자동으로 실행
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // isLike 변경 메서드
-    public void updateLikeStatus(boolean isLike) {
+    public Friend(Long userId, Long friendUserId, Boolean isLike, String status) {
+        this.userId = userId;
+        this.friendUserId = friendUserId;
         this.isLike = isLike;
-    }
-
-    // status 변경 메서드
-    public void updateStatus(String status) {
         this.status = status;
     }
 }
