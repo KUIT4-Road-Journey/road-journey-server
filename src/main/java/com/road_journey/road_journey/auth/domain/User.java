@@ -28,8 +28,8 @@ public class User {
     private String profileImage;
     private String statusMessage;
 
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "ROLE", nullable = false)
-//    private RoleType role;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private RoleType role = RoleType.USER;
 
 }
