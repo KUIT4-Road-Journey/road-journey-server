@@ -15,11 +15,11 @@ public class User {
     @Column(name = "USER_ID")
     private Long userId;
 
-    @Column(name = "ACCOUNT_ID", nullable = false, unique = true)
+    @Column(name = "account_id", nullable = false, unique = true)
     private String accountId;
 
-    @Column(name = "PASSWORD", nullable = false)
-    private String accountPassword;
+    @Column(name = "account_pw", nullable = false)
+    private String accountPw;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
@@ -28,8 +28,8 @@ public class User {
     private String profileImage;
     private String statusMessage;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "ROLE", nullable = false)
-    private RoleType role;
+//    @Enumerated(EnumType.STRING)
+//    @Column(name = "ROLE", nullable = false)
+//    private RoleType role;
 
 }

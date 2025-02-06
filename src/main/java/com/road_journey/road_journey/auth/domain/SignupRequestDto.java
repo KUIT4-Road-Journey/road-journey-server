@@ -19,7 +19,7 @@ public class SignupRequestDto {
     @Size(min = 8, message = "비밀번호는 최소 10자 이상이어야 합니다.")
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{10,}$",
             message = "비밀번호는 최소 하나의 문자, 숫자, 특수문자를 포함해야 합니다.")
-    private String accountPassword;
+    private String accountPw;
 
     @NotBlank(message = "이메일은 필수 입력 값입니다.")
     @Email(message = "유효한 이메일 주소를 입력하세요.")

@@ -17,5 +17,5 @@ public class LoginRequestDto {
 
 
     @NotNull(message = "패스워드 입력은 필수입니다.")
-    private String password;
+    private String accountPw;
 }

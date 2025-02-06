@@ -33,14 +33,14 @@ public class AuthService {
     @Transactional
     public String login(@Valid LoginRequestDto dto) {
         String accountId = dto.getAccountId();
-        String password = dto.getPassword();
+        String password = dto.getAccountPw();
         User user = userRepository.findUserByAccountId(accountId);
         if(user == null) {
             throw new UsernameNotFoundException("아이디가 존재하지 않습니다.");
         }
 
         // 암호화된 password를 디코딩한 값과 입력한 패스워드 값이 다르면 null 반환
-        if(!encoder.matches(password, user.getAccountPassword())) {
+        if(!encoder.matches(password, user.getAccountPw())) {
             throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
         }
 
@@ -66,7 +66,7 @@ public class AuthService {
         // 사용자 정보 저장
         User user = new User();
         user.setAccountId(request.getAccountId());
-        user.setAccountPassword(encoder.encode(request.getAccountPassword())); // 비밀번호 암호화 저장
+        user.setAccountPw(encoder.encode(request.getAccountPw())); // 비밀번호 암호화 저장
         user.setEmail(request.getEmail());
         user.setNickname(request.getNickname());
         user.setProfileImage(request.getProfileImage());

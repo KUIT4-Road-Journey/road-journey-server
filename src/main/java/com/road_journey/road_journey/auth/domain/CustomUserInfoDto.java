@@ -13,7 +13,7 @@ public class CustomUserInfoDto {
 
     private String accountId;
 
-    private String accountPassword;
+    private String accountPw;
 
     private String email;
 
