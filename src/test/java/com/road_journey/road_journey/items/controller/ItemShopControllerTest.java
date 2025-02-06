@@ -39,22 +39,38 @@ class ItemShopControllerTest {
         // given
         itemRepository.save(new Item(null, "밤하늘", "wallpaper", "암흑 공간을 수놓은 반짝거리는 ...", 2500L, false));
         itemRepository.save(new Item(null, "노을", "wallpaper", "해질녘 노을...", 2500L, false));
+        itemRepository.save(new Item(null, "Test Item", "ornament", "Special Description", 2000L, false));
 
         // when & then
         mockMvc.perform(get("/items/shop"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(org.hamcrest.Matchers.greaterThan(0)));
+
+        mockMvc.perform(get("/items/shop")
+                        .param("category", "wallpaper"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(2))
+                .andExpect(jsonPath("$[0].itemName").value("밤하늘"))
+                .andExpect(jsonPath("$[1].itemName").value("노을"));
+
+
+        mockMvc.perform(get("/items/shop")
+                        .param("category", "ornament"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$[0].itemName").value("Test Item"));
     }
+
 
     @Test
     void 아이템_구매_API_테스트() throws Exception {
         // given
-        User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 500L, "active"));
-        Item item = itemRepository.save(new Item(null, "Sword", "weapon", "A sharp sword", 100L, false));
+        User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 2500L, "active"));
+        Item item = itemRepository.save(new Item(null, "밤하늘", "wallpaper", "암흑 공간을 수놓은 반짝거리는 ...", 2500L, false));
 
         // when & then
         mockMvc.perform(post("/items/shop/order")
-                        .param("userId", user.getUserId().toString())
+                        .param("userId", user.getUserId().toString()) //todo 임시
                         .param("itemId", item.getItemId().toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"));

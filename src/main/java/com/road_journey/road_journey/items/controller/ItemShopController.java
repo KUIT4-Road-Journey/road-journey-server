@@ -24,7 +24,7 @@ public class ItemShopController {
     }
 
     @PostMapping("/order")
-    public ResponseEntity<Map<String, Object>> purchaseItem(@RequestParam Long userId, @RequestParam Long itemId) {
+    public ResponseEntity<Map<String, Object>> purchaseItem(@RequestParam Long userId, @RequestParam Long itemId) { //todo 임시
         return ResponseEntity.ok(itemShopService.purchaseItem(userId, itemId));
     }
 }

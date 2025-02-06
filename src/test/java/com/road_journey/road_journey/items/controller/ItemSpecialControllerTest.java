@@ -43,7 +43,7 @@ class ItemSpecialControllerTest {
 
         // when & then
         mockMvc.perform(get("/items/special")
-                        .param("userId", user.getUserId().toString()))
+                        .param("userId", user.getUserId().toString())) //todo 임시
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.specialItems", hasSize(greaterThan(0))));
     }
@@ -55,7 +55,7 @@ class ItemSpecialControllerTest {
 
         // when & then
         mockMvc.perform(post("/items/special/order")
-                        .param("userId", user.getUserId().toString()))
+                        .param("userId", user.getUserId().toString())) //todo 임시
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"));
     }

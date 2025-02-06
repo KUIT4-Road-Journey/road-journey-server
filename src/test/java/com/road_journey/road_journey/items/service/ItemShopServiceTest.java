@@ -67,6 +67,6 @@ public class ItemShopServiceTest {
 
         Assertions.assertEquals("failed", response.get("status"));
         Assertions.assertEquals(500L, response.get("availableGold"));
-        Assertions.assertTrue(!userItemRepository.existsByUserIdAndItemId(user.getUserId(), item.getItemId()));
+        Assertions.assertFalse(userItemRepository.existsByUserIdAndItemId(user.getUserId(), item.getItemId()));
     }
 }

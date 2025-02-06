@@ -17,12 +17,12 @@ public class ItemSpecialController {
     }
 
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getSpecialItems(@RequestParam Long userId) {
+    public ResponseEntity<Map<String, Object>> getSpecialItems(@RequestParam Long userId) { //todo 임시
         return ResponseEntity.ok(itemSpecialService.getSpecialItems(userId));
     }
 
     @PostMapping("/order")
-    public ResponseEntity<Map<String, Object>> purchaseSpecialItem(@RequestParam Long userId) {
+    public ResponseEntity<Map<String, Object>> purchaseSpecialItem(@RequestParam Long userId) { //todo 임시
         return ResponseEntity.ok(itemSpecialService.purchaseSpecialItem(userId));
     }
 }
