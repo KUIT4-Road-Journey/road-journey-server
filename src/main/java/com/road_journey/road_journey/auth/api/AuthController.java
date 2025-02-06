@@ -47,7 +47,7 @@ public class AuthController {
 //    }
 
     // 아이디 찾기 - 인증 코드 확인
-    @PostMapping("/find/id/verify-code")
+    //@PostMapping("/find/id/verify-code")
     public ResponseEntity<Map<String, Object>> verifyIdCode(@RequestBody Map<String, Integer> request) {
         int code = request.get("code");
         Optional<User> user = authService.findIdByEmail("user@email.com"); // TODO: 이메일 기반 조회 로직 필요
@@ -58,7 +58,7 @@ public class AuthController {
     }
 
     // 비밀번호 찾기 - 인증 코드 확인
-    @PostMapping("/auth/find/password/verify-code")
+    //@PostMapping("/find/password/verify-code")
     public ResponseEntity<Map<String, Object>> verifyPasswordCode(@RequestBody Map<String, Integer> request) {
         int code = request.get("code");
         Optional<User> user = authService.findPasswordByEmail("user@email.com"); // TODO: 이메일 기반 조회 로직 필요
@@ -69,7 +69,7 @@ public class AuthController {
     }
 
     // 비밀번호 찾기 - 아이디 확인
-    @PostMapping("/find/password/check-id")
+    //@PostMapping("/find/password/check-id")
     public ResponseEntity<Map<String, Object>> checkId(@RequestBody Map<String, String> request) {
         String accountId = request.get("accountId");
         Optional<User> user = authService.findByAccountId(accountId);
