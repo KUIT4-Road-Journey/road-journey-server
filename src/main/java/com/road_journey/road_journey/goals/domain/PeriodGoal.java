@@ -24,7 +24,7 @@ public class PeriodGoal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long repeatedGoalId; // 기간목표아이디
+    private Long periodGoalId; // 기간목표아이디
 
     @Column
     private Long goalId; // 목표아이디

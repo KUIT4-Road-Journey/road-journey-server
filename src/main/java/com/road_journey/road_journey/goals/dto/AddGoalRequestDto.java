@@ -1,6 +1,7 @@
 package com.road_journey.road_journey.goals.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -13,8 +14,8 @@ public class AddGoalRequestDto {
     private int difficulty;
     private String category;
     private String description;
-    private boolean isSharedGoal;
-    private boolean isPublicGoal;
+    private boolean sharedGoal;
+    private boolean publicGoal;
     private String subGoalType;
     private DateInfo dateInfo;
     private List<Friend> friendList;
@@ -61,6 +62,7 @@ public class AddGoalRequestDto {
     }
 
     @Getter
+    @AllArgsConstructor
     public static class Friend {
         private Long userId;
 

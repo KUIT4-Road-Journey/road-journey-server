@@ -1,5 +1,6 @@
 package com.road_journey.road_journey.goals.service;
 
+import com.road_journey.road_journey.goals.domain.Goal;
 import com.road_journey.road_journey.goals.domain.PeriodGoal;
 import com.road_journey.road_journey.goals.dto.AddGoalRequestDto;
 import com.road_journey.road_journey.goals.repository.PeriodGoalRepository;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class PeriodGoalService {
@@ -46,5 +48,9 @@ public class PeriodGoalService {
                 .status("none")
                 .build();
         periodGoalRepository.save(periodGoal);
+    }
+
+    public Optional<PeriodGoal> getPeriodGoalByGoalId(Long goalId) {
+        return periodGoalRepository.findByGoalId(goalId);
     }
 }

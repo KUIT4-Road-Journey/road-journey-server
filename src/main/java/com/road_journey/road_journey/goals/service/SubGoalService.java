@@ -6,6 +6,8 @@ import com.road_journey.road_journey.goals.repository.SubGoalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class SubGoalService {
 
@@ -19,8 +21,13 @@ public class SubGoalService {
                 .description(subGoalRequest.getDescription())
                 .isCompleted(false)
                 .difficulty(subGoalRequest.getDifficulty())
+                .progressStatus("none") // TODO 상태값 수정 필요
                 .status("none")
                 .build();
         subGoalRepository.save(subGoal);
+    }
+
+    public List<SubGoal> getSubGoalsByGoalId(Long goalId) {
+        return subGoalRepository.findByGoalId(goalId);
     }
 }

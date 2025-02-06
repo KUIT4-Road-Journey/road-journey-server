@@ -1,10 +1,13 @@
 package com.road_journey.road_journey.goals.service;
 
+import com.road_journey.road_journey.goals.domain.Goal;
 import com.road_journey.road_journey.goals.domain.RepeatedGoal;
 import com.road_journey.road_journey.goals.dto.AddGoalRequestDto;
 import com.road_journey.road_journey.goals.repository.RepeatedGoalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class RepeatedGoalService {
@@ -22,5 +25,9 @@ public class RepeatedGoalService {
                 .status("none")
                 .build();
         repeatedGoalRepository.save(repeatedGoal);
+    }
+
+    public Optional<RepeatedGoal> getRepeatedGoalByGoalId(Long goalId) {
+        return repeatedGoalRepository.findByGoalId(goalId);
     }
 }

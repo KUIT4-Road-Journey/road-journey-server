@@ -28,6 +28,9 @@ public class Goal {
     private Long originalGoalId; // 원본목표아이디
 
     @Column
+    private Long existingGoalId; // 원본목표아이디
+
+    @Column
     private String title; // 목표이름
 
     @Column
@@ -35,6 +38,9 @@ public class Goal {
 
     @Column
     private String description; // 상세내용
+
+    @Column
+    private String category; // 상세내용
 
     @Column
     private boolean isSharedGoal; // 공동목표여부
@@ -52,7 +58,7 @@ public class Goal {
     private String sharedStatus; // 공동상태
 
     @Column
-    private int completedStatus; // 완료상태
+    private String progressStatus; // 진행상태
 
     @Column
     private LocalDateTime finishedAt; // 완료일

@@ -1,6 +1,7 @@
 package com.road_journey.road_journey.goals.controller;
 
 import com.road_journey.road_journey.goals.dto.AddGoalRequestDto;
+import com.road_journey.road_journey.goals.dto.GoalResponseDto;
 import com.road_journey.road_journey.goals.service.GoalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,8 +33,8 @@ public class GoalController {
     }
 
     @GetMapping("/{goalId}")
-    public String getGoalList(@PathVariable Long goalId) {
-        return "Goal " + goalId;
+    public GoalResponseDto getGoalList(@PathVariable Long goalId) {
+        return goalService.getGoalResponse(goalId);
     }
 
     @PostMapping("/{goalId}/accept")
