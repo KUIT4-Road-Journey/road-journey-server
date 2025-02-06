@@ -1,6 +1,6 @@
 package com.road_journey.road_journey.notifications.service;
 
-import com.road_journey.road_journey.notifications.dto.DeleteResponseDTO;
+import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
 import com.road_journey.road_journey.notifications.dto.NotificationDTO;
 import com.road_journey.road_journey.notifications.entity.Notification;
 import com.road_journey.road_journey.notifications.repository.NotificationRepository;
@@ -27,7 +27,7 @@ public class NotificationService {
     }
 
     @Transactional
-    public DeleteResponseDTO deleteNotification(Long userId, Long notificationId) {
+    public UpdateResponseDTO deleteNotification(Long userId, Long notificationId) {
         Optional<Notification> notification = notificationRepository.findByUserIdAndNotificationId(userId, notificationId);
 
         if (notification.isPresent()) {
@@ -35,24 +35,31 @@ public class NotificationService {
 
             if (!"deleted".equals(notif.getStatus())) {
                 notificationRepository.updateStatusByUserIdAndId(userId, notificationId, "deleted");
-                return new DeleteResponseDTO("success", "Notification deleted.");
+                return new UpdateResponseDTO("success", "Notification deleted.");
             } else {
-                return new DeleteResponseDTO("error", "Notification is already deleted.");
+                return new UpdateResponseDTO("error", "Notification is already deleted.");
             }
         } else {
-            return new DeleteResponseDTO("error", "Notification not found or does not belong to the user.");
+            return new UpdateResponseDTO("error", "Notification not found or does not belong to the user.");
         }
     }
 
     @Transactional
-    public DeleteResponseDTO deleteAllNotifications(Long userId) {
+    public UpdateResponseDTO deleteAllNotifications(Long userId) {
         List<Notification> activeNotifications = notificationRepository.findByUserIdAndStatus(userId, "active");
 
         if (activeNotifications.isEmpty()) {
-            return new DeleteResponseDTO("error", "No active notifications found to delete.");
+            return new UpdateResponseDTO("error", "No active notifications found to delete.");
         }
 
         notificationRepository.updateStatusByUserIdAndCategory(userId, "notification", "deleted");
-        return new DeleteResponseDTO("success", "All notifications deleted.");
+        return new UpdateResponseDTO("success", "All notifications deleted.");
+    }
+
+    //특정 카테고리(`category`)의 알림 조회 //todo test 필요
+    public List<NotificationDTO> getNotificationsByCategory(Long userId, String category) {
+        return notificationRepository.findActiveNotificationsByCategory(userId, category).stream()
+                .map(NotificationDTO::new)
+                .collect(Collectors.toList());
     }
 }

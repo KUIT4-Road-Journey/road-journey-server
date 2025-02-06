@@ -2,11 +2,14 @@ package com.road_journey.road_journey.auth;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.security.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user")  // MySQL 테이블 명과 일치
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,12 +18,13 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long userId;
 
-    @Column(unique = true, nullable = false, length = 50)
+    @Column(name = "account_id", unique = true, nullable = false, length = 50)
     private String accountId;
 
-    @Column(nullable = false, length = 200)
+    @Column(name = "account_pw", nullable = false, length = 200)
     private String accountPw;
 
     @Column(nullable = false, length = 100)
@@ -29,13 +33,13 @@ public class User {
     @Column(nullable = false, length = 50)
     private String nickname;
 
-    @Column(nullable = false)
+    @Column(name = "last_login_time", columnDefinition = "TIMESTAMP NULL")
     private LocalDateTime lastLoginTime;
 
-    @Column(length = 200)
+    @Column(name = "profile_image", length = 200, nullable = true)
     private String profileImage;
 
-    @Column(nullable = false, length = 200)
+    @Column(name = "status_message", length = 200, nullable = true)
     private String statusMessage;
 
     @Column(nullable = false)
@@ -44,26 +48,15 @@ public class User {
     @Column(nullable = false, length = 50)
     private String status;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private Timestamp createdAt;
 
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private Timestamp updatedAt;
 
-    // @PrePersist: INSERT 시 자동 설정
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-        this.lastLoginTime = LocalDateTime.now();  // 기본값 설정
-    }
-
-    // @PreUpdate: UPDATE 시 자동 설정
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
+    // 엔터티 생성자
     public User(String accountId, String accountPw, String email, String nickname, Long gold, String status) {
         this.accountId = accountId;
         this.accountPw = accountPw;
@@ -71,9 +64,8 @@ public class User {
         this.nickname = nickname;
         this.gold = gold;
         this.status = status;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-        this.lastLoginTime = LocalDateTime.now();
-        this.statusMessage = "";
+        this.lastLoginTime = null;
+        this.statusMessage = null;
+        this.profileImage = null;
     }
 }

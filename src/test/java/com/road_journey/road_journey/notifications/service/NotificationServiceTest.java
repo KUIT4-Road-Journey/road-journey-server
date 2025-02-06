@@ -1,6 +1,6 @@
 package com.road_journey.road_journey.notifications.service;
 
-import com.road_journey.road_journey.notifications.dto.DeleteResponseDTO;
+import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
 import com.road_journey.road_journey.notifications.dto.NotificationDTO;
 import com.road_journey.road_journey.notifications.entity.Notification;
 import com.road_journey.road_journey.notifications.repository.NotificationRepository;
@@ -45,7 +45,7 @@ public class NotificationServiceTest {
         Notification notification = notificationRepository.save(new Notification(1L, "test_category", 100L, "Test message"));
 
 
-        DeleteResponseDTO response = notificationService.deleteNotification(1L, notification.getNotificationId());
+        UpdateResponseDTO response = notificationService.deleteNotification(1L, notification.getNotificationId());
 
 
         assertThat(response.getStatus()).isEqualTo("success");
@@ -57,7 +57,7 @@ public class NotificationServiceTest {
         notificationRepository.save(new Notification(1L, "notification", 101L, "Test message101"));
 
 
-        DeleteResponseDTO response = notificationService.deleteAllNotifications(1L);
+        UpdateResponseDTO response = notificationService.deleteAllNotifications(1L);
 
 
         assertThat(response.getStatus()).isEqualTo("success");

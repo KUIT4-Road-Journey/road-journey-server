@@ -1,9 +1,13 @@
 package com.road_journey.road_journey.friends.controller;
 
-import com.road_journey.road_journey.friends.dto.UpdateResponseDTO;
+import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
+import com.road_journey.road_journey.notifications.dto.NotificationDTO;
+import com.road_journey.road_journey.notifications.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/friends/messages")

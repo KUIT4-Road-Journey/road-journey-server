@@ -1,4 +1,4 @@
-package com.road_journey.road_journey.friends.dto;
+package com.road_journey.road_journey.notifications.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
