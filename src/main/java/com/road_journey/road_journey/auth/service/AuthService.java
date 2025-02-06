@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -63,6 +64,12 @@ public class AuthService {
             throw new RuntimeException("이미 사용 중인 이메일입니다.");
         }
 
+        // 비밀번호 검증 (영문 + 숫자 + 특수문자 포함, 10자 이상)
+        if (!isValidPassword(request.getAccountPw())) {
+            throw new RuntimeException("비밀번호는 영문, 숫자, 특수문자를 포함하여 10자 이상이어야 합니다.");
+        }
+
+
         // 사용자 정보 저장
         User user = new User();
         user.setAccountId(request.getAccountId());
@@ -74,6 +81,12 @@ public class AuthService {
 
         userRepository.save(user);
         return "Registration successful";
+    }
+
+    // 비밀번호 검증 메서드
+    private boolean isValidPassword(String password) {
+        String passwordPattern = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{10,}$";
+        return Pattern.matches(passwordPattern, password);
     }
 
     /**
