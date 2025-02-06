@@ -19,19 +19,19 @@ public class NotificationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<NotificationDTO>> getNotifications(@RequestParam Long userId) {
+    public ResponseEntity<List<NotificationDTO>> getNotifications(@RequestParam Long userId) { // todo 임시
 //        System.out.println("[CONTROLLER] 요청된 사용자 ID: " + userId);
         return ResponseEntity.ok(notificationService.getNotifications(userId));
     }
 
     @DeleteMapping("/{notificationId}")
-    public ResponseEntity<DeleteResponseDTO> deleteNotification(@PathVariable Long notificationId, @RequestParam Long userId) {
+    public ResponseEntity<DeleteResponseDTO> deleteNotification(@PathVariable Long notificationId, @RequestParam Long userId) { // todo 임시
 //        System.out.println("[CONTROLLER] 삭제 요청: userId=" + userId + ", notificationId=" + notificationId);
         return ResponseEntity.ok(notificationService.deleteNotification(userId, notificationId));
     }
 
     @DeleteMapping
-    public ResponseEntity<DeleteResponseDTO> deleteAllNotifications(@RequestParam Long userId) {
+    public ResponseEntity<DeleteResponseDTO> deleteAllNotifications(@RequestParam Long userId) { // todo 임시
 //        System.out.println("[CONTROLLER] 전체 삭제 요청: userId=" + userId);
         return ResponseEntity.ok(notificationService.deleteAllNotifications(userId));
     }
