@@ -18,8 +18,8 @@ public class RepeatedGoalService {
     public void createRepeatedGoal(Long goalId, AddGoalRequestDto.DateInfo dateInfo) {
         RepeatedGoal repeatedGoal = RepeatedGoal.builder()
                 .goalId(goalId)
-                .period(dateInfo.getRepetitionPeriod())
-                .number(dateInfo.getRepetitionNumber())
+                .repetitionPeriod(dateInfo.getRepetitionPeriod())
+                .repetitionNumber(dateInfo.getRepetitionNumber())
                 .completedCount(0)
                 .failedCount(0)
                 .status("none")

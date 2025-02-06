@@ -23,10 +23,10 @@ public class RepeatedGoal {
     private Long goalId; // 목표아이디
 
     @Column
-    private int period; // 반복일
+    private int repetitionPeriod; // 반복일
 
     @Column
-    private int number; // 반복횟수
+    private int repetitionNumber; // 반복횟수
 
     @Column
     private int completedCount; // 성공횟수
