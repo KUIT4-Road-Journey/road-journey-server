@@ -1,6 +1,5 @@
 package com.road_journey.road_journey.friends.controller;
 
-import com.road_journey.road_journey.friends.dto.FriendDTO;
 import com.road_journey.road_journey.friends.dto.FriendListDTO;
 import com.road_journey.road_journey.friends.service.FriendManagementService;
 import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/friends")
