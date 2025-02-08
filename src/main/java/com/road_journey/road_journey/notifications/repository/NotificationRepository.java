@@ -12,7 +12,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     List<Notification> findByUserIdAndStatus(Long userId, String status);
 
-    Optional<Notification> findByUserIdAndNotificationId(Long userId, Long notificationId);
+    Optional<Notification> findByNotificationId(Long notificationId);
 
     @Modifying
     @Transactional
@@ -31,5 +31,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     @Transactional
     @Query("UPDATE Notification n SET n.status = :status WHERE n.notificationId = :notificationId AND n.category = :category")
     void updateStatusByNotificationIdAndCategory(Long notificationId, String category, String status);
+
+    @Query("SELECT n FROM Notification n WHERE n.userId = :userId AND n.category IN :categories AND n.status = 'active'")
+    List<Notification> findFriendMessages(Long userId, List<String> categories);
 }
 

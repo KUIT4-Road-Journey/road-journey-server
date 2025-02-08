@@ -1,5 +1,6 @@
 package com.road_journey.road_journey.notifications.controller;
 
+import com.road_journey.road_journey.notifications.dto.NotificationCategory;
 import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
 import com.road_journey.road_journey.notifications.dto.NotificationDTO;
 import com.road_journey.road_journey.notifications.service.NotificationService;
@@ -25,13 +26,13 @@ public class NotificationController {
     }
 
     @DeleteMapping("/{notificationId}")
-    public ResponseEntity<UpdateResponseDTO> deleteNotification(@PathVariable Long notificationId, @RequestParam Long userId) { // todo 임시
+    public ResponseEntity<UpdateResponseDTO> deleteNotification(@PathVariable Long notificationId, @RequestParam Long userId) {
 //        System.out.println("[CONTROLLER] 삭제 요청: userId=" + userId + ", notificationId=" + notificationId);
-        return ResponseEntity.ok(notificationService.deleteNotification(userId, notificationId));
+        return ResponseEntity.ok(notificationService.deleteNotification(notificationId));
     }
 
     @DeleteMapping
-    public ResponseEntity<UpdateResponseDTO> deleteAllNotifications(@RequestParam Long userId) { // todo 임시
+    public ResponseEntity<UpdateResponseDTO> deleteAllNotifications(@RequestParam Long userId) {
 //        System.out.println("[CONTROLLER] 전체 삭제 요청: userId=" + userId);
         return ResponseEntity.ok(notificationService.deleteAllNotifications(userId));
     }

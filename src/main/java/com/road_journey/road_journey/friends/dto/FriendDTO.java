@@ -1,30 +1,32 @@
 package com.road_journey.road_journey.friends.dto;
 
-
-import com.road_journey.road_journey.friends.entity.Friend;
+import com.road_journey.road_journey.auth.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class FriendDTO {
-    private Long friendId;
     private Long userId;
-    private Long friendUserId;
-    private Boolean isLike;
-    private String status;
-    private LocalDateTime createdAt;
+    private String accountId;
+    private String nickname;
+    private String profileImage;
+    private String statusMessage;
+    private String friendStatus;
+    private Long friendId; // 친구 요청 ID
 
-    public FriendDTO(Friend friend) {
-        this.friendId = friend.getFriendId();
-        this.userId = friend.getUserId();
-        this.friendUserId = friend.getFriendUserId();
-        this.isLike = friend.getIsLike();
-        this.status = friend.getStatus();
-        this.createdAt = friend.getCreatedAt();
+    public FriendDTO(User user, String friendStatus, Long friendId) {
+        this.userId = user.getUserId();
+        this.accountId = user.getAccountId();
+        this.nickname = user.getNickname();
+        this.profileImage = user.getProfileImage();
+        this.statusMessage = user.getStatusMessage();
+
+        this.friendStatus = friendStatus;
+
+        this.friendId = friendId;
     }
 }
+

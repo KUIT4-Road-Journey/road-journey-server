@@ -21,13 +21,12 @@ public class FriendManagementController {
     @GetMapping
     public ResponseEntity<List<FriendListDTO>> getFriends(
             @RequestParam Long userId,
-            @RequestParam(required = false, defaultValue = "alphabetical") String category) {
-        return ResponseEntity.ok(friendManagementService.getFriends(userId, category));
+            @RequestParam(required = false, defaultValue = "alphabetical") String sortBy) {
+        return ResponseEntity.ok(friendManagementService.getFriends(userId, sortBy));
     }
 
-    //todo 구현 X
     @GetMapping("/{friendId}/main")
-    public ResponseEntity<Object> getFriendMain(@RequestParam Long userId, @PathVariable Long friendId) {
+    public ResponseEntity<Object> getFriendMain(@PathVariable Long friendId) {
         return ResponseEntity.ok(friendManagementService.getFriendMain());
     }
 
@@ -37,6 +36,6 @@ public class FriendManagementController {
             @RequestParam Long userId,
             @PathVariable Long friendId,
             @RequestBody Map<String, Boolean> request) {
-        return ResponseEntity.ok(friendManagementService.updateFriendLike(userId, friendId, request.get("action")));
+        return ResponseEntity.ok(friendManagementService.updateFriendLike(friendId, request.get("action")));
     }
 }

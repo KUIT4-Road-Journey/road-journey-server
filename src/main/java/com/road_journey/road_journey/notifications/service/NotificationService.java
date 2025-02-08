@@ -30,8 +30,8 @@ public class NotificationService {
     }
 
     @Transactional
-    public UpdateResponseDTO deleteNotification(Long userId, Long notificationId) {
-        Optional<Notification> notification = notificationRepository.findByUserIdAndNotificationId(userId, notificationId);
+    public UpdateResponseDTO deleteNotification(Long notificationId) {
+        Optional<Notification> notification = notificationRepository.findByNotificationId(notificationId);
 
         if (notification.isPresent()) {
             Notification notif = notification.get();
@@ -59,7 +59,7 @@ public class NotificationService {
         return new UpdateResponseDTO("success", "All notifications deleted.");
     }
 
-    //특정 카테고리(`category`)의 알림 조회
+    // todo 특정 카테고리(`category`)의 알림 조회
     public List<NotificationDTO> getNotificationsByCategory(Long userId, NotificationCategory category) {
         return notificationRepository.findActiveNotificationsByCategory(userId, category.name()).stream()
                 .map(NotificationDTO::new)
@@ -75,10 +75,5 @@ public class NotificationService {
 //        notification.setMessage("You have a new friend request.");
 //        notification.setStatus("active");
 //        notificationRepository.save(notification);
-//    }
-
-//    @Transactional
-//    public void deactivateNotification(Long friendId, String category) {
-//        notificationRepository.updateStatusByNotificationIdAndCategory(friendId, category, "deleted");
 //    }
 }

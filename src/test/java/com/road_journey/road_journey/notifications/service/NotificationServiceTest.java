@@ -47,7 +47,7 @@ public class NotificationServiceTest {
         Notification notification = notificationRepository.save(new Notification(1L, NOTIFICATION.name(), 100L, "Test message"));
 
 
-        UpdateResponseDTO response = notificationService.deleteNotification(1L, notification.getNotificationId());
+        UpdateResponseDTO response = notificationService.deleteNotification(notification.getNotificationId());
 
 
         assertThat(response.getStatus()).isEqualTo("success");

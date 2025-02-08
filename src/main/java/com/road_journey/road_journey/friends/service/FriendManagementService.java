@@ -6,6 +6,7 @@ import com.road_journey.road_journey.friends.dto.FriendListDTO;
 import com.road_journey.road_journey.friends.entity.Friend;
 import com.road_journey.road_journey.friends.repository.FriendRepository;
 import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
+import com.road_journey.road_journey.notifications.entity.Notification;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class FriendManagementService {
     private final UserRepository userRepository;
 
     //친구 목록 조회
-    public List<FriendListDTO> getFriends(Long userId, String category) {
+    public List<FriendListDTO> getFriends(Long userId, String sortBy) {
         List<Friend> friends = friendRepository.findFriendsByUserId(userId);
 
         if (friends.isEmpty()) {
@@ -46,11 +47,11 @@ public class FriendManagementService {
                 })
                 .collect(Collectors.toList());
 
-        return sortFriendsByCategory(friendList, category);
+        return sortFriendsByCategory(friendList, sortBy);
     }
 
-    private List<FriendListDTO> sortFriendsByCategory(List<FriendListDTO> friends, String category) {
-        switch (category) {
+    private List<FriendListDTO> sortFriendsByCategory(List<FriendListDTO> friends, String sortBy) {
+        switch (sortBy) {
             case "lastLogin":
                 friends.sort(Comparator.comparing(FriendListDTO::getLastLoginTime, Comparator.nullsLast(Comparator.reverseOrder())));
                 break;
@@ -77,8 +78,8 @@ public class FriendManagementService {
 
     //친구 좋아요 상태 변경
     @Transactional
-    public UpdateResponseDTO updateFriendLike(Long userId, Long friendId, Boolean isLike) {
-        Optional<Friend> friendOptional = friendRepository.findActiveFriend(userId, friendId);
+    public UpdateResponseDTO updateFriendLike(Long friendId, Boolean isLike) {
+        Optional<Friend> friendOptional = friendRepository.findFriendsByfriendUserId(friendId);
 
         if (friendOptional.isEmpty()) {
             return new UpdateResponseDTO("failed", "Friend not found.");

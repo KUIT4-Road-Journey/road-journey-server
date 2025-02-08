@@ -2,7 +2,7 @@ package com.road_journey.road_journey.friends.service;
 
 import com.road_journey.road_journey.auth.User;
 import com.road_journey.road_journey.auth.UserRepository;
-import com.road_journey.road_journey.friends.dto.FriendUserDTO;
+import com.road_journey.road_journey.friends.dto.FriendDTO;
 import com.road_journey.road_journey.friends.entity.Friend;
 import com.road_journey.road_journey.friends.repository.FriendRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class FriendSearchService {
     private final UserRepository userRepository;
     private final FriendRepository friendRepository;
 
-    public List<FriendUserDTO> searchUsers(Long userId, String searchId) {
+    public List<FriendDTO> searchUsers(Long userId, String searchId) {
         List<User> users = userRepository.findUsersByAccountId(searchId);
 
         return users.stream()
@@ -38,7 +38,7 @@ public class FriendSearchService {
                         friendId = friend.getFriendId();
                     }
 
-                    return IS_FRIEND.name().equals(friendStatus) ? null : new FriendUserDTO(user, PENDING.name(), friendId);
+                    return IS_FRIEND.name().equals(friendStatus) ? null : new FriendDTO(user, PENDING.name(), friendId);
                 })
                 .filter(Objects::nonNull) // 친구 관계는 제외
                 .collect(Collectors.toList());
