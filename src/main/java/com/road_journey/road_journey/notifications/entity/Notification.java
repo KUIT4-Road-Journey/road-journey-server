@@ -33,7 +33,7 @@ public class Notification {
     private String message;
 
     @Column(nullable = false, length = 50)
-    private String status = "active"; // 기본값 설정
+    private String status = "active";
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

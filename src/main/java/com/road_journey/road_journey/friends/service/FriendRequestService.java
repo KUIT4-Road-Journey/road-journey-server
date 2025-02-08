@@ -35,7 +35,7 @@ public class FriendRequestService {
         Friend newFriend = new Friend(userId, friendUserId, false, "pending");
         friendRepository.save(newFriend);
 
-        notificationService.createNotification(friendUserId, NotificationCategory.FRIEND.name(), newFriend.getFriendId());
+//        notificationService.createNotification(friendUserId, NotificationCategory.FRIEND.name(), newFriend.getFriendId());
 
         return newFriend;
     }
@@ -77,7 +77,7 @@ public class FriendRequestService {
         Friend newFriendRelation = new Friend(friendRequest.getFriendUserId(), friendRequest.getUserId(), false, "active");
         friendRepository.save(newFriendRelation);
 
-        notificationService.deactivateNotification(friendId, NotificationCategory.FRIEND);
+//        notificationService.deactivateNotification(friendId, NotificationCategory.FRIEND.name());
     }
 
     //친구 요청 거절
@@ -94,6 +94,6 @@ public class FriendRequestService {
         friendRequest.setStatus("isNotFriend");
         friendRepository.save(friendRequest);
 
-        notificationService.deactivateNotification(friendId, NotificationCategory.FRIEND);
+//        notificationService.deactivateNotification(friendId, NotificationCategory.FRIEND.name());
     }
 }

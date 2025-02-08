@@ -64,4 +64,16 @@ public class NotificationServiceTest {
         assertThat(response.getStatus()).isEqualTo("success");
         assertThat(notificationRepository.findByUserIdAndStatus(1L, "active")).isEmpty();
     }
+
+//    @Test
+//    public void 알림_생성_테스트() {
+//        notificationService.createNotification(1L, NotificationCategory.FRIEND.name(), 100L);
+//
+//
+//        List<Notification> notifications = notificationRepository.findByUserIdAndStatus(1L, "active");
+//        assertThat(notifications).isNotEmpty();
+//        assertThat(notifications.get(0).getUserId()).isEqualTo(1L);
+//        assertThat(notifications.get(0).getCategory()).isEqualTo(NotificationCategory.FRIEND.name());
+//        assertThat(notifications.get(0).getRelatedId()).isEqualTo(100L);
+//    }
 }

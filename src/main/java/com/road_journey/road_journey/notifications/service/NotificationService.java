@@ -35,7 +35,7 @@ public class NotificationService {
             Notification notif = notification.get();
 
             if (!"deleted".equals(notif.getStatus())) {
-                notificationRepository.updateStatusByUserIdAndId(userId, notificationId, "deleted");
+                notificationRepository.updateStatusByNotificationId(notificationId, "deleted");
                 return new UpdateResponseDTO("success", "Notification deleted.");
             } else {
                 return new UpdateResponseDTO("error", "Notification is already deleted.");
@@ -58,26 +58,25 @@ public class NotificationService {
     }
 
     //특정 카테고리(`category`)의 알림 조회
-    // todo test 필요
     public List<NotificationDTO> getNotificationsByCategory(Long userId, NotificationCategory category) {
         return notificationRepository.findActiveNotificationsByCategory(userId, category.name()).stream()
                 .map(NotificationDTO::new)
                 .collect(Collectors.toList());
     }
 
-    @Transactional
-    public void createNotification(Long userId, String category, Long relatedId) {
-        Notification notification = new Notification();
-        notification.setUserId(userId);
-        notification.setCategory(category);
-        notification.setRelatedId(relatedId);
-        notification.setMessage("You have a new friend request.");
-        notification.setStatus("active");
-        notificationRepository.save(notification);
-    }
+//    @Transactional
+//    public void createNotification(Long userId, String category, Long relatedId) {
+//        Notification notification = new Notification();
+//        notification.setUserId(userId);
+//        notification.setCategory(category);
+//        notification.setRelatedId(relatedId);
+//        notification.setMessage("You have a new friend request.");
+//        notification.setStatus("active");
+//        notificationRepository.save(notification);
+//    }
 
-    @Transactional
-    public void deactivateNotification(Long relatedId, NotificationCategory category) {
-        notificationRepository.updateStatusByRelatedIdAndCategory(relatedId, category.name(), "deleted");
-    }
+//    @Transactional
+//    public void deactivateNotification(Long friendId, String category) {
+//        notificationRepository.updateStatusByNotificationIdAndCategory(friendId, category, "deleted");
+//    }
 }
