@@ -1,5 +1,6 @@
 package com.road_journey.road_journey.friends.controller;
 
+import com.road_journey.road_journey.notifications.dto.NotificationCategory;
 import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
 import com.road_journey.road_journey.notifications.dto.NotificationDTO;
 import com.road_journey.road_journey.notifications.service.NotificationService;
@@ -19,7 +20,7 @@ public class FriendMessagesController {
     //받은 메시지 목록 조회 (Notification 활용)
     @GetMapping
     public ResponseEntity<List<NotificationDTO>> getFriendMessages(@RequestParam Long userId) {
-        return ResponseEntity.ok(notificationService.getNotificationsByCategory(userId, "친구요청"));
+        return ResponseEntity.ok(notificationService.getNotificationsByCategory(userId, NotificationCategory.FRIEND));
     }
 
     //개별 메시지 삭제 (Notification 활용)

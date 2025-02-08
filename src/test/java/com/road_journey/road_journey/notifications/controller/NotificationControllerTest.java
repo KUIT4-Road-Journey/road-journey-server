@@ -2,6 +2,7 @@ package com.road_journey.road_journey.notifications.controller;
 
 import com.road_journey.road_journey.auth.User;
 import com.road_journey.road_journey.auth.UserRepository;
+import com.road_journey.road_journey.notifications.dto.NotificationCategory;
 import com.road_journey.road_journey.notifications.entity.Notification;
 import com.road_journey.road_journey.notifications.repository.NotificationRepository;
 import jakarta.persistence.EntityManager;
@@ -44,7 +45,7 @@ public class NotificationControllerTest {
 
     @BeforeEach
     public void setup() {
-        User testUser = new User("testUser", "password123", "test@example.com", "TestNickname", 100L, "ACTIVE");
+        User testUser = new User("testUser", "password123", "test@example.com", "TestNickname", 100L, "active");
         userRepository.save(testUser);
         entityManager.flush();
         entityManager.refresh(testUser);
@@ -54,7 +55,7 @@ public class NotificationControllerTest {
 
     @Test
     public void 알림_조회_테스트() throws Exception {
-        Notification notification = new Notification(testUserId, "test_category", 100L, "Test message");
+        Notification notification = new Notification(testUserId, NotificationCategory.NOTIFICATION.name(), 100L, "Test message");
         notificationRepository.save(notification);
         entityManager.flush();
         entityManager.refresh(notification);
@@ -73,7 +74,7 @@ public class NotificationControllerTest {
 
     @Test
     public void 알림_삭제_테스트() throws Exception {
-        Notification notification = new Notification(testUserId, "test_category", 100L, "Test message");
+        Notification notification = new Notification(testUserId, NotificationCategory.NOTIFICATION.name(), 100L, "Test message");
         notificationRepository.save(notification);
         entityManager.flush();
         entityManager.refresh(notification);
@@ -90,8 +91,8 @@ public class NotificationControllerTest {
 
     @Test
     public void 전체_알림_삭제_테스트() throws Exception {
-        notificationRepository.save(new Notification(testUserId, "test_category", 100L, "Test message100"));
-        notificationRepository.save(new Notification(testUserId, "test_category", 101L, "Test message101"));
+        notificationRepository.save(new Notification(testUserId, NotificationCategory.NOTIFICATION.name(), 100L, "Test message100"));
+        notificationRepository.save(new Notification(testUserId, NotificationCategory.NOTIFICATION.name(), 101L, "Test message101"));
         entityManager.flush();
 
 //        System.out.println("[TEST] 전체 삭제 요청: userId=" + testUserId);

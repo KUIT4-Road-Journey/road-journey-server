@@ -1,5 +1,6 @@
 package com.road_journey.road_journey.notifications.repository;
 
+import com.road_journey.road_journey.notifications.dto.NotificationCategory;
 import com.road_journey.road_journey.notifications.entity.Notification;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class NotificationRepositoryTest {
 
     @Test
     public void 알림_저장_조회_테스트() {
-        notificationRepository.save(new Notification(1L, "test_category", 100L, "Test message"));
+        notificationRepository.save(new Notification(1L, NotificationCategory.NOTIFICATION.name(), 100L, "Test message"));
 
 
         List<Notification> notifications = notificationRepository.findByUserIdAndStatus(1L, "active");
@@ -35,7 +36,7 @@ public class NotificationRepositoryTest {
 
     @Test
     public void 알림_삭제_테스트() {
-        Notification notification = notificationRepository.save(new Notification(1L, "test_category", 100L, "Test message"));
+        Notification notification = notificationRepository.save(new Notification(1L, NotificationCategory.NOTIFICATION.name(), 100L, "Test message"));
 
 
         notificationRepository.updateStatusByUserIdAndId(1L, notification.getNotificationId(), "deleted");

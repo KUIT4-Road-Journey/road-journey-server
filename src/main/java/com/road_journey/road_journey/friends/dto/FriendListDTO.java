@@ -14,17 +14,15 @@ public class FriendListDTO {
     private String nickname;
     private String profileImage;
     private String statusMessage;
-    private int friendStatus;
-    private Long lastLoginTime; // 최근 접속 정렬용
-    private int achievementCount; // 달성 목표 수 정렬용
+    private Long lastLoginTime;
+    private int achievementCount;
 
-    public FriendListDTO(User user, int friendStatus, Long lastLoginTime, int achievementCount) {
+    public FriendListDTO(User user, Long lastLoginTime, int achievementCount) {
         this.userId = user.getUserId();
         this.accountId = user.getAccountId();
         this.nickname = user.getNickname();
         this.profileImage = user.getProfileImage();
         this.statusMessage = user.getStatusMessage();
-        this.friendStatus = friendStatus;
         this.lastLoginTime = lastLoginTime;
         this.achievementCount = achievementCount;
     }

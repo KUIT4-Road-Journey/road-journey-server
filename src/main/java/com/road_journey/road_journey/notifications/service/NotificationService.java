@@ -1,5 +1,6 @@
 package com.road_journey.road_journey.notifications.service;
 
+import com.road_journey.road_journey.notifications.dto.NotificationCategory;
 import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
 import com.road_journey.road_journey.notifications.dto.NotificationDTO;
 import com.road_journey.road_journey.notifications.entity.Notification;
@@ -52,14 +53,14 @@ public class NotificationService {
             return new UpdateResponseDTO("error", "No active notifications found to delete.");
         }
 
-        notificationRepository.updateStatusByUserIdAndCategory(userId, "notification", "deleted");
+        notificationRepository.updateStatusByUserIdAndCategory(userId, NotificationCategory.NOTIFICATION.name(), "deleted");
         return new UpdateResponseDTO("success", "All notifications deleted.");
     }
 
     //특정 카테고리(`category`)의 알림 조회
     // todo test 필요
-    public List<NotificationDTO> getNotificationsByCategory(Long userId, String category) {
-        return notificationRepository.findActiveNotificationsByCategory(userId, category).stream()
+    public List<NotificationDTO> getNotificationsByCategory(Long userId, NotificationCategory category) {
+        return notificationRepository.findActiveNotificationsByCategory(userId, category.name()).stream()
                 .map(NotificationDTO::new)
                 .collect(Collectors.toList());
     }
@@ -76,7 +77,7 @@ public class NotificationService {
     }
 
     @Transactional
-    public void deactivateNotification(Long relatedId, String category) {
-        notificationRepository.updateStatusByRelatedIdAndCategory(relatedId, category, "deleted");
+    public void deactivateNotification(Long relatedId, NotificationCategory category) {
+        notificationRepository.updateStatusByRelatedIdAndCategory(relatedId, category.name(), "deleted");
     }
 }

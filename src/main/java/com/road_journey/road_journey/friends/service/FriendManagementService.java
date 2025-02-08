@@ -37,12 +37,12 @@ public class FriendManagementService {
                     User user = userRepository.findById(friend.getFriendUserId())
                             .orElse(null);
 
-                    int friendStatus = "isFriend".equals(friend.getStatus()) ? 2 : 1; // 2: 친구, 1: 대기중
-                    long lastLoginMillis = Optional.ofNullable(user.getLastLoginTime())
+                    long lastLoginMillis = Optional.ofNullable(user)
+                            .map(User::getLastLoginTime)
                             .map(time -> time.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli())
                             .orElse(0L);
 
-                    return new FriendListDTO(user, friendStatus, lastLoginMillis, getAchievementCount(user.getUserId()));
+                    return new FriendListDTO(user, lastLoginMillis, getAchievementCount(user.getUserId()));
                 })
                 .collect(Collectors.toList());
 
@@ -70,8 +70,8 @@ public class FriendManagementService {
         return 0;
     }
 
-    //todo : 개별 친구 프로필 접근 (main 쪽 완성되면 땡겨서 사용하면 될듯?)
     public Optional<Object> getFriendMain() {
+        //todo : 개별 친구 프로필 접근 (main 쪽 완성되면 땡겨서 사용하면 될듯?)
         return Optional.empty();
     }
 

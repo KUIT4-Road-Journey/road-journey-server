@@ -15,10 +15,10 @@ public class FriendUserDTO {
     private String nickname;
     private String profileImage;
     private String statusMessage;
-    private String friendStatus; // 0: 친구 아님, 1: 대기중, 2: 친구
+    private FriendStatus friendStatus;
     private Long friendId; // 친구 요청 ID
 
-    public FriendUserDTO(User user, String friendStatus, Long friendId) {
+    public FriendUserDTO(User user, FriendStatus friendStatus, Long friendId) {
         this.userId = user.getUserId();
         this.accountId = user.getAccountId();
         this.nickname = user.getNickname();

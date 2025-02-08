@@ -1,5 +1,6 @@
 package com.road_journey.road_journey.notifications.service;
 
+import com.road_journey.road_journey.notifications.dto.NotificationCategory;
 import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
 import com.road_journey.road_journey.notifications.dto.NotificationDTO;
 import com.road_journey.road_journey.notifications.entity.Notification;
@@ -29,7 +30,7 @@ public class NotificationServiceTest {
 
     @Test
     public void 알림_목록_조회_테스트() {
-        Notification notification = notificationRepository.save(new Notification(1L, "test_category", 100L, "Test message"));
+        Notification notification = notificationRepository.save(new Notification(1L, NotificationCategory.NOTIFICATION.name(), 100L, "Test message"));
 
 
         List<NotificationDTO> notifications = notificationService.getNotifications(1L);
@@ -42,7 +43,7 @@ public class NotificationServiceTest {
 
     @Test
     public void 알림_삭제_테스트() {
-        Notification notification = notificationRepository.save(new Notification(1L, "test_category", 100L, "Test message"));
+        Notification notification = notificationRepository.save(new Notification(1L, NotificationCategory.NOTIFICATION.name(), 100L, "Test message"));
 
 
         UpdateResponseDTO response = notificationService.deleteNotification(1L, notification.getNotificationId());
@@ -53,8 +54,8 @@ public class NotificationServiceTest {
 
     @Test
     public void 전체_알림_삭제_테스트() {
-        notificationRepository.save(new Notification(1L, "notification", 100L, "Test message100"));
-        notificationRepository.save(new Notification(1L, "notification", 101L, "Test message101"));
+        notificationRepository.save(new Notification(1L, NotificationCategory.NOTIFICATION.name(), 100L, "Test message100"));
+        notificationRepository.save(new Notification(1L, NotificationCategory.NOTIFICATION.name(), 101L, "Test message101"));
 
 
         UpdateResponseDTO response = notificationService.deleteAllNotifications(1L);

@@ -33,13 +33,13 @@ public class User {
     @Column(nullable = false, length = 50)
     private String nickname;
 
-    @Column(name = "last_login_time", columnDefinition = "TIMESTAMP NULL")
+    @Column(name = "last_login_time")
     private LocalDateTime lastLoginTime;
 
-    @Column(name = "profile_image", length = 200, nullable = true)
+    @Column(name = "profile_image", length = 200)
     private String profileImage;
 
-    @Column(name = "status_message", length = 200, nullable = true)
+    @Column(name = "status_message", length = 200)
     private String statusMessage;
 
     @Column(nullable = false)
@@ -50,13 +50,12 @@ public class User {
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false, nullable = false)
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    private Timestamp updatedAt;
+    private LocalDateTime updatedAt;
 
-    // 엔터티 생성자
     public User(String accountId, String accountPw, String email, String nickname, Long gold, String status) {
         this.accountId = accountId;
         this.accountPw = accountPw;
@@ -64,8 +63,5 @@ public class User {
         this.nickname = nickname;
         this.gold = gold;
         this.status = status;
-        this.lastLoginTime = null;
-        this.statusMessage = null;
-        this.profileImage = null;
     }
 }

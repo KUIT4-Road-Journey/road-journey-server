@@ -1,10 +1,12 @@
 package com.road_journey.road_journey.friends.service;
 
 import com.road_journey.road_journey.auth.User;
+import com.road_journey.road_journey.friends.dto.FriendStatus;
 import com.road_journey.road_journey.friends.dto.FriendUserDTO;
 import com.road_journey.road_journey.auth.UserRepository;
 import com.road_journey.road_journey.friends.entity.Friend;
 import com.road_journey.road_journey.friends.repository.FriendRepository;
+import com.road_journey.road_journey.notifications.dto.NotificationCategory;
 import com.road_journey.road_journey.notifications.service.NotificationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +35,7 @@ public class FriendRequestService {
         Friend newFriend = new Friend(userId, friendUserId, false, "pending");
         friendRepository.save(newFriend);
 
-        notificationService.createNotification(friendUserId, "friend", newFriend.getFriendId());
+        notificationService.createNotification(friendUserId, NotificationCategory.FRIEND.name(), newFriend.getFriendId());
 
         return newFriend;
     }
@@ -52,7 +54,7 @@ public class FriendRequestService {
                 .map(friend -> {
                     User user = userRepository.findById(friend.getUserId())
                             .orElseThrow(() -> new IllegalStateException("User not found"));
-                    return new FriendUserDTO(user, "pending", friend.getUserId()); // 1: 대기중
+                    return new FriendUserDTO(user, FriendStatus.PENDING, friend.getUserId()); // 1: 대기중
                 })
                 .collect(Collectors.toList());
     }
@@ -75,7 +77,7 @@ public class FriendRequestService {
         Friend newFriendRelation = new Friend(friendRequest.getFriendUserId(), friendRequest.getUserId(), false, "active");
         friendRepository.save(newFriendRelation);
 
-        notificationService.deactivateNotification(friendId, "friend");
+        notificationService.deactivateNotification(friendId, NotificationCategory.FRIEND);
     }
 
     //친구 요청 거절
@@ -92,6 +94,6 @@ public class FriendRequestService {
         friendRequest.setStatus("isNotFriend");
         friendRepository.save(friendRequest);
 
-        notificationService.deactivateNotification(friendId, "friend");
+        notificationService.deactivateNotification(friendId, NotificationCategory.FRIEND);
     }
 }

@@ -3,6 +3,7 @@ package com.road_journey.road_journey.friends.controller;
 import com.road_journey.road_journey.friends.dto.FriendUserDTO;
 import com.road_journey.road_journey.friends.entity.Friend;
 import com.road_journey.road_journey.friends.service.FriendRequestService;
+import com.road_journey.road_journey.notifications.dto.NotificationCategory;
 import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
 import com.road_journey.road_journey.notifications.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,6 @@ import java.util.Map;
 public class FriendRequestController {
 
     private final FriendRequestService friendRequestService;
-    private final NotificationService notificationService;
 
     //친구 요청 보내기
     @PostMapping
@@ -28,10 +28,7 @@ public class FriendRequestController {
         Long friendUserId = request.get("friendUserId");
 
         // 친구 요청을 대기 상태로 저장
-        Friend newFriendRequest = friendRequestService.sendFriendRequest(userId, friendUserId);
-
-        // Notification에 기록 (relatedId에 friend_id 저장)
-        notificationService.createNotification(friendUserId, "pending", newFriendRequest.getFriendId());
+        friendRequestService.sendFriendRequest(userId, friendUserId);
 
         return ResponseEntity.ok(new UpdateResponseDTO("success", "Friend request sent successfully."));
     }

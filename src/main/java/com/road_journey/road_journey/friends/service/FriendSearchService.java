@@ -1,6 +1,7 @@
 package com.road_journey.road_journey.friends.service;
 
 import com.road_journey.road_journey.auth.User;
+import com.road_journey.road_journey.friends.dto.FriendStatus;
 import com.road_journey.road_journey.friends.dto.FriendUserDTO;
 import com.road_journey.road_journey.auth.UserRepository;
 import com.road_journey.road_journey.friends.entity.Friend;
@@ -36,7 +37,7 @@ public class FriendSearchService {
                         friendId = friend.getFriendId();
                     }
 
-                    return "isFriend".equals(friendStatus) ? null : new FriendUserDTO(user, friendStatus, friendId);
+                    return "isFriend".equals(friendStatus) ? null : new FriendUserDTO(user, FriendStatus.PENDING, friendId);
                 })
                 .filter(Objects::nonNull) // 친구 관계는 제외
                 .collect(Collectors.toList());
