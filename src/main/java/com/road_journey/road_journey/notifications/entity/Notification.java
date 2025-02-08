@@ -1,6 +1,5 @@
 package com.road_journey.road_journey.notifications.entity;
 
-import com.road_journey.road_journey.notifications.dto.NotificationCategory;
 import jakarta.persistence.*;
 import lombok.*;
 

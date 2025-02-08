@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.road_journey.road_journey.notifications.dto.NotificationCategory.*;
+
 @Service
 public class NotificationService {
 
@@ -53,7 +55,7 @@ public class NotificationService {
             return new UpdateResponseDTO("error", "No active notifications found to delete.");
         }
 
-        notificationRepository.updateStatusByUserIdAndCategory(userId, NotificationCategory.NOTIFICATION.name(), "deleted");
+        notificationRepository.updateStatusByUserIdAndCategory(userId, NOTIFICATION.name(), "deleted");
         return new UpdateResponseDTO("success", "All notifications deleted.");
     }
 

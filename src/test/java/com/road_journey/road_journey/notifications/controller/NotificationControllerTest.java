@@ -2,7 +2,6 @@ package com.road_journey.road_journey.notifications.controller;
 
 import com.road_journey.road_journey.auth.User;
 import com.road_journey.road_journey.auth.UserRepository;
-import com.road_journey.road_journey.notifications.dto.NotificationCategory;
 import com.road_journey.road_journey.notifications.entity.Notification;
 import com.road_journey.road_journey.notifications.repository.NotificationRepository;
 import jakarta.persistence.EntityManager;
@@ -17,6 +16,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.road_journey.road_journey.notifications.dto.NotificationCategory.NOTIFICATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -55,7 +55,7 @@ public class NotificationControllerTest {
 
     @Test
     public void 알림_조회_테스트() throws Exception {
-        Notification notification = new Notification(testUserId, NotificationCategory.NOTIFICATION.name(), 100L, "Test message");
+        Notification notification = new Notification(testUserId, NOTIFICATION.name(), 100L, "Test message");
         notificationRepository.save(notification);
         entityManager.flush();
         entityManager.refresh(notification);
@@ -74,7 +74,7 @@ public class NotificationControllerTest {
 
     @Test
     public void 알림_삭제_테스트() throws Exception {
-        Notification notification = new Notification(testUserId, NotificationCategory.NOTIFICATION.name(), 100L, "Test message");
+        Notification notification = new Notification(testUserId, NOTIFICATION.name(), 100L, "Test message");
         notificationRepository.save(notification);
         entityManager.flush();
         entityManager.refresh(notification);
@@ -91,8 +91,8 @@ public class NotificationControllerTest {
 
     @Test
     public void 전체_알림_삭제_테스트() throws Exception {
-        notificationRepository.save(new Notification(testUserId, NotificationCategory.NOTIFICATION.name(), 100L, "Test message100"));
-        notificationRepository.save(new Notification(testUserId, NotificationCategory.NOTIFICATION.name(), 101L, "Test message101"));
+        notificationRepository.save(new Notification(testUserId, NOTIFICATION.name(), 100L, "Test message100"));
+        notificationRepository.save(new Notification(testUserId, NOTIFICATION.name(), 101L, "Test message101"));
         entityManager.flush();
 
 //        System.out.println("[TEST] 전체 삭제 요청: userId=" + testUserId);

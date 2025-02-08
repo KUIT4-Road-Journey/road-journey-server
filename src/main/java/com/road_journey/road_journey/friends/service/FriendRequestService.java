@@ -16,6 +16,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.road_journey.road_journey.friends.dto.FriendStatus.*;
+
 @Service
 @RequiredArgsConstructor
 public class FriendRequestService {
@@ -23,19 +25,14 @@ public class FriendRequestService {
     private final FriendRepository friendRepository;
     private final UserRepository userRepository;
 
-    private final NotificationService notificationService;
-
     //친구 요청 보내기
     @Transactional
     public Friend sendFriendRequest(Long userId, Long friendUserId) {
-        // 중복 요청 방지
-        friendRepository.findByUserIdAndFriendUserIdAndStatus(userId, friendUserId, "pending")
+        friendRepository.findByUserIdAndFriendUserIdAndStatus(userId, friendUserId, PENDING.name())
                 .ifPresent(friend -> { throw new IllegalStateException("Friend request already pending."); });
 
-        Friend newFriend = new Friend(userId, friendUserId, false, "pending");
+        Friend newFriend = new Friend(userId, friendUserId, false, PENDING.name());
         friendRepository.save(newFriend);
-
-//        notificationService.createNotification(friendUserId, NotificationCategory.FRIEND.name(), newFriend.getFriendId());
 
         return newFriend;
     }
@@ -43,7 +40,7 @@ public class FriendRequestService {
     //친구 요청 목록 조회
     public List<FriendUserDTO> getFriendRequests(Long userId) {
         List<Friend> pendingRequests = friendRepository.findFriendsByUserId(userId).stream()
-                .filter(friend -> "pending".equals(friend.getStatus()))
+                .filter(friend -> PENDING.name().equals(friend.getStatus()))
                 .collect(Collectors.toList());
 
         if (pendingRequests.isEmpty()) {
@@ -54,7 +51,7 @@ public class FriendRequestService {
                 .map(friend -> {
                     User user = userRepository.findById(friend.getUserId())
                             .orElseThrow(() -> new IllegalStateException("User not found"));
-                    return new FriendUserDTO(user, FriendStatus.PENDING, friend.getUserId()); // 1: 대기중
+                    return new FriendUserDTO(user, PENDING.name(), friend.getUserId());
                 })
                 .collect(Collectors.toList());
     }
@@ -69,12 +66,11 @@ public class FriendRequestService {
             throw new IllegalArgumentException("Unauthorized action.");
         }
 
-        //기존 요청을 "active"로 변경
-        friendRequest.setStatus("active");
+        friendRequest.setStatus(FriendStatus.IS_FRIEND.name());
         friendRepository.save(friendRequest);
 
         //반대 방향 친구 관계 추가 (userId → friendUserId)
-        Friend newFriendRelation = new Friend(friendRequest.getFriendUserId(), friendRequest.getUserId(), false, "active");
+        Friend newFriendRelation = new Friend(friendRequest.getFriendUserId(), friendRequest.getUserId(), false, FriendStatus.IS_FRIEND.name());
         friendRepository.save(newFriendRelation);
 
 //        notificationService.deactivateNotification(friendId, NotificationCategory.FRIEND.name());
@@ -91,7 +87,7 @@ public class FriendRequestService {
         }
 
         // 요청 삭제
-        friendRequest.setStatus("isNotFriend");
+        friendRequest.setStatus(FriendStatus.IS_NOT_FRIEND.name());
         friendRepository.save(friendRequest);
 
 //        notificationService.deactivateNotification(friendId, NotificationCategory.FRIEND.name());
