@@ -3,6 +3,8 @@ package com.road_journey.road_journey.goals.controller;
 import com.road_journey.road_journey.goals.dto.AddGoalRequestDto;
 import com.road_journey.road_journey.goals.dto.GoalListResponseDto;
 import com.road_journey.road_journey.goals.dto.GoalResponseDto;
+import com.road_journey.road_journey.goals.response.BaseResponse;
+import com.road_journey.road_journey.goals.response.ResponseStatus;
 import com.road_journey.road_journey.goals.service.GoalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,20 +28,21 @@ public class GoalController {
     private GoalService goalService;
 
     @PostMapping("")
-    public String addGoal(@RequestBody AddGoalRequestDto addGoalRequest) {
+    public ResponseStatus addGoal(@RequestBody AddGoalRequestDto addGoalRequest) {
         goalService.createGoals(addGoalRequest);
-        return "Goal Added";
+        return new BaseResponse<>("Goal added.");
+        // TODO 요청 실패 시 처리
     }
 
     @GetMapping("/list/{userId}")
-    public GoalListResponseDto getGoalList(@PathVariable Long userId,
-                                           @RequestParam String category) {
-        return goalService.getGoalListResponse(userId, category);
+    public ResponseStatus getGoalList(@PathVariable Long userId,
+                                      @RequestParam String category) {
+        return new BaseResponse<>(goalService.getGoalListResponse(userId, category));
     }
 
     @GetMapping("/{goalId}")
-    public GoalResponseDto getGoalList(@PathVariable Long goalId) {
-        return goalService.getGoalResponseByGoalId(goalId);
+    public ResponseStatus getGoalList(@PathVariable Long goalId) {
+        return new BaseResponse<>(goalService.getGoalResponseByGoalId(goalId)); // TODO null 반환할 경우 처리
     }
 
     @PostMapping("/{goalId}/accept")

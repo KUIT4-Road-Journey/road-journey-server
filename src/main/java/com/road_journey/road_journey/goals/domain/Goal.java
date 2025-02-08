@@ -7,7 +7,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Builder
@@ -25,10 +29,10 @@ public class Goal {
     private Long userId; // 사용자아이디
 
     @Column
-    private Long originalGoalId; // 원본목표아이디
+    private Long originalGoalId; // 원본목표아이디 (공동목표를 생성한 사용자의 목표 아이디)
 
     @Column
-    private Long existingGoalId; // 원본목표아이디
+    private Long existingGoalId; // 기존목표아이디 (수정 대기 중인 목표의 원본 목표, 수정 대기 중이 아니라면 null)
 
     @Column
     private String title; // 목표이름
@@ -71,6 +75,50 @@ public class Goal {
 
     @Column()
     private LocalDateTime updatedAt; // 수정일
+
+
+    @OneToOne(mappedBy = "goal", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private PeriodGoal periodGoal;
+
+    @OneToOne(mappedBy = "goal", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private RepeatedGoal repeatedGoal;
+
+    @OneToMany(mappedBy = "goal", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SubGoal> subGoalList = new ArrayList<>();
+
+    public boolean isIncludedInList() {
+        if (!isStarted()) { // 아직 시작일이 되지 않은 경우
+            System.out.println("시작일");
+            return false;
+        }
+        if (isRewarded) { // 이미 보상을 획득한 경우
+            System.out.println("보상 획득 여부");
+            return false;
+        }
+        if (isPendingForEdit()) { // 수정 승인 대기 중인 경우
+            System.out.println("수정 승인 대기 중");
+            return false;
+        }
+        if (!isMadeByUser()) { // 자신이 생성한 목표가 아니고
+            // 공동 목표 승인을 대기 중이거나 거절한 경우
+            System.out.println("공동 목표 승인 대기/거절");
+            return !sharedStatus.equals("pending") && !sharedStatus.equals("rejected");
+        }
+        System.out.println("ok"); // TODO 출력문 나중에 없애기
+        return true;
+    }
+
+    private boolean isPendingForEdit() {
+        return existingGoalId != null;
+    }
+
+    private boolean isStarted() {
+        return !periodGoal.getStartAt().isAfter(LocalDate.now()); // 시작한 목표인지 확인
+    }
+
+    private boolean isMadeByUser() {
+        return Objects.equals(goalId, originalGoalId); // 사용자 본인이 생성한 목표인지 확인
+    }
 
     @PrePersist
     protected void onCreate() {

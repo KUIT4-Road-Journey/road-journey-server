@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -19,8 +20,10 @@ public class RepeatedGoal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long repeatedGoalId; // 반복목표아이디
 
-    @Column
-    private Long goalId; // 목표아이디
+    @Setter
+    @OneToOne
+    @JoinColumn(name = "goalId", referencedColumnName = "goalId")
+    private Goal goal;
 
     @Column
     private int repetitionPeriod; // 반복일

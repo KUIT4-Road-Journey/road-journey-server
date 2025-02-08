@@ -5,12 +5,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,8 +29,10 @@ public class PeriodGoal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long periodGoalId; // 기간목표아이디
 
-    @Column
-    private Long goalId; // 목표아이디
+    @Setter
+    @OneToOne
+    @JoinColumn(name = "goalId", referencedColumnName = "goalId")
+    private Goal goal;
 
     @Column
     private LocalDate startAt; // 시작일

@@ -15,16 +15,22 @@ public class RepeatedGoalService {
     @Autowired
     private RepeatedGoalRepository repeatedGoalRepository;
 
-    public void createRepeatedGoal(Long goalId, AddGoalRequestDto.DateInfo dateInfo) {
+    public RepeatedGoal createRepeatedGoal(Goal goal, AddGoalRequestDto addGoalRequestDto) {
+        if (!addGoalRequestDto.isRepeatedGoal()) {
+            return null;
+        }
+
+        AddGoalRequestDto.DateInfo dateInfo = addGoalRequestDto.getDateInfo();
         RepeatedGoal repeatedGoal = RepeatedGoal.builder()
-                .goalId(goalId)
+                .goal(goal)
                 .repetitionPeriod(dateInfo.getRepetitionPeriod())
                 .repetitionNumber(dateInfo.getRepetitionNumber())
                 .completedCount(0)
                 .failedCount(0)
                 .status("none")
                 .build();
-        repeatedGoalRepository.save(repeatedGoal);
+        //repeatedGoalRepository.save(repeatedGoal);
+        return repeatedGoal;
     }
 
     public Optional<RepeatedGoal> getRepeatedGoalByGoalId(Long goalId) {

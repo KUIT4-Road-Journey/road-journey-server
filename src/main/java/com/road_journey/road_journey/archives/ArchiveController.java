@@ -31,7 +31,7 @@ public class ArchiveController {
 
     @GetMapping("/{goalId}")
     public GoalResponseDto getArchive(@PathVariable Long goalId) {
-        return goalService.getGoalResponseByGoalId(goalId);
+        return goalService.getGoalResponseByGoalId(goalId); // TODO 기록 리스트의 출력 기준에 맞게 수정 필요
     }
 
 }

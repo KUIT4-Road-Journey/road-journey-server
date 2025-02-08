@@ -17,7 +17,7 @@ public class PeriodGoalService {
     @Autowired
     private PeriodGoalRepository periodGoalRepository;
 
-    public void createPeriodGoal(Long goalId, AddGoalRequestDto.DateInfo dateInfo) {
+    public PeriodGoal createPeriodGoal(Goal goal, AddGoalRequestDto.DateInfo dateInfo) {
 
         LocalDate startAt = dateInfo.getStartAt();
         LocalDate expireAt = dateInfo.getExpireAt();
@@ -39,7 +39,7 @@ public class PeriodGoalService {
         }
 
         PeriodGoal periodGoal = PeriodGoal.builder()
-                .goalId(goalId)
+                .goal(goal)
                 .startAt(startAt)
                 .expireAt(expireAt)
                 .periodStartAt(periodStartAt)
@@ -47,7 +47,9 @@ public class PeriodGoalService {
                 .completedAt(null)
                 .status("none")
                 .build();
-        periodGoalRepository.save(periodGoal);
+
+        //periodGoalRepository.save(periodGoal);
+        return periodGoal;
     }
 
     public Optional<PeriodGoal> getPeriodGoalByGoalId(Long goalId) {

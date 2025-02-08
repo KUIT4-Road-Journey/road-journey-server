@@ -27,20 +27,24 @@ public class GoalResponseDto {
     private final List<Friend> friendList;
     private final List<SubGoal> subGoalList;
 
-    public GoalResponseDto(Goal goal, Optional<PeriodGoal> periodGoal, Optional<RepeatedGoal> repeatedGoal, List<com.road_journey.road_journey.goals.domain.SubGoal> subGoalList, List<Long> friendIdList) {
+    public GoalResponseDto(Goal goal, List<Long> friendIdList) {
         this.goalId = goal.getGoalId();
         this.title = goal.getTitle();
         this.difficulty = goal.getDifficulty();
         this.category = goal.getCategory();
         this.description = goal.getDescription();
         this.progressStatus = goal.getProgressStatus();
-        this.progress = calculateProgress(subGoalList);
+        this.progress = calculateProgress(goal.getSubGoalList());
         this.isSharedGoal = goal.isSharedGoal();
         this.isPublicGoal = goal.isPublic();
         this.subGoalType = goal.getSubGoalType();
-        this.dateInfo = new DateInfo(periodGoal, repeatedGoal);
+        this.dateInfo = new DateInfo(goal.getPeriodGoal(), goal.getRepeatedGoal());
         this.friendList = createFriendList(friendIdList);
-        this.subGoalList = createSubGoalList(subGoalList);
+        this.subGoalList = createSubGoalList(goal.getSubGoalList());
+    }
+
+    public static GoalResponseDto from(Goal goal, List<Long> friendIdList) {
+        return new GoalResponseDto(goal, friendIdList);
     }
 
     private List<SubGoal> createSubGoalList(List<com.road_journey.road_journey.goals.domain.SubGoal> subGoalList) {
@@ -75,18 +79,18 @@ public class GoalResponseDto {
 
     @Getter
     public static class DateInfo {
-        private LocalDate startAt;
-        private LocalDate expireAt;
-        private int repetitionPeriod;
-        private int repetitionNumber;
+        private final LocalDate startAt;
+        private final LocalDate expireAt;
+        private final int repetitionPeriod;
+        private final int repetitionNumber;
 
-        DateInfo(Optional<PeriodGoal> periodGoal, Optional<RepeatedGoal> repeatedGoal) {
-            this.startAt = periodGoal.get().getPeriodStartAt();
-            this.expireAt = periodGoal.get().getPeriodExpireAt();
+        DateInfo(PeriodGoal periodGoal, RepeatedGoal repeatedGoal) {
+            this.startAt = periodGoal.getPeriodStartAt();
+            this.expireAt = periodGoal.getPeriodExpireAt();
 
-            if (repeatedGoal.isPresent()) {
-                this.repetitionPeriod = repeatedGoal.get().getRepetitionPeriod();
-                this.repetitionNumber = repeatedGoal.get().getRepetitionNumber();
+            if (repeatedGoal != null) {
+                this.repetitionPeriod = repeatedGoal.getRepetitionPeriod();
+                this.repetitionNumber = repeatedGoal.getRepetitionNumber();
                 return;
             }
             this.repetitionPeriod = -1;
@@ -102,11 +106,11 @@ public class GoalResponseDto {
 
     @Getter
     public static class SubGoal {
-        private Long subGoalId;
-        private int index;
-        private int difficulty;
-        private String description;
-        private String progressStatus;
+        private final Long subGoalId;
+        private final int index;
+        private final int difficulty;
+        private final String description;
+        private final String progressStatus;
 
         SubGoal(com.road_journey.road_journey.goals.domain.SubGoal subGoal) {
             this.subGoalId = subGoal.getSubGoalId();

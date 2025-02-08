@@ -11,6 +11,7 @@ import com.road_journey.road_journey.goals.repository.GoalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,18 +45,12 @@ public class GoalService {
     private Long createGoalOfUser(AddGoalRequestDto addGoalRequest, Long userId, Long originalGoalId) {
 
         Goal goal = createGoalByRequest(userId, addGoalRequest, originalGoalId);
-        Long userGoalId = saveGoalWithOriginalGoalId(goal, originalGoalId);
 
-        if (addGoalRequest.isRepeatedGoal()) { // 반복 목표인 경우
-            repeatedGoalService.createRepeatedGoal(userGoalId, addGoalRequest.getDateInfo()); //RepeatedGoal 객체 생성
-        }
-        periodGoalService.createPeriodGoal(userGoalId, addGoalRequest.getDateInfo()); // PeriodGoal 객체 생성
+        goal.setPeriodGoal(periodGoalService.createPeriodGoal(goal, addGoalRequest.getDateInfo()));
+        goal.setRepeatedGoal(repeatedGoalService.createRepeatedGoal(goal, addGoalRequest));
+        goal.setSubGoalList(subGoalService.createSubGoalList(goal, addGoalRequest));
 
-        // 하위목표 객체 생성
-        for (AddGoalRequestDto.SubGoal subGoalRequest : addGoalRequest.getSubGoalList()) {
-            subGoalService.createSubGoal(userGoalId, subGoalRequest);
-        }
-        return userGoalId;
+        return saveGoalWithOriginalGoalId(goal, originalGoalId); // 생성한 목표 아이디 반환
     }
 
     private String getInitialSharedStatus(AddGoalRequestDto addGoalRequest, Long originalGoalId) {
@@ -103,17 +98,12 @@ public class GoalService {
 
     public GoalResponseDto getGoalResponseByGoalId(Long goalId) {
         Optional<Goal> goal = getGoalById(goalId);
-        return getGoalResponse(goal.get());
+        return goal.map(this::getGoalResponse).orElse(null); // 목표를 찾지 못하면 null 반환
     }
 
     public GoalResponseDto getGoalResponse(Goal goal) {
-        Long goalId = goal.getGoalId();
-        Optional<PeriodGoal> periodGoal = periodGoalService.getPeriodGoalByGoalId(goalId);
-        Optional<RepeatedGoal> repeatedGoal = repeatedGoalService.getRepeatedGoalByGoalId(goalId);
-        List<SubGoal> subGoalList = subGoalService.getSubGoalsByGoalId(goalId);
         List<Long> friendIdList = getFriendIdList(goal.getOriginalGoalId());
-
-        return new GoalResponseDto(goal, periodGoal, repeatedGoal, subGoalList, friendIdList);
+        return GoalResponseDto.from(goal, friendIdList);
     }
 
     public List<Goal> getAllGoals() {
@@ -122,10 +112,6 @@ public class GoalService {
 
     public Optional<Goal> getGoalById(Long id) {
         return goalRepository.findById(id);
-    }
-
-    public List<Goal> getGoalSByOriginalGoalId(Long originalGoalId) {
-        return goalRepository.findGoalsByOriginalGoalId(originalGoalId);
     }
 
     public List<Long> getFriendIdList(Long originalGoalId) {
@@ -138,17 +124,15 @@ public class GoalService {
         return friendIdList;
     }
 
-
-
     public GoalListResponseDto getGoalListResponse(Long userId, String category) {
         // TODO 목표 리스트에 출력되는 정확한 기준 반영 필요
-        List<Goal> goalList = goalRepository.findByUserIdAndCategory(userId, category);
-        System.out.println(goalList.size());
+        List<Goal> goalList = goalRepository.findByUserIdAndCategoryAndStatus(userId, category, "activated");
+
+        goalList.removeIf(goal -> !goal.isIncludedInList()); // 리스트에 출력할 목표들만 남기기
 
         List<GoalResponseDto> goalResponseList = goalList.stream()
                 .map(this::getGoalResponse)
                 .collect(Collectors.toList());
-
         return new GoalListResponseDto(goalResponseList);
     }
 }

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -19,10 +20,10 @@ public class SubGoal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long subGoalId;
 
-    // @ManyToOne
-    // @JoinColumn(name = "goal_id")
-    @Column
-    private Long goalId;
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "goalId", nullable = false)
+    private Goal goal;
 
     @Column
     private int subGoalIndex; // 순번
