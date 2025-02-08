@@ -56,10 +56,27 @@ public class NotificationService {
         return new UpdateResponseDTO("success", "All notifications deleted.");
     }
 
-    //특정 카테고리(`category`)의 알림 조회 //todo test 필요
+    //특정 카테고리(`category`)의 알림 조회
+    // todo test 필요
     public List<NotificationDTO> getNotificationsByCategory(Long userId, String category) {
         return notificationRepository.findActiveNotificationsByCategory(userId, category).stream()
                 .map(NotificationDTO::new)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void createNotification(Long userId, String category, Long relatedId) {
+        Notification notification = new Notification();
+        notification.setUserId(userId);
+        notification.setCategory(category);
+        notification.setRelatedId(relatedId);
+        notification.setMessage("You have a new friend request.");
+        notification.setStatus("active");
+        notificationRepository.save(notification);
+    }
+
+    @Transactional
+    public void deactivateNotification(Long relatedId, String category) {
+        notificationRepository.updateStatusByRelatedIdAndCategory(relatedId, category, "deleted");
     }
 }

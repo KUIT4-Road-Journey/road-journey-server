@@ -1,6 +1,6 @@
 package com.road_journey.road_journey.friends.controller;
 
-import com.road_journey.road_journey.friends.dto.FriendDTO;
+import com.road_journey.road_journey.friends.dto.FriendUserDTO;
 import com.road_journey.road_journey.friends.entity.Friend;
 import com.road_journey.road_journey.friends.service.FriendRequestService;
 import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
@@ -31,18 +31,14 @@ public class FriendRequestController {
         Friend newFriendRequest = friendRequestService.sendFriendRequest(userId, friendUserId);
 
         // Notification에 기록 (relatedId에 friend_id 저장)
-        notificationService.createNotification(
-                friendUserId,
-                "친구요청",
-                newFriendRequest.getFriendId()
-        );
+        notificationService.createNotification(friendUserId, "pending", newFriendRequest.getFriendId());
 
         return ResponseEntity.ok(new UpdateResponseDTO("success", "Friend request sent successfully."));
     }
 
-    //친구 요청 목록 조회 (`status = '대기중'`)
+    //친구 요청 목록 조회 (`status = 'pending'`)
     @GetMapping
-    public ResponseEntity<List<FriendDTO>> getFriendRequests(@RequestParam Long userId) {
+    public ResponseEntity<List<FriendUserDTO>> getFriendRequests(@RequestParam Long userId) {
         return ResponseEntity.ok(friendRequestService.getFriendRequests(userId));
     }
 

@@ -27,4 +27,10 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     //todo test 필요
     @Query("SELECT n FROM Notification n WHERE n.userId = :userId AND n.category = :category AND n.status = 'active'")
     List<Notification> findActiveNotificationsByCategory(Long userId, String category);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Notification n SET n.status = :status WHERE n.relatedId = :relatedId AND n.category = :category")
+    void updateStatusByRelatedIdAndCategory(Long relatedId, String category, String status);
 }
+

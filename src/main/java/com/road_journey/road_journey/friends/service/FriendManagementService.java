@@ -1,7 +1,6 @@
 package com.road_journey.road_journey.friends.service;
 
 import com.road_journey.road_journey.auth.User;
-import com.road_journey.road_journey.auth.UserDTO;
 import com.road_journey.road_journey.auth.UserRepository;
 import com.road_journey.road_journey.friends.dto.FriendListDTO;
 import com.road_journey.road_journey.friends.entity.Friend;
@@ -12,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -26,15 +26,18 @@ public class FriendManagementService {
 
     //친구 목록 조회
     public List<FriendListDTO> getFriends(Long userId, String category) {
-        List<Friend> friends = friendRepository.findFriendsByUserId(0);
+        List<Friend> friends = friendRepository.findFriendsByUserId(userId);
+
+        if (friends.isEmpty()) {
+            return Collections.emptyList();
+        }
 
         List<FriendListDTO> friendList = friends.stream()
                 .map(friend -> {
                     User user = userRepository.findById(friend.getFriendUserId())
-                            .orElseThrow(() -> new UserNotFoundException("User not found"));
-                    int friendStatus = "active".equals(friend.getStatus()) ? 2 : 1; // 2: 친구, 1: 대기중
+                            .orElse(null);
 
-                    // LocalDateTime을 밀리초로 변환
+                    int friendStatus = "isFriend".equals(friend.getStatus()) ? 2 : 1; // 2: 친구, 1: 대기중
                     long lastLoginMillis = Optional.ofNullable(user.getLastLoginTime())
                             .map(time -> time.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli())
                             .orElse(0L);
@@ -75,9 +78,13 @@ public class FriendManagementService {
     //친구 좋아요 상태 변경
     @Transactional
     public UpdateResponseDTO updateFriendLike(Long userId, Long friendId, Boolean isLike) {
-        Friend friend = friendRepository.findActiveFriend(userId, friendId)
-                .orElseThrow(() -> new FriendNotFoundException("Friend not found"));
+        Optional<Friend> friendOptional = friendRepository.findActiveFriend(userId, friendId);
 
+        if (friendOptional.isEmpty()) {
+            return new UpdateResponseDTO("failed", "Friend not found.");
+        }
+
+        Friend friend = friendOptional.get();
         friend.setIsLike(isLike);
         friendRepository.save(friend);
 
