@@ -55,7 +55,7 @@ class ItemStorageControllerTest {
 
         // when & then
         mockMvc.perform(get("/items/storage")
-                        .param("userId", user.getUserId().toString()) //todo 임시
+                        .param("userId", user.getUserId().toString()) //todo userId 수정
                         .param("category", "wallpaper"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.items", hasSize(greaterThan(0))));
@@ -70,7 +70,7 @@ class ItemStorageControllerTest {
 
         // when & then
         mockMvc.perform(patch("/items/storage/" + userItem.getUserItemId() + "/equip")
-                        .param("userId", user.getUserId().toString()) //todo 임시
+                        .param("userId", user.getUserId().toString()) //todo userId 수정
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"isEquipped\": true}"))
                 .andExpect(status().isOk())

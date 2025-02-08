@@ -17,13 +17,13 @@ public class ItemStorageController {
     }
 
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getUserItems(@RequestParam Long userId, //todo 임시
+    public ResponseEntity<Map<String, Object>> getUserItems(@RequestParam Long userId, //todo userId 수정
                                                             @RequestParam(defaultValue = "all") String category) {
         return ResponseEntity.ok(itemStorageService.getUserItems(userId, category));
     }
 
     @PatchMapping("/{userItemId}/equip")
-    public ResponseEntity<Map<String, Object>> equipItem(@RequestParam Long userId, //todo 임시
+    public ResponseEntity<Map<String, Object>> equipItem(@RequestParam Long userId, //todo userId 수정
                                                          @PathVariable Long userItemId,
                                                          @RequestBody Map<String, Boolean> request) {
         boolean isEquipped = request.getOrDefault("isEquipped", false);

@@ -59,7 +59,6 @@ public class NotificationService {
         return new UpdateResponseDTO("success", "All notifications deleted.");
     }
 
-    // todo 특정 카테고리(`category`)의 알림 조회
     public List<NotificationDTO> getNotificationsByCategory(Long userId, NotificationCategory category) {
         return notificationRepository.findActiveNotificationsByCategory(userId, category.name()).stream()
                 .map(NotificationDTO::new)

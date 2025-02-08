@@ -65,7 +65,7 @@ public class NotificationControllerTest {
 
 
         mockMvc.perform(get("/notifications")
-                        .param("userId", String.valueOf(testUserId)) // todo 임시
+                        .param("userId", String.valueOf(testUserId)) //todo userId 수정
                         .header("Authorization", "Bearer test-token"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(1))
@@ -83,7 +83,7 @@ public class NotificationControllerTest {
 
 
         mockMvc.perform(delete("/notifications/" + notification.getNotificationId())
-                        .param("userId", String.valueOf(testUserId)) // todo 임시
+                        .param("userId", String.valueOf(testUserId)) //todo userId 수정
                         .header("Authorization", "Bearer test-token"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"));
@@ -99,7 +99,7 @@ public class NotificationControllerTest {
 
 
         mockMvc.perform(delete("/notifications")
-                        .param("userId", String.valueOf(testUserId)) // todo 임시
+                        .param("userId", String.valueOf(testUserId)) //todo userId 수정
                         .header("Authorization", "Bearer test-token"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"));

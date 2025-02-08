@@ -70,7 +70,7 @@ class ItemShopControllerTest {
 
         // when & then
         mockMvc.perform(post("/items/shop/order")
-                        .param("userId", user.getUserId().toString()) //todo 임시
+                        .param("userId", user.getUserId().toString()) //todo userId 수정
                         .param("itemId", item.getItemId().toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"));
