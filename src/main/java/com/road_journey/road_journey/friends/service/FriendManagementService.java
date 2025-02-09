@@ -1,7 +1,7 @@
 package com.road_journey.road_journey.friends.service;
 
-import com.road_journey.road_journey.auth.User;
-import com.road_journey.road_journey.auth.UserRepository;
+import com.road_journey.road_journey.auth.dao.UserRepository;
+import com.road_journey.road_journey.auth.domain.User;
 import com.road_journey.road_journey.friends.dto.FriendListDTO;
 import com.road_journey.road_journey.friends.entity.Friend;
 import com.road_journey.road_journey.friends.repository.FriendRepository;

@@ -1,6 +1,6 @@
 package com.road_journey.road_journey.friends.dto;
 
-import com.road_journey.road_journey.auth.User;
+import com.road_journey.road_journey.auth.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,7 +1,7 @@
 package com.road_journey.road_journey.items.service;
 
-import com.road_journey.road_journey.auth.User;
-import com.road_journey.road_journey.auth.UserRepository;
+import com.road_journey.road_journey.auth.dao.UserRepository;
+import com.road_journey.road_journey.auth.domain.User;
 import com.road_journey.road_journey.items.dto.SpecialItemDto;
 import com.road_journey.road_journey.items.entity.Item;
 import com.road_journey.road_journey.items.entity.UserItem;
@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service

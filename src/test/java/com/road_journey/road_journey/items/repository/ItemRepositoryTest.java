@@ -41,7 +41,7 @@ class ItemRepositoryTest {
         itemRepository.save(new Item(null, "노을", "wallpaper", "해질녘 노을...", 2500L, false));
 
 
-        List<Item> armorItems = itemRepository.findByCategoryAndIsSpecialFalse("wallpaper");
+        List<Item> armorItems = itemRepository.findByCategory("wallpaper");
 
 
         assertEquals(2, armorItems.size());

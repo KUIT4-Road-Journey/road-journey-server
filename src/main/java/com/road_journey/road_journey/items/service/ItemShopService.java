@@ -1,7 +1,7 @@
 package com.road_journey.road_journey.items.service;
 
-import com.road_journey.road_journey.auth.User;
-import com.road_journey.road_journey.auth.UserRepository;
+import com.road_journey.road_journey.auth.dao.UserRepository;
+import com.road_journey.road_journey.auth.domain.User;
 import com.road_journey.road_journey.items.dto.ItemDto;
 import com.road_journey.road_journey.items.entity.Item;
 import com.road_journey.road_journey.items.entity.UserItem;
@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,13 +29,25 @@ public class ItemShopService {
         this.userItemRepository = userItemRepository;
     }
 
-    public List<ItemDto> getShopItems(String category) {
+    public List<ItemDto> getShopItems(Long userId, String category) {
         List<Item> items = category.equals("all")
                 ? itemRepository.findAll()
-                : itemRepository.findByCategoryAndIsSpecialFalse(category);
+                : itemRepository.findByCategory(category);
+
+        List<UserItem> userItems = userItemRepository.findByUserId(userId);
+        Set<Long> ownedItemIds = userItems.stream().map(UserItem::getItemId).collect(Collectors.toSet());
+        Set<Long> selectedItemIds = userItems.stream()
+                .filter(UserItem::isSelected)
+                .map(UserItem::getItemId)
+                .collect(Collectors.toSet());
 
         return items.stream()
-                .map(item -> new ItemDto(item))
+                .map(item -> {
+                    ItemDto itemDto = new ItemDto(item);
+                    itemDto.setOwned(ownedItemIds.contains(item.getItemId()));
+                    itemDto.setSelected(selectedItemIds.contains(item.getItemId()));
+                    return itemDto;
+                })
                 .collect(Collectors.toList());
     }
 

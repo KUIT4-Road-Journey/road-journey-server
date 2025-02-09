@@ -1,7 +1,5 @@
 package com.road_journey.road_journey.items.service;
 
-import com.road_journey.road_journey.auth.User;
-import com.road_journey.road_journey.auth.UserRepository;
 import com.road_journey.road_journey.items.dto.UserItemDto;
 import com.road_journey.road_journey.items.entity.Item;
 import com.road_journey.road_journey.items.entity.UserItem;

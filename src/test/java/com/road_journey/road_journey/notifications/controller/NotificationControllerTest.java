@@ -1,11 +1,11 @@
 package com.road_journey.road_journey.notifications.controller;
 
-import com.road_journey.road_journey.auth.User;
-import com.road_journey.road_journey.auth.UserRepository;
+import com.road_journey.road_journey.auth.config.JwtUtil;
+import com.road_journey.road_journey.auth.dao.UserRepository;
+import com.road_journey.road_journey.auth.domain.CustomUserInfoDto;
+import com.road_journey.road_journey.auth.domain.User;
 import com.road_journey.road_journey.notifications.entity.Notification;
 import com.road_journey.road_journey.notifications.repository.NotificationRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.road_journey.road_journey.notifications.dto.NotificationCategory.NOTIFICATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -38,35 +37,26 @@ public class NotificationControllerTest {
     @Autowired
     private UserRepository userRepository;
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    @Autowired
+    private JwtUtil jwtUtil;
 
-    private Long testUserId;  //테스트용 사용자 ID 저장
+    private String tokenUser;
+    private Long testUserId;
 
     @BeforeEach
     public void setup() {
-        User testUser = new User("testUser", "password123", "test@example.com", "TestNickname", 100L, "active");
-        userRepository.save(testUser);
-        entityManager.flush();
-        entityManager.refresh(testUser);
+        User testUser = userRepository.save(new User("testUser", "password123", "test@example.com", "TestNickname", 100L, "active"));
         testUserId = testUser.getUserId();
-//        System.out.println("[TEST] 테스트 사용자 ID: " + testUserId);
+        tokenUser = "Bearer " + jwtUtil.createAccessToken(
+                new CustomUserInfoDto(testUserId, "testUser", "password123", "test@example.com", "TestNickname", "ROLE_USER"));
     }
 
     @Test
     public void 알림_조회_테스트() throws Exception {
-        Notification notification = new Notification(testUserId, NOTIFICATION.name(), 100L, "Test message");
-        notificationRepository.save(notification);
-        entityManager.flush();
-        entityManager.refresh(notification);
-
-//        System.out.println("[TEST] 저장된 알림 ID: " + notification.getNotificationId());
-//        System.out.println("[TEST] 저장된 알림 userId: " + notification.getUserId());
-
+        notificationRepository.save(new Notification(testUserId, "NOTIFICATION", 100L, "Test message"));
 
         mockMvc.perform(get("/notifications")
-                        .param("userId", String.valueOf(testUserId)) //todo userId 수정
-                        .header("Authorization", "Bearer test-token"))
+                        .header("Authorization", tokenUser))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(1))
                 .andExpect(jsonPath("$[0].message").value("Test message"));
@@ -74,33 +64,21 @@ public class NotificationControllerTest {
 
     @Test
     public void 알림_삭제_테스트() throws Exception {
-        Notification notification = new Notification(testUserId, NOTIFICATION.name(), 100L, "Test message");
-        notificationRepository.save(notification);
-        entityManager.flush();
-        entityManager.refresh(notification);
-
-//        System.out.println("[TEST] 삭제할 알림 ID: " + notification.getNotificationId());
-
+        Notification notification = notificationRepository.save(new Notification(testUserId, "NOTIFICATION", 100L, "Test message"));
 
         mockMvc.perform(delete("/notifications/" + notification.getNotificationId())
-                        .param("userId", String.valueOf(testUserId)) //todo userId 수정
-                        .header("Authorization", "Bearer test-token"))
+                        .header("Authorization", tokenUser))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"));
     }
 
     @Test
     public void 전체_알림_삭제_테스트() throws Exception {
-        notificationRepository.save(new Notification(testUserId, NOTIFICATION.name(), 100L, "Test message100"));
-        notificationRepository.save(new Notification(testUserId, NOTIFICATION.name(), 101L, "Test message101"));
-        entityManager.flush();
-
-//        System.out.println("[TEST] 전체 삭제 요청: userId=" + testUserId);
-
+        notificationRepository.save(new Notification(testUserId, "NOTIFICATION", 100L, "Test message100"));
+        notificationRepository.save(new Notification(testUserId, "NOTIFICATION", 101L, "Test message101"));
 
         mockMvc.perform(delete("/notifications")
-                        .param("userId", String.valueOf(testUserId)) //todo userId 수정
-                        .header("Authorization", "Bearer test-token"))
+                        .header("Authorization", tokenUser))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"));
     }

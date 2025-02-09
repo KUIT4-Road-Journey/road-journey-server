@@ -1,7 +1,7 @@
 package com.road_journey.road_journey.items.service;
 
-import com.road_journey.road_journey.auth.User;
-import com.road_journey.road_journey.auth.UserRepository;
+import com.road_journey.road_journey.auth.dao.UserRepository;
+import com.road_journey.road_journey.auth.domain.User;
 import com.road_journey.road_journey.items.entity.Item;
 import com.road_journey.road_journey.items.repository.ItemRepository;
 import com.road_journey.road_journey.items.repository.UserItemRepository;

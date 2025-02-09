@@ -1,21 +1,7 @@
 package com.road_journey.road_journey.friends.service;
 
-import com.road_journey.road_journey.auth.User;
-import com.road_journey.road_journey.auth.UserRepository;
-import com.road_journey.road_journey.friends.dto.FriendMessageDTO;
-import com.road_journey.road_journey.friends.dto.SharedGoalDetailDTO;
-import com.road_journey.road_journey.friends.dto.StepDTO;
-import com.road_journey.road_journey.friends.entity.Friend;
-import com.road_journey.road_journey.friends.repository.FriendRepository;
-import com.road_journey.road_journey.notifications.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

@@ -1,7 +1,9 @@
 package com.road_journey.road_journey.friends.controller;
 
-import com.road_journey.road_journey.auth.User;
-import com.road_journey.road_journey.auth.UserRepository;
+import com.road_journey.road_journey.auth.config.JwtUtil;
+import com.road_journey.road_journey.auth.dao.UserRepository;
+import com.road_journey.road_journey.auth.domain.CustomUserInfoDto;
+import com.road_journey.road_journey.auth.domain.User;
 import com.road_journey.road_journey.friends.entity.Friend;
 import com.road_journey.road_journey.friends.repository.FriendRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,6 +37,10 @@ public class FriendManagementControllerTest {
     @Autowired
     private FriendRepository friendRepository;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    private String tokenUser1;
     private Long userId1;
     private Long userId2;
     private Long friendId;
@@ -49,14 +55,16 @@ public class FriendManagementControllerTest {
 
         userId1 = user1.getUserId();
         userId2 = user2.getUserId();
-
         friendId = friendRepository.save(new Friend(userId1, userId2, true, "IS_FRIEND")).getFriendId();
+
+        tokenUser1 = "Bearer " + jwtUtil.createAccessToken(
+                new CustomUserInfoDto(userId1, "user1", "password1", "user1@test.com", "User One", "ROLE_USER"));
     }
 
     @Test
     public void 친구목록_조회_성공() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/friends")
-                        .param("userId", String.valueOf(userId1))
+                        .header("Authorization", tokenUser1)
                         .param("sortBy", "alphabetical")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -66,27 +74,20 @@ public class FriendManagementControllerTest {
 
     @Test
     public void 친구메인_정보_조회_성공() throws Exception {
-        // todo
+        mockMvc.perform(MockMvcRequestBuilders.get("/friends/" + friendId + "/main")
+                        .header("Authorization", tokenUser1)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
     public void 친구좋아요_상태변경_성공() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.patch("/friends/" + friendId + "/likes")
-                        .param("userId", String.valueOf(userId1))
+                        .header("Authorization", tokenUser1)
                         .content("{\"action\": true}")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"))
                 .andExpect(jsonPath("$.message").value("Friend like status updated."));
-    }
-
-    @Test
-    public void 친구목록_조회_잘못된_userId_실패() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/friends")
-                        .param("userId", "9999")  // 존재하지 않는 userId
-                        .param("sortBy", "alphabetical")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(0));  // 결과가 빈 리스트인지 확인
     }
 }

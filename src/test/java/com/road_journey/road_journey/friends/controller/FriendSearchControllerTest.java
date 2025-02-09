@@ -1,8 +1,10 @@
 package com.road_journey.road_journey.friends.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.road_journey.road_journey.auth.User;
-import com.road_journey.road_journey.auth.UserRepository;
+import com.road_journey.road_journey.auth.config.JwtUtil;
+import com.road_journey.road_journey.auth.dao.UserRepository;
+import com.road_journey.road_journey.auth.domain.CustomUserInfoDto;
+import com.road_journey.road_journey.auth.domain.User;
 import com.road_journey.road_journey.friends.entity.Friend;
 import com.road_journey.road_journey.friends.repository.FriendRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,10 +39,12 @@ public class FriendSearchControllerTest {
     private FriendRepository friendRepository;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private JwtUtil jwtUtil;
 
+    private String tokenUser1;
     private Long userId1;
     private Long userId2;
+    private Long friendId;
 
     @BeforeEach
     public void setUp() {
@@ -52,14 +56,16 @@ public class FriendSearchControllerTest {
 
         userId1 = user1.getUserId();
         userId2 = user2.getUserId();
+        friendId = friendRepository.save(new Friend(userId1, userId2, false, "PENDING")).getFriendId();
 
-        friendRepository.save(new Friend(userId1, userId2, false, "PENDING"));
+        tokenUser1 = "Bearer " + jwtUtil.createAccessToken(
+                new CustomUserInfoDto(userId1, "user1", "password1", "user1@test.com", "User One", "ROLE_USER"));
     }
 
     @Test
     public void 친구검색_성공() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/friends/search")
-                        .param("userId", String.valueOf(userId1))
+                        .header("Authorization", tokenUser1)
                         .param("searchId", "user2")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -71,18 +77,10 @@ public class FriendSearchControllerTest {
     @Test
     public void 친구검색_결과없음() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/friends/search")
-                        .param("userId", String.valueOf(userId1))
+                        .header("Authorization", tokenUser1)
                         .param("searchId", "nonexistent")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(0));
-    }
-
-    @Test
-    public void 친구검색_userId_누락_실패() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/friends/search")
-                        .param("searchId", "user2")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
     }
 }

@@ -1,12 +1,13 @@
 package com.road_journey.road_journey.friends.controller;
 
-import com.road_journey.road_journey.auth.User;
-import com.road_journey.road_journey.auth.UserRepository;
+import com.road_journey.road_journey.auth.config.JwtUtil;
+import com.road_journey.road_journey.auth.dao.UserRepository;
+import com.road_journey.road_journey.auth.domain.CustomUserInfoDto;
+import com.road_journey.road_journey.auth.domain.User;
 import com.road_journey.road_journey.friends.entity.Friend;
 import com.road_journey.road_journey.friends.repository.FriendRepository;
 import com.road_journey.road_journey.notifications.entity.Notification;
 import com.road_journey.road_journey.notifications.repository.NotificationRepository;
-import com.road_journey.road_journey.notifications.service.NotificationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,16 +34,15 @@ public class FriendMessagesControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private NotificationService notificationService;
-
-    @Autowired
     private NotificationRepository notificationRepository;
     @Autowired
     private FriendRepository friendRepository;
-
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private JwtUtil jwtUtil;
 
+    private String tokenUser1;
     private Long userId1;
     private Long userId2;
     private Long friendId;
@@ -51,7 +51,7 @@ public class FriendMessagesControllerTest {
     @BeforeEach
     public void setUp() {
         userId1 = userRepository.save(new User("user1", "password1", "user1@test.com", "User One", 0L, "active"))
-                        .getUserId();
+                .getUserId();
         userId2 = userRepository.save(new User("user2", "password2", "user2@test.com", "User Two", 0L, "active"))
                 .getUserId();
 
@@ -59,6 +59,9 @@ public class FriendMessagesControllerTest {
 
         Notification notification = new Notification(userId1, "friend_request", friendId, "친구 요청이 있습니다.");
         notificationId = notificationRepository.save(notification).getNotificationId();
+
+        tokenUser1 = "Bearer " + jwtUtil.createAccessToken(
+                new CustomUserInfoDto(userId1, "user1", "password1", "user1@test.com", "User One", "ROLE_USER"));
     }
 
     @Test
@@ -69,7 +72,7 @@ public class FriendMessagesControllerTest {
     @Test
     public void 개별메시지_삭제_성공() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/friends/messages/" + notificationId)
-                        .param("userId", String.valueOf(userId1))
+                        .header("Authorization", tokenUser1)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"))
@@ -79,7 +82,7 @@ public class FriendMessagesControllerTest {
     @Test
     public void 개별메시지_삭제_존재하지않는_메시지() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/friends/messages/999999")
-                        .param("userId", String.valueOf(userId1))
+                        .header("Authorization", tokenUser1)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("error"))
