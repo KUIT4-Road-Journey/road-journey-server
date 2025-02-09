@@ -1,5 +1,6 @@
 package com.road_journey.road_journey.goals.dto;
 
+import com.road_journey.road_journey.goals.domain.Goal;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -10,10 +11,10 @@ import java.util.List;
 public class GoalListResponseDto {
     private final List<GoalInfo> goalInfoList;
 
-    public GoalListResponseDto(List<GoalResponseDto> goalResponseList) {
+    public GoalListResponseDto(List<Goal> goalList) {
         this.goalInfoList = new ArrayList<>();
-        for(GoalResponseDto goalResponse : goalResponseList) {
-            goalInfoList.add(new GoalInfo(goalResponse));
+        for(Goal goal : goalList) {
+            goalInfoList.add(new GoalInfo(goal));
         }
     }
 
@@ -26,13 +27,13 @@ public class GoalListResponseDto {
         private final int progress;
         private final LocalDate expireAt;
 
-        GoalInfo(GoalResponseDto goalResponse) {
-            this.goalId = goalResponse.getGoalId();
-            this.title = goalResponse.getTitle();
-            this.difficulty = goalResponse.getDifficulty();
-            this.progressStutus = goalResponse.getProgressStatus();
-            this.progress = goalResponse.getProgress();
-            this.expireAt = goalResponse.getDateInfo().getExpireAt();
+        GoalInfo(Goal goal) {
+            this.goalId = goal.getGoalId();
+            this.title = goal.getTitle();
+            this.difficulty = goal.getDifficulty();
+            this.progressStutus = goal.getProgressStatus();
+            this.progress = goal.getProgress();
+            this.expireAt = goal.getPeriodGoal().getExpireAt();
         }
     }
 }

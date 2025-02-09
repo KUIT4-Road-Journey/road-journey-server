@@ -9,7 +9,6 @@ import lombok.Getter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Getter
 public class GoalResponseDto {
@@ -34,7 +33,7 @@ public class GoalResponseDto {
         this.category = goal.getCategory();
         this.description = goal.getDescription();
         this.progressStatus = goal.getProgressStatus();
-        this.progress = calculateProgress(goal.getSubGoalList());
+        this.progress = goal.getProgress();
         this.isSharedGoal = goal.isSharedGoal();
         this.isPublicGoal = goal.isPublic();
         this.subGoalType = goal.getSubGoalType();
@@ -61,20 +60,6 @@ public class GoalResponseDto {
             friendList.add(new Friend(friendId));
         }
         return friendList;
-    }
-
-    private int calculateProgress(List<com.road_journey.road_journey.goals.domain.SubGoal> subGoalList) {
-        if (subGoalList.isEmpty()) {
-            return 0;
-        }
-
-        int count = 0;
-        for (com.road_journey.road_journey.goals.domain.SubGoal subGoal : subGoalList) {
-            if (subGoal.getProgressStatus().equals("completed")) {
-                count ++;
-            }
-        }
-        return (int)(count / (double)(subGoalList.size() + 1) * 100);
     }
 
     @Getter

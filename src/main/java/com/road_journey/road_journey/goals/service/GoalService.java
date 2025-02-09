@@ -1,5 +1,6 @@
 package com.road_journey.road_journey.goals.service;
 
+import com.road_journey.road_journey.archives.dto.ArchiveListResponseDto;
 import com.road_journey.road_journey.goals.domain.*;
 import com.road_journey.road_journey.goals.dto.*;
 import com.road_journey.road_journey.goals.repository.GoalRepository;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -84,7 +86,7 @@ public class GoalService {
                 .isSharedGoal(addGoalRequest.isSharedGoal())
                 .isPublic(addGoalRequest.isPublicGoal())
                 .subGoalType(addGoalRequest.getSubGoalType())
-                .isRewarded(false)
+                .rewardCount(0)
                 .sharedStatus(this.getInitialSharedStatus(addGoalRequest, originalGoalId))
                 .progressStatus("none") // TODO 상태값 수정 필요
                 .finishedAt(null)
@@ -125,15 +127,21 @@ public class GoalService {
     }
 
     public GoalListResponseDto getGoalListResponse(Long userId, String category) {
-        // TODO 목표 리스트에 출력되는 정확한 기준 반영 필요
         List<Goal> goalList = goalRepository.findGoalsByUserIdAndCategoryAndStatus(userId, category, "activated");
+        goalList.removeIf(goal -> !goal.isIncludedInGoalList()); // 리스트에 출력할 목표들만 남기기
+        return new GoalListResponseDto(goalList);
+    }
 
-        goalList.removeIf(goal -> !goal.isIncludedInList()); // 리스트에 출력할 목표들만 남기기
+    public ArchiveListResponseDto getArchiveListResponse(Long userId, String finishType, String category, String subGoalType, String sortType) {
+        List<Goal> goalList = goalRepository.findGoalsByUserIdAndCategoryAndSubGoalTypeAndStatus(userId, category, subGoalType, "activated");
+        goalList.removeIf(goal -> !goal.isIncludedInArchiveList(finishType)); // 리스트에 출력할 목표들만 남기기
 
-        List<GoalResponseDto> goalResponseList = goalList.stream()
-                .map(this::getGoalResponse)
-                .collect(Collectors.toList());
-        return new GoalListResponseDto(goalResponseList);
+        if (sortType.equals("lastCreated")) {
+            goalList.sort(Comparator.comparing(Goal::getCreatedAt).reversed());
+        } else {
+            goalList.sort(Comparator.comparing(Goal::getFinishedAt).reversed());
+        }
+        return new ArchiveListResponseDto(goalList);
     }
 
 
@@ -200,7 +208,7 @@ public class GoalService {
                 .isSharedGoal(addGoalRequest.isSharedGoal())
                 .isPublic(addGoalRequest.isPublicGoal())
                 .subGoalType(addGoalRequest.getSubGoalType())
-                .isRewarded(false)
+                .rewardCount(goal.getRewardCount())
                 .sharedStatus(this.getInitialSharedStatus(addGoalRequest, originalGoalId))
                 .progressStatus("none") // TODO 상태값 수정 필요
                 .finishedAt(null)

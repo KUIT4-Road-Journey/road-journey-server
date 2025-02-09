@@ -50,6 +50,10 @@ public class RepeatedGoal {
         status = "deactivated";
     }
 
+    public int getRepeatedCount() {
+        return completedCount + failedCount;
+    }
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
