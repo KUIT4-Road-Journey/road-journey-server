@@ -1,8 +1,8 @@
 package com.road_journey.road_journey.notifications.service;
 
 import com.road_journey.road_journey.notifications.dto.NotificationCategory;
-import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
 import com.road_journey.road_journey.notifications.dto.NotificationDTO;
+import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
 import com.road_journey.road_journey.notifications.entity.Notification;
 import com.road_journey.road_journey.notifications.repository.NotificationRepository;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.road_journey.road_journey.notifications.dto.NotificationCategory.*;
+import static com.road_journey.road_journey.notifications.dto.NotificationCategory.NOTIFICATION;
 
 @Service
 public class NotificationService {

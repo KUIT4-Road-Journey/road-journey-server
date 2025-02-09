@@ -1,7 +1,6 @@
 package com.road_journey.road_journey.items.repository;
 
 import com.road_journey.road_journey.items.entity.UserItem;
-import com.road_journey.road_journey.auth.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

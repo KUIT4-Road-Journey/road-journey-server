@@ -1,9 +1,8 @@
 package com.road_journey.road_journey.friends.service;
 
 import com.road_journey.road_journey.auth.User;
-import com.road_journey.road_journey.friends.dto.FriendStatus;
-import com.road_journey.road_journey.friends.dto.FriendDTO;
 import com.road_journey.road_journey.auth.UserRepository;
+import com.road_journey.road_journey.friends.dto.FriendDTO;
 import com.road_journey.road_journey.friends.entity.Friend;
 import com.road_journey.road_journey.friends.repository.FriendRepository;
 import jakarta.transaction.Transactional;

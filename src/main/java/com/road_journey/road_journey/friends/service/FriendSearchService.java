@@ -13,7 +13,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.road_journey.road_journey.friends.dto.FriendStatus.*;
+import static com.road_journey.road_journey.friends.dto.FriendStatus.IS_FRIEND;
+import static com.road_journey.road_journey.friends.dto.FriendStatus.IS_NOT_FRIEND;
 
 @Service
 @RequiredArgsConstructor

@@ -6,7 +6,6 @@ import com.road_journey.road_journey.friends.dto.FriendListDTO;
 import com.road_journey.road_journey.friends.entity.Friend;
 import com.road_journey.road_journey.friends.repository.FriendRepository;
 import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
-import com.road_journey.road_journey.notifications.entity.Notification;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
