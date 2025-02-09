@@ -26,6 +26,7 @@ public class FriendSearchService {
         List<User> users = userRepository.findUsersByAccountId(searchId);
 
         return users.stream()
+                .filter(user -> !user.getUserId().equals(userId))
                 .map(user -> {
                     Optional<Friend> optionalFriend = friendRepository.findFriendByUserIdAndFriendUserId(userId, user.getUserId());
 
@@ -38,9 +39,9 @@ public class FriendSearchService {
                         friendId = friend.getFriendId();
                     }
 
-                    return IS_FRIEND.name().equals(friendStatus) ? null : new FriendDTO(user, PENDING.name(), friendId);
+                    return IS_FRIEND.name().equals(friendStatus) ? null : new FriendDTO(user, friendStatus, friendId);
                 })
-                .filter(Objects::nonNull) // 친구 관계는 제외
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 }

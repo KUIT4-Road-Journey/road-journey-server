@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.road_journey.road_journey.friends.dto.FriendStatus.IS_FRIEND;
+
 @Service
 @RequiredArgsConstructor
 public class FriendManagementService {
@@ -68,7 +70,7 @@ public class FriendManagementService {
 
     private int getAchievementCount(Long userId) {
         // todo : 목표 테이블에서 해당 유저의 달성 목표 수 조회
-        return 0;
+        return userId.intValue();
     }
 
     public Optional<Object> getFriendMain() {
@@ -79,7 +81,7 @@ public class FriendManagementService {
     //친구 좋아요 상태 변경
     @Transactional
     public UpdateResponseDTO updateFriendLike(Long friendId, Boolean isLike) {
-        Optional<Friend> friendOptional = friendRepository.findFriendsByfriendUserId(friendId);
+        Optional<Friend> friendOptional = friendRepository.findActiveFriendsByFriendId(friendId);
 
         if (friendOptional.isEmpty()) {
             return new UpdateResponseDTO("failed", "Friend not found.");
@@ -90,5 +92,16 @@ public class FriendManagementService {
         friendRepository.save(friend);
 
         return new UpdateResponseDTO("success", "Friend like status updated.");
+    }
+
+    // 친구의 좋아요 상태 반환
+    public Boolean getFriendLikeStatus(Long userId, Long friendUserId) {
+        Optional<Friend> friendOptional = friendRepository.findByUserIdAndFriendUserIdAndStatus(userId, friendUserId, IS_FRIEND.name());
+
+        if (friendOptional.isEmpty()) {
+            throw new IllegalStateException("Friend relationship not found.");
+        }
+
+        return friendOptional.get().getIsLike();
     }
 }

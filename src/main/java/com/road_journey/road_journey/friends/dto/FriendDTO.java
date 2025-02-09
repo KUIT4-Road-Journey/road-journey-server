@@ -9,13 +9,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FriendDTO {
+    private Long friendId; // 친구 요청 ID
     private Long userId;
     private String accountId;
     private String nickname;
     private String profileImage;
     private String statusMessage;
     private String friendStatus;
-    private Long friendId; // 친구 요청 ID
 
     public FriendDTO(User user, String friendStatus, Long friendId) {
         this.userId = user.getUserId();

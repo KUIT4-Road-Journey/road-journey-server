@@ -1,8 +1,7 @@
 package com.road_journey.road_journey.notifications.service;
 
-import com.road_journey.road_journey.notifications.dto.NotificationCategory;
-import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
 import com.road_journey.road_journey.notifications.dto.NotificationDTO;
+import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
 import com.road_journey.road_journey.notifications.entity.Notification;
 import com.road_journey.road_journey.notifications.repository.NotificationRepository;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.road_journey.road_journey.notifications.dto.NotificationCategory.*;
+import static com.road_journey.road_journey.notifications.dto.NotificationCategory.NOTIFICATION;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest

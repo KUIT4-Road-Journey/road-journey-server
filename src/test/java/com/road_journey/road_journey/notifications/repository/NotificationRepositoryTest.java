@@ -1,6 +1,5 @@
 package com.road_journey.road_journey.notifications.repository;
 
-import com.road_journey.road_journey.notifications.dto.NotificationCategory;
 import com.road_journey.road_journey.notifications.entity.Notification;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -13,7 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.road_journey.road_journey.notifications.dto.NotificationCategory.*;
+import static com.road_journey.road_journey.notifications.dto.NotificationCategory.FRIEND;
+import static com.road_journey.road_journey.notifications.dto.NotificationCategory.NOTIFICATION;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest

@@ -37,7 +37,7 @@ public class FriendRequestService {
 
     //받은 친구 요청 목록 조회
     public List<FriendDTO> getFriendRequests(Long userId) {
-        List<Friend> pendingRequests = friendRepository.findFriendsByFriendUserId(userId).stream()
+        List<Friend> pendingRequests = friendRepository.findPendingFriendRequestsByFriendUserId(userId).stream()
                 .filter(friend -> PENDING.name().equals(friend.getStatus()))
                 .collect(Collectors.toList());
 
@@ -68,7 +68,7 @@ public class FriendRequestService {
         friendRepository.save(friendRequest);
 
         //반대 방향 친구 관계 추가 (userId → friendUserId)
-        Friend newFriendRelation = new Friend(userId, friendRequest.getUserId(), false, FriendStatus.IS_FRIEND.name());
+        Friend newFriendRelation = new Friend(userId, friendRequest.getUserId(), false, IS_FRIEND.name());
         friendRepository.save(newFriendRelation);
     }
 
@@ -83,9 +83,7 @@ public class FriendRequestService {
         }
 
         // 요청 삭제
-        friendRequest.setStatus(IS_NOT_FRIEND.name());
+        friendRequest.setStatus(DELETED.name());
         friendRepository.save(friendRequest);
     }
 }
-
-//        notificationService.deactivateNotification(friendId, NotificationCategory.FRIEND.name());

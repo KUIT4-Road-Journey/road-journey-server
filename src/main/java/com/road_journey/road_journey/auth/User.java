@@ -34,7 +34,7 @@ public class User {
     private String nickname;
 
     @Column(name = "last_login_time")
-    private LocalDateTime lastLoginTime;
+    private LocalDateTime lastLoginTime = LocalDateTime.now();
 
     @Column(name = "profile_image", length = 200)
     private String profileImage;
@@ -46,7 +46,7 @@ public class User {
     private Long gold = 0L;
 
     @Column(nullable = false, length = 50)
-    private String status;
+    private String status = "active";
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false, nullable = false)

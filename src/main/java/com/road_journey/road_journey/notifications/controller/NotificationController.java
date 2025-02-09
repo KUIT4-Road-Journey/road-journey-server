@@ -1,8 +1,7 @@
 package com.road_journey.road_journey.notifications.controller;
 
-import com.road_journey.road_journey.notifications.dto.NotificationCategory;
-import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
 import com.road_journey.road_journey.notifications.dto.NotificationDTO;
+import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
 import com.road_journey.road_journey.notifications.service.NotificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
