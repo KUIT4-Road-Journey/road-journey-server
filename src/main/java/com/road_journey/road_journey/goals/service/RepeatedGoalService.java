@@ -19,18 +19,29 @@ public class RepeatedGoalService {
         if (!addGoalRequestDto.isRepeatedGoal()) {
             return null;
         }
-
         AddGoalRequestDto.DateInfo dateInfo = addGoalRequestDto.getDateInfo();
-        RepeatedGoal repeatedGoal = RepeatedGoal.builder()
+        return RepeatedGoal.builder()
                 .goal(goal)
                 .repetitionPeriod(dateInfo.getRepetitionPeriod())
                 .repetitionNumber(dateInfo.getRepetitionNumber())
                 .completedCount(0)
                 .failedCount(0)
-                .status("none")
+                .status("activated")
                 .build();
-        //repeatedGoalRepository.save(repeatedGoal);
-        return repeatedGoal;
+    }
+
+    public RepeatedGoal copyRepeatedGoal(Goal goal, RepeatedGoal repeatedGoal) {
+        if (repeatedGoal == null) {
+            return null;
+        }
+        return RepeatedGoal.builder()
+                .goal(goal)
+                .repetitionPeriod(repeatedGoal.getRepetitionPeriod())
+                .repetitionNumber(repeatedGoal.getRepetitionNumber())
+                .completedCount(repeatedGoal.getCompletedCount())
+                .failedCount(repeatedGoal.getFailedCount())
+                .status(repeatedGoal.getStatus())
+                .build();
     }
 
     public Optional<RepeatedGoal> getRepeatedGoalByGoalId(Long goalId) {

@@ -29,17 +29,35 @@ public class SubGoalService {
     }
 
     public SubGoal createSubGoal(Goal goal, AddGoalRequestDto.SubGoal subGoalRequest) {
-        SubGoal subGoal = SubGoal.builder()
+        return SubGoal.builder()
                 .goal(goal)
                 .subGoalIndex(subGoalRequest.getIndex())
                 .description(subGoalRequest.getDescription())
                 .isCompleted(false)
                 .difficulty(subGoalRequest.getDifficulty())
                 .progressStatus("none") // TODO 상태값 수정 필요
-                .status("none")
+                .status("activated")
                 .build();
-        //subGoalRepository.save(subGoal);
-        return subGoal;
+    }
+
+    public List<SubGoal> copySubGoalList(Goal goal, List<SubGoal> subGoalList) {
+        List<SubGoal> newSubGoalList = new ArrayList<>();
+        for (SubGoal subGoal : subGoalList) {
+            newSubGoalList.add(copySubGoal(goal, subGoal));
+        }
+        return newSubGoalList;
+    }
+
+    public SubGoal copySubGoal(Goal goal, SubGoal subGoal) {
+        return SubGoal.builder()
+                .goal(goal)
+                .subGoalIndex(subGoal.getSubGoalIndex())
+                .description(subGoal.getDescription())
+                .isCompleted(subGoal.isCompleted())
+                .difficulty(subGoal.getDifficulty())
+                .progressStatus(subGoal.getProgressStatus())
+                .status(subGoal.getStatus())
+                .build();
     }
 
     public List<SubGoal> getSubGoalsByGoalId(Long goalId) {

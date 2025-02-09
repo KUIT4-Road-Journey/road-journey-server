@@ -87,7 +87,7 @@ public class Goal {
     private List<SubGoal> subGoalList = new ArrayList<>();
 
     public boolean isIncludedInList() {
-        if (!isStarted()) { // 아직 시작일이 되지 않은 경우
+        if (!isPeriodStarted()) { // 아직 시작일이 되지 않은 경우
             System.out.println("시작일");
             return false;
         }
@@ -108,16 +108,31 @@ public class Goal {
         return true;
     }
 
-    private boolean isPendingForEdit() {
+    public boolean isPendingForEdit() {
         return existingGoalId != null;
     }
 
-    private boolean isStarted() {
+    public boolean isStarted() {
         return !periodGoal.getStartAt().isAfter(LocalDate.now()); // 시작한 목표인지 확인
     }
 
-    private boolean isMadeByUser() {
+    public boolean isPeriodStarted() {
+        return !periodGoal.getPeriodStartAt().isAfter(LocalDate.now()); // 시작한 목표인지 확인
+    }
+
+    public boolean isMadeByUser() {
         return Objects.equals(goalId, originalGoalId); // 사용자 본인이 생성한 목표인지 확인
+    }
+
+    public void deactivate() { // Goal과 해당 Goal에 연결된 Entity들을 비활성화
+        setStatus("deactivated");
+        periodGoal.deactivate();
+        if (repeatedGoal != null) {
+            repeatedGoal.deactivate();
+        }
+        for (SubGoal subGoal : subGoalList) {
+            subGoal.deactivate();
+        }
     }
 
     @PrePersist

@@ -38,18 +38,27 @@ public class PeriodGoalService {
             periodExpireAt = startAt.plusDays(repetitionPeriod);;
         }
 
-        PeriodGoal periodGoal = PeriodGoal.builder()
+        return PeriodGoal.builder()
                 .goal(goal)
                 .startAt(startAt)
                 .expireAt(expireAt)
                 .periodStartAt(periodStartAt)
                 .periodExpireAt(periodExpireAt)
                 .completedAt(null)
-                .status("none")
+                .status("activated")
                 .build();
+    }
 
-        //periodGoalRepository.save(periodGoal);
-        return periodGoal;
+    public PeriodGoal copyPeriodGoal(Goal goal, PeriodGoal periodGoal) {
+        return PeriodGoal.builder()
+                .goal(goal)
+                .startAt(periodGoal.getStartAt())
+                .expireAt(periodGoal.getExpireAt())
+                .periodStartAt(periodGoal.getPeriodStartAt())
+                .periodExpireAt(periodGoal.getPeriodExpireAt())
+                .completedAt(periodGoal.getCompletedAt())
+                .status(periodGoal.getStatus())
+                .build();
     }
 
     public Optional<PeriodGoal> getPeriodGoalByGoalId(Long goalId) {

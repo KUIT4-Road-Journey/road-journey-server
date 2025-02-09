@@ -29,8 +29,7 @@ public class GoalController {
 
     @PostMapping("")
     public ResponseStatus addGoal(@RequestBody AddGoalRequestDto addGoalRequest) {
-        goalService.createGoals(addGoalRequest);
-        return new BaseResponse<>("Goal added.");
+        return goalService.createGoals(addGoalRequest);
         // TODO 요청 실패 시 처리
     }
 
@@ -57,8 +56,10 @@ public class GoalController {
     }
 
     @PostMapping("/{goalId}/edit")
-    public String editGoal(@PathVariable Long goalId) {
-        return "Goal " + goalId + " Edited";
+    public ResponseStatus editGoal(@PathVariable Long goalId,
+                           @RequestBody AddGoalRequestDto addGoalRequest) {
+
+        return goalService.editGoals(goalId, addGoalRequest);
     }
 
     @PostMapping("/{goalId}/edit/accept")

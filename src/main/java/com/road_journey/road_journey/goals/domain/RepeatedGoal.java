@@ -46,6 +46,10 @@ public class RepeatedGoal {
     @Column
     private LocalDateTime updatedAt; // 수정일
 
+    public void deactivate() {
+        status = "deactivated";
+    }
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
