@@ -41,7 +41,7 @@ class ItemStorageServiceTest {
 
     @Test
     void 보유_아이템_리스트_요청_테스트() {
-        User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 2000L, "active"));
+        User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 2000L));
         System.out.println("Created User ID: " + user.getUserId());
 
         Item item = itemRepository.save(new Item(null, "Test Item", "wallpaper", "Special Description", 2000L, true));
@@ -59,7 +59,7 @@ class ItemStorageServiceTest {
 
     @Test
     void 아이템_토글_테스트() {
-        User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 500L, "active"));
+        User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 500L));
         System.out.println("Created User ID: " + user.getUserId());
 
         Item item = itemRepository.save(new Item(null, "Test Item", "wallpaper", "Special Description", 2000L, true));
@@ -81,7 +81,7 @@ class ItemStorageServiceTest {
 
     @Test
     void 동일_카테고리_아이템_장착시_다른_아이템_해제_테스트() {
-        User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 500L, "active"));
+        User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 500L));
 
         Item item1 = itemRepository.save(new Item(null, "Test Item1", "wallpaper", "Special Description1", 2000L, true));
         Item item2 = itemRepository.save(new Item(null, "Test Item2", "wallpaper", "Special Description2", 2000L, true));
@@ -104,7 +104,7 @@ class ItemStorageServiceTest {
 
     @Test
     void 다른_장신구_장착시_기존_장신구_유지_테스트() {
-        User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 500L, "active"));
+        User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 500L));
 
         Item item1 = itemRepository.save(new Item(null, "Test Item1", "ornament", "Special Description1", 2000L, true));
         Item item2 = itemRepository.save(new Item(null, "Test Item2", "ornament", "Special Description2", 2000L, true));

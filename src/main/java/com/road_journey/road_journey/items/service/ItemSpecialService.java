@@ -23,7 +23,7 @@ public class ItemSpecialService {
     private final UserRepository userRepository;
     private final UserItemRepository userItemRepository;
 
-    private static final int SPECIAL_PRICE = 1500;
+    private static final int SPECIAL_PRICE = 30000;
 
     public ItemSpecialService(ItemRepository itemRepository, UserRepository userRepository, UserItemRepository userItemRepository) {
         this.itemRepository = itemRepository;

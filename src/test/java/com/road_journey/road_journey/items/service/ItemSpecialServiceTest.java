@@ -36,7 +36,8 @@ public class ItemSpecialServiceTest {
 
     @Test
     void 특별_아이템_구매_성공_테스트() {
-        User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 2000L, "active"));
+        itemRepository.deleteAll();
+        User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 40000L));
         System.out.println("Created User ID: " + user.getUserId());
 
         Item specialItem = itemRepository.save(new Item(null, "Special Item", "character", "Special Description", 2000L, true));
@@ -47,13 +48,14 @@ public class ItemSpecialServiceTest {
 
 
         Assertions.assertEquals("success", response.get("status"));
-        Assertions.assertEquals(500L, response.get("availableGold"));
+        Assertions.assertEquals(10000L, response.get("availableGold"));
         Assertions.assertTrue(userItemRepository.existsByUserIdAndItemId(user.getUserId(), specialItem.getItemId()));
     }
 
     @Test
     void 중복_특별_아이템_구매_실패_골드차감_테스트() {
-        User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 2000L, "active"));
+        itemRepository.deleteAll();
+        User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 40000L));
         System.out.println("Created User ID: " + user.getUserId());
 
         Item specialItem = itemRepository.save(new Item(null, "Special Item", "character", "Special Description", 2000L, true));
@@ -66,7 +68,7 @@ public class ItemSpecialServiceTest {
 
 
         Assertions.assertEquals("success", response.get("status"));
-        Assertions.assertEquals(500L, response.get("availableGold"));  // 골드가 차감되어야 함
+        Assertions.assertEquals(10000L, response.get("availableGold"));  // 골드가 차감되어야 함
         long itemCount = userItemRepository.count();  // 유저 아이템 개수 확인
         Assertions.assertEquals(1, itemCount);  // 새로운 아이템이 추가되지 않아야 함
     }

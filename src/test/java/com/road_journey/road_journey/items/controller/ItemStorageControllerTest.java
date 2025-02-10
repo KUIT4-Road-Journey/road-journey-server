@@ -54,9 +54,9 @@ class ItemStorageControllerTest {
 
     @BeforeEach
     void setUp() {
-        User user = userRepository.save(new User("user1", "password1", "user1@test.com", "User One", 0L, "active"));
+        User user = userRepository.save(new User("user1", "password1", "user1@test.com", "User One", 0L));
         tokenUser = "Bearer " + jwtUtil.createAccessToken(
-                new CustomUserInfoDto(user.getUserId(), "user1", "password1", "user1@test.com", "User One", "ROLE_USER"));
+                new CustomUserInfoDto(user.getUserId(), "user1", "password1", "user1@test.com", "User One", "USER"));
     }
 
     @Test

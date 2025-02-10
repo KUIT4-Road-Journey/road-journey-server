@@ -40,9 +40,9 @@ public class FriendManagementServiceTest {
 
     @BeforeEach
     public void setUp() {
-        User user1 = new User("user1", "password1", "user1@test.com", "User One", 0L, "active");
-        User user2 = new User("user2", "password2", "user2@test.com", "User Two", 0L, "active");
-        User user3 = new User("user3", "password3", "user3@test.com", "User Three", 0L, "active");
+        User user1 = new User("user1", "password1", "user1@test.com", "User One", 0L);
+        User user2 = new User("user2", "password2", "user2@test.com", "User Two", 0L);
+        User user3 = new User("user3", "password3", "user3@test.com", "User Three", 0L);
 
         userRepository.save(user1);
         userRepository.save(user2);

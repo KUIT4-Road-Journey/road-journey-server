@@ -47,8 +47,8 @@ public class FriendManagementControllerTest {
 
     @BeforeEach
     public void setUp() {
-        User user1 = new User("user1", "password1", "user1@test.com", "User One", 0L, "active");
-        User user2 = new User("user2", "password2", "user2@test.com", "User Two", 0L, "active");
+        User user1 = new User("user1", "password1", "user1@test.com", "User One", 0L);
+        User user2 = new User("user2", "password2", "user2@test.com", "User Two", 0L);
 
         userRepository.save(user1);
         userRepository.save(user2);
@@ -58,7 +58,7 @@ public class FriendManagementControllerTest {
         friendId = friendRepository.save(new Friend(userId1, userId2, true, "IS_FRIEND")).getFriendId();
 
         tokenUser1 = "Bearer " + jwtUtil.createAccessToken(
-                new CustomUserInfoDto(userId1, "user1", "password1", "user1@test.com", "User One", "ROLE_USER"));
+                new CustomUserInfoDto(userId1, "user1", "password1", "user1@test.com", "User One", "USER"));
     }
 
     @Test

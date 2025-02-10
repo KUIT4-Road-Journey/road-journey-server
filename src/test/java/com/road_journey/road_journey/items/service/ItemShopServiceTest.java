@@ -35,7 +35,7 @@ public class ItemShopServiceTest {
     @Test
     @Transactional
     void 아이템_구매_성공_테스트() {
-        User user = new User("testUser", "secure_password", "test@mail.com", "nickname", 1500L, "active");
+        User user = new User("testUser", "secure_password", "test@mail.com", "nickname", 1500L);
         user = userRepository.save(user);
         System.out.println("Created User ID: " + user.getUserId());
 
@@ -55,7 +55,7 @@ public class ItemShopServiceTest {
     @Test
     @Transactional
     void 아이템_구매_실패_테스트() {
-        User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 500L, "active"));
+        User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 500L));
         System.out.println("Created User ID: " + user.getUserId());
 
         Item item = itemRepository.save(new Item(null, "Test Item", "background", "Test Description", 1000L, false));

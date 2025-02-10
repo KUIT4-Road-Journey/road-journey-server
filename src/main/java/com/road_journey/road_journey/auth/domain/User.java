@@ -47,8 +47,9 @@ public class User {
     @Column(nullable = false)
     private Long gold = 0L;
 
-    @Column(nullable = false, length = 50)
-    private String status = "active";
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private RoleType role = RoleType.USER;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false, nullable = false)
@@ -58,13 +59,12 @@ public class User {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    public User(String accountId, String accountPw, String email, String nickname, Long gold, String status) {
+    public User(String accountId, String accountPw, String email, String nickname, Long gold) {
         this.accountId = accountId;
         this.accountPw = accountPw;
         this.email = email;
         this.nickname = nickname;
         this.gold = gold;
-        this.status = status;
     }
 }
 

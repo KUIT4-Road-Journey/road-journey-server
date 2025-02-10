@@ -50,9 +50,9 @@ public class FriendMessagesControllerTest {
 
     @BeforeEach
     public void setUp() {
-        userId1 = userRepository.save(new User("user1", "password1", "user1@test.com", "User One", 0L, "active"))
+        userId1 = userRepository.save(new User("user1", "password1", "user1@test.com", "User One", 0L))
                 .getUserId();
-        userId2 = userRepository.save(new User("user2", "password2", "user2@test.com", "User Two", 0L, "active"))
+        userId2 = userRepository.save(new User("user2", "password2", "user2@test.com", "User Two", 0L))
                 .getUserId();
 
         friendId = friendRepository.save(new Friend(userId1, userId2, true, "IS_FRIEND")).getFriendId();
@@ -61,7 +61,7 @@ public class FriendMessagesControllerTest {
         notificationId = notificationRepository.save(notification).getNotificationId();
 
         tokenUser1 = "Bearer " + jwtUtil.createAccessToken(
-                new CustomUserInfoDto(userId1, "user1", "password1", "user1@test.com", "User One", "ROLE_USER"));
+                new CustomUserInfoDto(userId1, "user1", "password1", "user1@test.com", "User One", "USER"));
     }
 
     @Test
