@@ -23,7 +23,7 @@ public class ItemShopController {
 
     // 상점 아이템 목록 조회
     @GetMapping
-    public ResponseEntity<List<ItemDto>> getShopItems(
+    public ResponseEntity<Map<String, Object>> getShopItems(
             @RequestHeader("Authorization") String token,
             @RequestParam(required = false, defaultValue = "all") String category) {
         token = TokenValidatorUtil.validateToken(token, jwtUtil);

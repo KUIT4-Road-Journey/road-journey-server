@@ -33,7 +33,7 @@ public class FriendManagementService {
         if (friends.isEmpty()) {
             return Collections.emptyList();
         }
-
+        // todo 친구의 메인화면 접근 설정 여부도 가져와야 함
         List<FriendListDTO> friendList = friends.stream()
                 .map(friend -> {
                     User user = userRepository.findById(friend.getFriendUserId())

@@ -13,6 +13,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     List<Notification> findByUserIdAndStatus(Long userId, String status);
 
+    List<Notification> findByUserIdAndCategoryAndStatus(Long userId, String category, String status);
+
     Optional<Notification> findByNotificationId(Long notificationId);
 
     @Modifying

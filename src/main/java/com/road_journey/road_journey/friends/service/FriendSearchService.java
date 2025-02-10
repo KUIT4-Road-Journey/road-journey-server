@@ -40,7 +40,7 @@ public class FriendSearchService {
                         friendId = friend.getFriendId();
                     }
 
-                    return IS_FRIEND.name().equals(friendStatus) ? null : new FriendDTO(user, friendStatus, friendId);
+                    return IS_FRIEND.name().equals(friendStatus) ? null : new FriendDTO(user, friendStatus, friendId, null);
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());

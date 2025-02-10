@@ -6,6 +6,7 @@ import com.road_journey.road_journey.auth.domain.CustomUserInfoDto;
 import com.road_journey.road_journey.auth.domain.User;
 import com.road_journey.road_journey.items.entity.Item;
 import com.road_journey.road_journey.items.repository.ItemRepository;
+import com.road_journey.road_journey.items.repository.UserItemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,9 @@ class ItemShopControllerTest {
     private ItemRepository itemRepository;
 
     @Autowired
+    private UserItemRepository userItemRepository;
+
+    @Autowired
     private JwtUtil jwtUtil;
 
     private String tokenUser;
@@ -45,7 +49,9 @@ class ItemShopControllerTest {
 
     @BeforeEach
     void setUp() {
+        userItemRepository.deleteAll();
         itemRepository.deleteAll();
+
         User user = userRepository.save(new User("user1", "password1", "user1@test.com", "User One", 40000L));
         userId = user.getUserId();
         tokenUser = "Bearer " + jwtUtil.createAccessToken(
@@ -65,19 +71,18 @@ class ItemShopControllerTest {
                 .andExpect(jsonPath("$.size()").value(org.hamcrest.Matchers.greaterThan(0)));
 
         mockMvc.perform(get("/items/shop")
-                        .header("Authorization", tokenUser)
-                        .param("category", "wallpaper"))
+                        .header("Authorization", tokenUser))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(2))
-                .andExpect(jsonPath("$[0].itemName").value("밤하늘"))
-                .andExpect(jsonPath("$[1].itemName").value("노을"));
+                .andExpect(jsonPath("$.availableGold").value(40000))
+                .andExpect(jsonPath("$.items[0].itemName").value("밤하늘"))
+                .andExpect(jsonPath("$.items[1].itemName").value("노을"));
 
         mockMvc.perform(get("/items/shop")
                         .header("Authorization", tokenUser)
                         .param("category", "ornament"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(1))
-                .andExpect(jsonPath("$[0].itemName").value("Test Item"));
+                .andExpect(jsonPath("$.items.size()").value(1))
+                .andExpect(jsonPath("$.items[0].itemName").value("Test Item"));
     }
 
     @Test

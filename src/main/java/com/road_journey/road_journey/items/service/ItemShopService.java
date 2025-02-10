@@ -29,7 +29,7 @@ public class ItemShopService {
         this.userItemRepository = userItemRepository;
     }
 
-    public List<ItemDto> getShopItems(Long userId, String category) {
+    public Map<String, Object> getShopItems(Long userId, String category) {
         List<Item> items = category.equals("all")
                 ? itemRepository.findAll()
                 : itemRepository.findByCategory(category);
@@ -41,7 +41,11 @@ public class ItemShopService {
                 .map(UserItem::getItemId)
                 .collect(Collectors.toSet());
 
-        return items.stream()
+        // 사용자 보유 골드 조회
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
+        Long availableGold = user.getGold();
+
+        List<ItemDto> itemDtoList = items.stream()
                 .map(item -> {
                     ItemDto itemDto = new ItemDto(item);
                     itemDto.setOwned(ownedItemIds.contains(item.getItemId()));
@@ -49,6 +53,11 @@ public class ItemShopService {
                     return itemDto;
                 })
                 .collect(Collectors.toList());
+
+        return Map.of(
+                "availableGold", availableGold,
+                "items", itemDtoList
+        );
     }
 
     @Transactional

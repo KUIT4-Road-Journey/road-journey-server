@@ -48,6 +48,8 @@ class UserItemRepositoryTest {
 
     @Test
     void 사용자가_보유한_아이템_조회_테스트() {
+        userItemRepository.deleteAll();
+        itemRepository.deleteAll();
         User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 500L));
 
         Item item1 = itemRepository.save(new Item(null, "밤하늘", "wallpaper", "암흑 공간을 수놓은 반짝거리는 ...", 2500L, false));

@@ -53,7 +53,7 @@ public class ItemStorageService {
 
         return Map.of(
                 "status", "success",
-                "message", isEquipped ? "아이템 장착 완료." : "아이템 장착 해제 완료."
+                "message", isEquipped ? "Item equipped successfully." : "Item unequipped successfully."
         );
     }
 

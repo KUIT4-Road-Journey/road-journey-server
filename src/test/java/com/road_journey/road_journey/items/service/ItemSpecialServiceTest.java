@@ -36,6 +36,7 @@ public class ItemSpecialServiceTest {
 
     @Test
     void 특별_아이템_구매_성공_테스트() {
+        userItemRepository.deleteAll();
         itemRepository.deleteAll();
         User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 40000L));
         System.out.println("Created User ID: " + user.getUserId());
@@ -54,6 +55,7 @@ public class ItemSpecialServiceTest {
 
     @Test
     void 중복_특별_아이템_구매_실패_골드차감_테스트() {
+        userItemRepository.deleteAll();
         itemRepository.deleteAll();
         User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 40000L));
         System.out.println("Created User ID: " + user.getUserId());

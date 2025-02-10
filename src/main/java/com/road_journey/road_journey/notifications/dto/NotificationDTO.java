@@ -12,7 +12,6 @@ public class NotificationDTO {
     private String createdAt;
     private String category;
     private Long relatedId;
-    private String status;
 
     public NotificationDTO(Notification notification) {
         this.notificationId = notification.getNotificationId();
@@ -20,6 +19,5 @@ public class NotificationDTO {
         this.createdAt = notification.getCreatedAt().toString();
         this.category = notification.getCategory();
         this.relatedId = notification.getRelatedId();
-        this.status = notification.getStatus();
     }
 }

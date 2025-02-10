@@ -36,9 +36,7 @@ public class FriendRequestService {
 
     //받은 친구 요청 목록 조회
     public List<FriendDTO> getFriendRequests(Long userId) {
-        List<Friend> pendingRequests = friendRepository.findPendingFriendRequestsByFriendUserId(userId).stream()
-                .filter(friend -> PENDING.name().equals(friend.getStatus()))
-                .collect(Collectors.toList());
+        List<Friend> pendingRequests = friendRepository.findPendingFriendRequestsByFriendUserId(userId);
 
         if (pendingRequests.isEmpty()) {
             return Collections.emptyList();
@@ -48,7 +46,7 @@ public class FriendRequestService {
                 .map(friend -> {
                     User user = userRepository.findById(friend.getUserId())
                             .orElseThrow(() -> new IllegalStateException("User not found"));
-                    return new FriendDTO(user, PENDING.name(), friend.getFriendId());
+                    return new FriendDTO(user, PENDING.name(), friend.getFriendId(), friend.getCreatedAt());
                 })
                 .collect(Collectors.toList());
     }

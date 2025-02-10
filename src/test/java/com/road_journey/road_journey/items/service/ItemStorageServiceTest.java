@@ -41,6 +41,9 @@ class ItemStorageServiceTest {
 
     @Test
     void 보유_아이템_리스트_요청_테스트() {
+        userItemRepository.deleteAll();
+        itemRepository.deleteAll();
+
         User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 2000L));
         System.out.println("Created User ID: " + user.getUserId());
 
@@ -59,6 +62,9 @@ class ItemStorageServiceTest {
 
     @Test
     void 아이템_토글_테스트() {
+        userItemRepository.deleteAll();
+        itemRepository.deleteAll();
+
         User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 500L));
         System.out.println("Created User ID: " + user.getUserId());
 
@@ -71,16 +77,19 @@ class ItemStorageServiceTest {
 
         Map<String, Object> response = itemStorageService.toggleEquipItem(user.getUserId(), userItem.getUserItemId(), true);
         Assertions.assertEquals("success", response.get("status"));
-        Assertions.assertEquals("아이템 장착 완료.", response.get("message"));
+        Assertions.assertEquals("Item equipped successfully.", response.get("message"));
 
 
         response = itemStorageService.toggleEquipItem(user.getUserId(), userItem.getUserItemId(), false);
         Assertions.assertEquals("success", response.get("status"));
-        Assertions.assertEquals("아이템 장착 해제 완료.", response.get("message"));
+        Assertions.assertEquals("Item unequipped successfully.", response.get("message"));
     }
 
     @Test
     void 동일_카테고리_아이템_장착시_다른_아이템_해제_테스트() {
+        userItemRepository.deleteAll();
+        itemRepository.deleteAll();
+
         User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 500L));
 
         Item item1 = itemRepository.save(new Item(null, "Test Item1", "wallpaper", "Special Description1", 2000L, true));

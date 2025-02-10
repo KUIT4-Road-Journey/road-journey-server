@@ -21,6 +21,8 @@ class ItemRepositoryTest {
 
     @Autowired
     private ItemRepository itemRepository;
+    @Autowired
+    private UserItemRepository userItemRepository;
 
     @Test
     void 아이템_저장_테스트() {
@@ -37,6 +39,7 @@ class ItemRepositoryTest {
 
     @Test
     void 카테고리별_아이템_조회_테스트() {
+        userItemRepository.deleteAll();
         itemRepository.deleteAll();
         itemRepository.save(new Item(null, "밤하늘", "wallpaper", "암흑 공간을 수놓은 반짝거리는 ...", 2500L, false));
         itemRepository.save(new Item(null, "노을", "wallpaper", "해질녘 노을...", 2500L, false));
@@ -48,6 +51,7 @@ class ItemRepositoryTest {
 
     @Test
     void 특별_아이템_조회_테스트() {
+        userItemRepository.deleteAll();
         itemRepository.deleteAll();
         itemRepository.save(new Item(null, "밤하늘", "wallpaper", "암흑 공간을 수놓은 반짝거리는 ...", 2500L, true));
         List<Item> specialItems = itemRepository.findByIsSpecialTrue();

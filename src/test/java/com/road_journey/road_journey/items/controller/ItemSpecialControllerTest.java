@@ -47,7 +47,6 @@ class ItemSpecialControllerTest {
 
     @BeforeEach
     void setUp() {
-        itemRepository.deleteAll();
         User user = userRepository.save(new User("user1", "password1", "user1@test.com", "User One", 40000L));
         userId = user.getUserId();
         tokenUser = "Bearer " + jwtUtil.createAccessToken(
