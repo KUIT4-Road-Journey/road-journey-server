@@ -47,10 +47,10 @@ class ItemSpecialControllerTest {
 
     @BeforeEach
     void setUp() {
-        User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 2500L, "active"));
+        User user = userRepository.save(new User("user1", "password1", "user1@test.com", "User One", 2500L, "active"));
         userId = user.getUserId();
         tokenUser = "Bearer " + jwtUtil.createAccessToken(
-                new CustomUserInfoDto(userId, "testUser", "secure_password", "test@mail.com", "nickname", "ROLE_USER"));
+                new CustomUserInfoDto(userId, "user1", "password1", "user1@test.com", "User One", "ROLE_USER"));
     }
 
     @Test

@@ -54,14 +54,14 @@ class ItemStorageControllerTest {
 
     @BeforeEach
     void setUp() {
-        User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 500L, "active"));
+        User user = userRepository.save(new User("user1", "password1", "user1@test.com", "User One", 0L, "active"));
         tokenUser = "Bearer " + jwtUtil.createAccessToken(
-                new CustomUserInfoDto(user.getUserId(), "testUser", "secure_password", "test@mail.com", "nickname", "ROLE_USER"));
+                new CustomUserInfoDto(user.getUserId(), "user1", "password1", "user1@test.com", "User One", "ROLE_USER"));
     }
 
     @Test
     void 보유_아이템_조회_API_테스트() throws Exception {
-        User user = userRepository.findByAccountId("testUser").orElseThrow();
+        User user = userRepository.findByAccountId("user1").orElseThrow();
         Item item = itemRepository.save(new Item(null, "밤하늘", "wallpaper", "암흑 공간을 수놓은 반짝거리는 ...", 2500L, false));
         UserItem userItem = new UserItem(null, user.getUserId(), item.getItemId(), false, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now());
         userItemRepository.save(userItem);
@@ -76,7 +76,7 @@ class ItemStorageControllerTest {
 
     @Test
     void 아이템_장착_API_테스트() throws Exception {
-        User user = userRepository.findByAccountId("testUser").orElseThrow();
+        User user = userRepository.findByAccountId("user1").orElseThrow();
         Item item = itemRepository.save(new Item(null, "밤하늘", "wallpaper", "암흑 공간을 수놓은 반짝거리는 ...", 2500L, false));
         UserItem userItem = new UserItem(null, user.getUserId(), item.getItemId(), false, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now());
         userItem = userItemRepository.save(userItem);

@@ -45,10 +45,10 @@ public class NotificationControllerTest {
 
     @BeforeEach
     public void setup() {
-        User testUser = userRepository.save(new User("testUser", "password123", "test@example.com", "TestNickname", 100L, "active"));
+        User testUser = userRepository.save(new User("user1", "password1", "user1@test.com", "User One", 0L, "active"));
         testUserId = testUser.getUserId();
         tokenUser = "Bearer " + jwtUtil.createAccessToken(
-                new CustomUserInfoDto(testUserId, "testUser", "password123", "test@example.com", "TestNickname", "ROLE_USER"));
+                new CustomUserInfoDto(testUserId, "user1", "password1", "user1@test.com", "User One", "ROLE_USER"));
     }
 
     @Test
