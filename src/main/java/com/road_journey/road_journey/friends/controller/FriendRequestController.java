@@ -24,11 +24,12 @@ public class FriendRequestController {
 
     // 친구 요청 목록 조회 (`status = 'pending'`)
     @GetMapping
-    public ResponseEntity<List<FriendDTO>> getFriendRequests(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<Map<String, List<FriendDTO>>> getFriendRequests(@RequestHeader("Authorization") String token) {
         token = TokenValidatorUtil.validateToken(token, jwtUtil);
-
         Long userId = jwtUtil.getUserId(token);
-        return ResponseEntity.ok(friendRequestService.getFriendRequests(userId));
+
+        List<FriendDTO> friendDTOs = friendRequestService.getFriendRequests(userId);
+        return ResponseEntity.ok(Map.of("requests", friendDTOs));
     }
 
     // 친구 요청 보내기
@@ -42,7 +43,6 @@ public class FriendRequestController {
         Long friendUserId = request.get("friendUserId");
 
         friendRequestService.sendFriendRequest(userId, friendUserId);
-
         return ResponseEntity.ok(new UpdateResponseDTO("success", "Friend request sent successfully."));
     }
 

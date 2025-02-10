@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/friends/search")
@@ -22,12 +23,13 @@ public class FriendSearchController {
 
     // 친구 검색 (searchId: 사용자 아이디)
     @GetMapping
-    public ResponseEntity<List<FriendDTO>> searchFriends(
+    public ResponseEntity<Map<String, List<FriendDTO>>> searchFriends(
             @RequestHeader("Authorization") String token,
             @RequestParam String searchId) {
         token = TokenValidatorUtil.validateToken(token, jwtUtil);
         Long userId = jwtUtil.getUserId(token);
 
-        return ResponseEntity.ok(friendSearchService.searchUsers(userId, searchId));
+        List<FriendDTO> friendDTOs = friendSearchService.searchUsers(userId, searchId);
+        return ResponseEntity.ok(Map.of("users", friendDTOs));
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/notifications")
@@ -22,10 +23,12 @@ public class NotificationController {
     private final JwtUtil jwtUtil;
 
     @GetMapping
-    public ResponseEntity<List<NotificationDTO>> getNotifications(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<Map<String, List<NotificationDTO>>> getNotifications(@RequestHeader("Authorization") String token) {
         token = TokenValidatorUtil.validateToken(token, jwtUtil);
         Long userId = jwtUtil.getUserId(token);
-        return ResponseEntity.ok(notificationService.getNotifications(userId));
+
+        List<NotificationDTO> notifications = notificationService.getNotifications(userId);
+        return ResponseEntity.ok(Map.of("notifications", notifications));
     }
 
     @DeleteMapping("/{notificationId}")

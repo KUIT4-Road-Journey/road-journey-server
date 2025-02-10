@@ -40,4 +40,13 @@ public class ItemStorageController {
         boolean isEquipped = request.getOrDefault("isEquipped", false);
         return ResponseEntity.ok(itemStorageService.toggleEquipItem(userId, userItemId, isEquipped));
     }
+
+    @GetMapping("/equipped")
+    public ResponseEntity<Map<String, Object>> getEquippedItems(
+            @RequestHeader("Authorization") String token) {
+        token = TokenValidatorUtil.validateToken(token, jwtUtil);
+        Long userId = jwtUtil.getUserId(token);
+
+        return ResponseEntity.ok(itemStorageService.getEquippedItems(userId));
+    }
 }

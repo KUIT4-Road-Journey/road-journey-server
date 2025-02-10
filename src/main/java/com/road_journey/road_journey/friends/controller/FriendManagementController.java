@@ -1,6 +1,7 @@
 package com.road_journey.road_journey.friends.controller;
 
 import com.road_journey.road_journey.auth.config.JwtUtil;
+import com.road_journey.road_journey.friends.dto.FriendDTO;
 import com.road_journey.road_journey.friends.dto.FriendListDTO;
 import com.road_journey.road_journey.friends.service.FriendManagementService;
 import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
@@ -24,13 +25,14 @@ public class FriendManagementController {
 
     // 친구 목록 조회 (정렬 기준: lastLogin, alphabetical)
     @GetMapping
-    public ResponseEntity<List<FriendListDTO>> getFriends(
+    public ResponseEntity<Map<String, List<FriendListDTO>>> getFriends(
             @RequestHeader("Authorization") String token,
             @RequestParam(required = false, defaultValue = "alphabetical") String sortBy) {
         token = TokenValidatorUtil.validateToken(token, jwtUtil);
         Long userId = jwtUtil.getUserId(token);
 
-        return ResponseEntity.ok(friendManagementService.getFriends(userId, sortBy));
+        List<FriendListDTO> FriendListDTOs = friendManagementService.getFriends(userId, sortBy);
+        return ResponseEntity.ok(Map.of("friends", FriendListDTOs));
     }
 
     @GetMapping("/{friendId}/main")

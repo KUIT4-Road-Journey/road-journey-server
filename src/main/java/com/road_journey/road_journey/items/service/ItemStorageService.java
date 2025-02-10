@@ -62,4 +62,18 @@ public class ItemStorageService {
         sameCategoryItems.forEach(item -> item.setSelected(false));
         userItemRepository.saveAll(sameCategoryItems);
     }
+
+    public Map<String, Object> getEquippedItems(Long userId) {
+        List<UserItem> equippedUserItems = userItemRepository.findByUserIdAndIsSelectedTrue(userId);
+
+        List<UserItemDto> equippedItems = equippedUserItems.stream()
+                .map(userItem -> {
+                    Item item = itemRepository.findById(userItem.getItemId())
+                            .orElseThrow(() -> new IllegalArgumentException("아이템 정보 없음"));
+                    return new UserItemDto(userItem, item);
+                })
+                .collect(Collectors.toList());
+
+        return Map.of("equippedItems", equippedItems);
+    }
 }

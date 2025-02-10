@@ -13,4 +13,6 @@ public interface UserItemRepository extends JpaRepository<UserItem, Long> {
     boolean existsByUserIdAndItemId(Long userId, Long itemId);
 
     List<UserItem> findByUserId(Long userId);
+
+    List<UserItem> findByUserIdAndIsSelectedTrue(Long userId);
 }
