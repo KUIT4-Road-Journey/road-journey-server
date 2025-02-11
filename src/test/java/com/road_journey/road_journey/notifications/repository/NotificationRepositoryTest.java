@@ -12,8 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.road_journey.road_journey.notifications.dto.NotificationCategory.FRIEND;
-import static com.road_journey.road_journey.notifications.dto.NotificationCategory.NOTIFICATION;
+import static com.road_journey.road_journey.notifications.dto.NotificationCategory.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -54,7 +53,7 @@ public class NotificationRepositoryTest {
     @Test
     public void 카테고리별_알림_검색_테스트() {
         notificationRepository.save(new Notification(1L, NOTIFICATION.name(), 100L, "Test message 1"));
-        notificationRepository.save(new Notification(1L, FRIEND.name(), 101L, "Test message 2"));
+        notificationRepository.save(new Notification(1L, FRIEND_LIKE.name(), 101L, "Test message 2"));
         notificationRepository.save(new Notification(1L, NOTIFICATION.name(), 102L, "Test message 3"));
 
 

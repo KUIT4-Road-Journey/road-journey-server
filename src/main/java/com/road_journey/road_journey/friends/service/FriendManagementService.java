@@ -20,6 +20,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.road_journey.road_journey.friends.dto.FriendStatus.IS_FRIEND;
+import static com.road_journey.road_journey.notifications.dto.NotificationCategory.FRIEND_LIKE;
+import static com.road_journey.road_journey.notifications.dto.NotificationCategory.NOTIFICATION;
 
 @Service
 @RequiredArgsConstructor
@@ -94,19 +96,11 @@ public class FriendManagementService {
         friendRepository.save(friend);
 
         if (isLike) {
-            Long relatedUserId = friend.getUserId();
-            User relatedUser = userRepository.findById(relatedUserId).orElse(null);
+            String nickname = userRepository.findNicknameByUserId(friend.getUserId());
+            String message = String.format("%s님이 내 프로필에 좋아요를 눌렀어요!", nickname);
 
-            if (relatedUser != null) {
-                String message = String.format("%s님이 내 프로필에 좋아요를 눌렀어요!", relatedUser.getNickname());
-                Notification notification = new Notification(
-                        friend.getFriendUserId(),  // 좋아요를 받은 사용자
-                        "NOTIFICATION",           // 카테고리
-                        relatedUserId,            // 관련 사용자 ID
-                        message                   // 알림 메시지
-                );
-                notificationRepository.save(notification);
-            }
+            notificationRepository.save(new Notification(friend.getFriendUserId(), NOTIFICATION.name(), friend.getUserId(), message));
+            notificationRepository.save(new Notification(friend.getFriendUserId(), FRIEND_LIKE.name(), friend.getUserId(), message));
         }
 
         return new UpdateResponseDTO("success", "Friend like status updated.");

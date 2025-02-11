@@ -24,7 +24,7 @@ public class NotificationService {
     private final UserRepository userRepository;
 
     public List<NotificationDTO> getNotifications(Long userId) {
-        return notificationRepository.findByUserIdAndCategoryAndStatus(userId, "NOTIFICATION", "active").stream()
+        return notificationRepository.findByUserIdAndCategoryAndStatus(userId, NOTIFICATION.name(), "active").stream()
                 .map(notification -> {
                     String imageUrl = null;
                     if (notification.getRelatedId() != null) {

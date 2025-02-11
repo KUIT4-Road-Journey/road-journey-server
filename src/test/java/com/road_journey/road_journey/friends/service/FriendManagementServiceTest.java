@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static com.road_journey.road_journey.friends.dto.FriendStatus.IS_FRIEND;
+import static com.road_journey.road_journey.notifications.dto.NotificationCategory.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -90,8 +91,7 @@ public class FriendManagementServiceTest {
     }
 
     @Test
-    public void 친구좋아요_상태변경_성공() {
-        // Arrange: 기존 Friend 데이터 확인
+    public void 친구좋아요_상태변경_및_알림_생성_성공() {
         Friend friend = friendRepository.findByUserIdAndFriendUserIdAndStatus(userId1, userId2, "IS_FRIEND")
                 .orElseThrow(() -> new IllegalStateException("Friend not found."));
 
@@ -107,23 +107,32 @@ public class FriendManagementServiceTest {
         assertFalse(updatedFriend.getIsLike());
         assertFalse(friendManagementService.getFriendLikeStatus(userId1, userId2));
 
-        // Act: 다시 좋아요 상태를 true로 변경 (Notification 생성)
+        // Act: 좋아요 상태를 true로 변경
         response = friendManagementService.updateFriendLike(friend.getFriendId(), true);
 
-        // Assert: 좋아요 상태 확인 및 Notification 생성 확인
+        // Assert: 상태 변경 확인
         assertEquals("success", response.getStatus());
         updatedFriend = friendRepository.findById(friend.getFriendId())
                 .orElseThrow(() -> new IllegalStateException("Friend not found."));
         assertTrue(updatedFriend.getIsLike());
 
-        // Verify: Notification 생성 여부 확인
-        List<Notification> notifications = notificationRepository.findByUserIdAndCategoryAndStatus(userId2, "NOTIFICATION", "active");
-        assertFalse(notifications.isEmpty());  // Notification이 생성되었는지 확인
+        // Verify: 두 개의 Notification 생성 여부 확인
+        List<Notification> notifications = notificationRepository.findByUserIdAndStatus(userId2, "active");
+        assertEquals(2, notifications.size());
 
-        Notification notification = notifications.get(0);
-        assertEquals(userId2, notification.getUserId());
-        assertEquals(friend.getUserId(), notification.getRelatedId());
-        assertTrue(notification.getMessage().contains("님이 내 프로필에 좋아요를 눌렀어요!"));
+        // 첫 번째 Notification (NOTIFICATION)
+        Notification notification1 = notifications.stream()
+                .filter(n -> n.getCategory().equals(NOTIFICATION.name()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("NOTIFICATION category not found."));
+        assertTrue(notification1.getMessage().contains("님이 내 프로필에 좋아요를 눌렀어요!"));
+
+        // 두 번째 Notification (FRIEND_LIKE)
+        Notification notification2 = notifications.stream()
+                .filter(n -> n.getCategory().equals(FRIEND_LIKE.name()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("FRIEND_LIKE category not found."));
+        assertTrue(notification2.getMessage().contains("님이 내 프로필에 좋아요를 눌렀어요!"));
     }
 
     @Test

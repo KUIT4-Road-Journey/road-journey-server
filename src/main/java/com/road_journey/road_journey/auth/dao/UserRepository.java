@@ -19,4 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u.profileImage FROM User u WHERE u.userId = :userId AND u.role = 'USER'")
     String findProfileImageByUserId(Long userId);
+
+    @Query("SELECT u.nickname FROM User u WHERE u.userId = :userId AND u.role = 'USER'")
+    String findNicknameByUserId(Long userId);
 }
