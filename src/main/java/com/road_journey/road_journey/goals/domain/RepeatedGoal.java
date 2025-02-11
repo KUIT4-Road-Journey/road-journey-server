@@ -38,6 +38,9 @@ public class RepeatedGoal {
     private int failedCount; // 실패횟수
 
     @Column
+    private String repetitionHistory; // 기록
+
+    @Column
     private String status; // 상태
 
     @Column(updatable = false)
@@ -51,7 +54,7 @@ public class RepeatedGoal {
     }
 
     public int getRepeatedCount() {
-        return completedCount + failedCount;
+        return repetitionHistory.length();
     }
 
     @PrePersist

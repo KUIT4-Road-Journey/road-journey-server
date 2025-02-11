@@ -26,6 +26,7 @@ public class RepeatedGoalService {
                 .repetitionNumber(dateInfo.getRepetitionNumber())
                 .completedCount(0)
                 .failedCount(0)
+                .repetitionHistory("")
                 .status("activated")
                 .build();
     }

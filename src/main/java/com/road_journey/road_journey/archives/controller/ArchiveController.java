@@ -1,6 +1,5 @@
 package com.road_journey.road_journey.archives.controller;
 
-import com.road_journey.road_journey.archives.dto.ArchiveListResponseDto;
 import com.road_journey.road_journey.goals.dto.GoalResponseDto;
 import com.road_journey.road_journey.goals.response.BaseResponse;
 import com.road_journey.road_journey.goals.response.ResponseStatus;

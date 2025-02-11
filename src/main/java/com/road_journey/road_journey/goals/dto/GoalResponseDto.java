@@ -25,6 +25,7 @@ public class GoalResponseDto {
     private final DateInfo dateInfo;
     private final List<Friend> friendList;
     private final List<SubGoal> subGoalList;
+    private final List<RepetitionInfo> repetitionInfoList;
 
     public GoalResponseDto(Goal goal, List<Long> friendIdList) {
         this.goalId = goal.getGoalId();
@@ -40,6 +41,25 @@ public class GoalResponseDto {
         this.dateInfo = new DateInfo(goal.getPeriodGoal(), goal.getRepeatedGoal());
         this.friendList = createFriendList(friendIdList);
         this.subGoalList = createSubGoalList(goal.getSubGoalList());
+        this.repetitionInfoList = createRepetitionInfoList(goal.getPeriodGoal(), goal.getRepeatedGoal());
+    }
+
+    private List<RepetitionInfo> createRepetitionInfoList(PeriodGoal periodGoal, RepeatedGoal repeatedGoal) {
+        if (repeatedGoal == null) {
+            return null;
+        }
+
+        LocalDate startAt = periodGoal.getStartAt();
+        int repetitionPeriod = repeatedGoal.getRepetitionPeriod();
+        String repetitionHistory = repeatedGoal.getRepetitionHistory();
+
+        List<RepetitionInfo> repetitionInfoList = new ArrayList<>();
+        for (int i = 0; i < repetitionHistory.length(); i++) {
+            LocalDate periodStartAt = startAt.plusDays((long) repetitionPeriod * i);
+            LocalDate periodExpireAt = periodStartAt.plusDays((long) repetitionPeriod);
+            repetitionInfoList.add(new RepetitionInfo(periodStartAt, periodExpireAt, repetitionHistory.charAt(i)));
+        }
+        return repetitionInfoList;
     }
 
     public static GoalResponseDto from(Goal goal, List<Long> friendIdList) {
@@ -66,12 +86,16 @@ public class GoalResponseDto {
     public static class DateInfo {
         private final LocalDate startAt;
         private final LocalDate expireAt;
+        private final LocalDate periodStartAt;
+        private final LocalDate periodExpireAt;
         private final int repetitionPeriod;
         private final int repetitionNumber;
 
         DateInfo(PeriodGoal periodGoal, RepeatedGoal repeatedGoal) {
-            this.startAt = periodGoal.getPeriodStartAt();
-            this.expireAt = periodGoal.getPeriodExpireAt();
+            this.startAt = periodGoal.getStartAt();
+            this.expireAt = periodGoal.getExpireAt();
+            this.periodStartAt = periodGoal.getPeriodStartAt();
+            this.periodExpireAt = periodGoal.getPeriodExpireAt();
 
             if (repeatedGoal != null) {
                 this.repetitionPeriod = repeatedGoal.getRepetitionPeriod();
@@ -103,6 +127,19 @@ public class GoalResponseDto {
             this.difficulty = subGoal.getDifficulty();
             this.description = subGoal.getDescription();
             this.progressStatus = subGoal.getProgressStatus();
+        }
+    }
+
+    @Getter
+    public static class RepetitionInfo {
+        private final LocalDate startAt;
+        private final LocalDate expireAt;
+        private final String progressStatus;
+
+        RepetitionInfo(LocalDate startAt, LocalDate expireAt, char c) {
+            this.startAt = startAt;
+            this.expireAt = expireAt;
+            this.progressStatus = c == '1' ? "completed" : "failed";
         }
     }
 }
