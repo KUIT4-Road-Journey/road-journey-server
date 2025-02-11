@@ -2,11 +2,11 @@ package com.road_journey.road_journey.items.service;
 
 import com.road_journey.road_journey.auth.dao.UserRepository;
 import com.road_journey.road_journey.auth.domain.User;
+import com.road_journey.road_journey.items.dto.UserItemDto;
 import com.road_journey.road_journey.items.entity.Item;
 import com.road_journey.road_journey.items.entity.UserItem;
 import com.road_journey.road_journey.items.repository.ItemRepository;
 import com.road_journey.road_journey.items.repository.UserItemRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,8 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @TestPropertySource(locations = "classpath:application-test.properties")
@@ -45,19 +44,15 @@ class ItemStorageServiceTest {
         itemRepository.deleteAll();
 
         User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 2000L));
-        System.out.println("Created User ID: " + user.getUserId());
-
         Item item = itemRepository.save(new Item(null, "Test Item", "wallpaper", "Special Description", 2000L, true));
-        System.out.println("Created Item ID: " + item.getItemId());
 
-        UserItem userItem = new UserItem(null, user.getUserId(), item.getItemId(), false, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now());
-        userItemRepository.save(userItem);
+        userItemRepository.save(new UserItem(null, user.getUserId(), item.getItemId(), false, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now()));
 
 
         Map<String, Object> response = itemStorageService.getUserItems(user.getUserId(), "wallpaper");
 
 
-        Assertions.assertEquals(1, ((List<?>) response.get("items")).size());
+        assertEquals(1, ((List<?>) response.get("items")).size());
     }
 
     @Test
@@ -66,23 +61,19 @@ class ItemStorageServiceTest {
         itemRepository.deleteAll();
 
         User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 500L));
-        System.out.println("Created User ID: " + user.getUserId());
-
         Item item = itemRepository.save(new Item(null, "Test Item", "wallpaper", "Special Description", 2000L, true));
-        System.out.println("Created Item ID: " + item.getItemId());
 
-        UserItem userItem = new UserItem(null, user.getUserId(), item.getItemId(), false, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now());
-        userItem = userItemRepository.save(userItem);
+        UserItem userItem = userItemRepository.save(new UserItem(null, user.getUserId(), item.getItemId(), false, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now()));
 
 
         Map<String, Object> response = itemStorageService.toggleEquipItem(user.getUserId(), userItem.getUserItemId(), true);
-        Assertions.assertEquals("success", response.get("status"));
-        Assertions.assertEquals("Item equipped successfully.", response.get("message"));
+        assertEquals("success", response.get("status"));
+        assertEquals("Item equipped successfully.", response.get("message"));
 
 
         response = itemStorageService.toggleEquipItem(user.getUserId(), userItem.getUserItemId(), false);
-        Assertions.assertEquals("success", response.get("status"));
-        Assertions.assertEquals("Item unequipped successfully.", response.get("message"));
+        assertEquals("success", response.get("status"));
+        assertEquals("Item unequipped successfully.", response.get("message"));
     }
 
     @Test
@@ -95,10 +86,8 @@ class ItemStorageServiceTest {
         Item item1 = itemRepository.save(new Item(null, "Test Item1", "wallpaper", "Special Description1", 2000L, true));
         Item item2 = itemRepository.save(new Item(null, "Test Item2", "wallpaper", "Special Description2", 2000L, true));
 
-        UserItem userItem1 = new UserItem(null, user.getUserId(), item1.getItemId(), false, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now());
-        userItem1 = userItemRepository.save(userItem1);
-        UserItem userItem2 = new UserItem(null, user.getUserId(), item2.getItemId(), false, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now());
-        userItem2 = userItemRepository.save(userItem2);
+        UserItem userItem1 = userItemRepository.save(new UserItem(null, user.getUserId(), item1.getItemId(), false, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now()));
+        UserItem userItem2 = userItemRepository.save(new UserItem(null, user.getUserId(), item2.getItemId(), false, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now()));
 
 
         itemStorageService.toggleEquipItem(user.getUserId(), userItem2.getUserItemId(), true);
@@ -118,10 +107,8 @@ class ItemStorageServiceTest {
         Item item1 = itemRepository.save(new Item(null, "Test Item1", "ornament", "Special Description1", 2000L, true));
         Item item2 = itemRepository.save(new Item(null, "Test Item2", "ornament", "Special Description2", 2000L, true));
 
-        UserItem userItem1 = new UserItem(null, user.getUserId(), item1.getItemId(), false, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now());
-        userItem1 = userItemRepository.save(userItem1);
-        UserItem userItem2 = new UserItem(null, user.getUserId(), item2.getItemId(), false, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now());
-        userItem2 = userItemRepository.save(userItem2);
+        UserItem userItem1 = userItemRepository.save(new UserItem(null, user.getUserId(), item1.getItemId(), false, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now()));
+        UserItem userItem2 = userItemRepository.save(new UserItem(null, user.getUserId(), item2.getItemId(), false, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now()));
 
 
         itemStorageService.toggleEquipItem(user.getUserId(), userItem1.getUserItemId(), true);
@@ -133,5 +120,28 @@ class ItemStorageServiceTest {
 
         assertTrue(updatedUserItem1.isSelected());
         assertTrue(updatedUserItem2.isSelected());
+    }
+
+    @Test
+    void 사용자_장착_아이템_조회_테스트() {
+        userItemRepository.deleteAll();
+        itemRepository.deleteAll();
+
+        User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 500L));
+
+        Item item1 = itemRepository.save(new Item(null, "Test Item1", "ornament", "Special Description1", 2000L, true));
+        Item item2 = itemRepository.save(new Item(null, "Test Item2", "wallpaper", "Special Description2", 2000L, true));
+
+        UserItem userItem1 = userItemRepository.save(new UserItem(null, user.getUserId(), item1.getItemId(), true, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now()));
+        UserItem userItem2 = userItemRepository.save(new UserItem(null, user.getUserId(), item2.getItemId(), true, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now()));
+
+
+        Map<String, Object> response = itemStorageService.getEquippedItems(user.getUserId());
+
+
+        List<UserItemDto> equippedItems = (List<UserItemDto>) response.get("equippedItems");
+        assertEquals(2, equippedItems.size());
+        assertEquals("Test Item1", equippedItems.get(0).getItemName());
+        assertEquals("Test Item2", equippedItems.get(1).getItemName());
     }
 }

@@ -68,8 +68,8 @@ public class FriendManagementControllerTest {
                         .param("sortBy", "alphabetical")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(1))
-                .andExpect(jsonPath("$[0].accountId").value("user2"));
+                .andExpect(jsonPath("$.friends.size()").value(1))
+                .andExpect(jsonPath("$.friends[0].accountId").value("user2"));
     }
 
     @Test

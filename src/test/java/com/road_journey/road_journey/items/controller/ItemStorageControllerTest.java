@@ -89,4 +89,20 @@ class ItemStorageControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"));
     }
+
+    @Test
+    void 작착_아이템_조회_API_테스트() throws Exception {
+        User user = userRepository.findByAccountId("user1").orElseThrow();
+        Item item = itemRepository.save(new Item(null, "밤하늘", "wallpaper", "암흑 공간을 수놓은 반짝거리는 ...", 2500L, false));
+        UserItem userItem = new UserItem(null, user.getUserId(), item.getItemId(), true, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now());
+        userItem = userItemRepository.save(userItem);
+
+        // when & then
+        mockMvc.perform(get("/items/storage/equipped")
+                        .header("Authorization", tokenUser))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.equippedItems", hasSize(greaterThan(0))))
+                .andExpect(jsonPath("$.equippedItems[0].itemName").value("밤하늘"))
+                .andExpect(jsonPath("$.equippedItems[0].selected").value(true));
+    }
 }

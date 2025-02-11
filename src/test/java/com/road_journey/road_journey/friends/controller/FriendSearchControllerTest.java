@@ -69,9 +69,9 @@ public class FriendSearchControllerTest {
                         .param("searchId", "user2")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(1))
-                .andExpect(jsonPath("$[0].accountId").value("user2"))
-                .andExpect(jsonPath("$[0].friendStatus").value("PENDING"));
+                .andExpect(jsonPath("$.users.size()").value(1))
+                .andExpect(jsonPath("$.users[0].accountId").value("user2"))
+                .andExpect(jsonPath("$.users[0].friendStatus").value("PENDING"));
     }
 
     @Test
@@ -81,6 +81,6 @@ public class FriendSearchControllerTest {
                         .param("searchId", "nonexistent")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(0));
+                .andExpect(jsonPath("$.users.size()").value(0));
     }
 }

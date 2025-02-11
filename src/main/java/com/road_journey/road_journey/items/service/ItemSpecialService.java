@@ -7,6 +7,7 @@ import com.road_journey.road_journey.items.entity.Item;
 import com.road_journey.road_journey.items.entity.UserItem;
 import com.road_journey.road_journey.items.repository.ItemRepository;
 import com.road_journey.road_journey.items.repository.UserItemRepository;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -115,5 +116,33 @@ public class ItemSpecialService {
                 "availableGold", user.getGold(),
                 "selectedItemId", selectedItem.getItemId()
         );
+    }
+
+
+
+    @Scheduled(cron = "0 0 0 */14 * ?")  // 2주마다 자정에 실행
+    public void updateSpecialItems() {
+        resetAllSpecialItems();
+        updateRandomSpecialItems();
+    }
+
+    @Transactional
+    public void resetAllSpecialItems() {
+        List<Item> currentSpecialItems = itemRepository.findByIsSpecialTrue();
+        currentSpecialItems.forEach(item -> item.setSpecial(false));
+        itemRepository.saveAll(currentSpecialItems);
+    }
+
+    @Transactional
+    public void updateRandomSpecialItems() {
+        setRandomSpecialItems("character", 2);
+        setRandomSpecialItems("ornament", 3);
+        setRandomSpecialItems("wallpaper", 3);
+    }
+
+    private void setRandomSpecialItems(String category, int count) {
+        List<Item> randomItems = itemRepository.findRandomItemsByCategory(category, count);
+        randomItems.forEach(item -> item.setSpecial(true));
+        itemRepository.saveAll(randomItems);
     }
 }

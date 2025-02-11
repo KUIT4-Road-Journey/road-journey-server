@@ -72,9 +72,9 @@ public class FriendRequestControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(1))
-                .andExpect(jsonPath("$[0].nickname").value("User One"))
-                .andExpect(jsonPath("$[0].friendStatus").value("PENDING"));
+                .andExpect(jsonPath("$.requests.size()").value(1))
+                .andExpect(jsonPath("$.requests[0].nickname").value("User One"))
+                .andExpect(jsonPath("$.requests[0].friendStatus").value("PENDING"));
     }
 
     @Test

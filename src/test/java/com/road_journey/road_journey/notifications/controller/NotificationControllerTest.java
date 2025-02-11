@@ -58,8 +58,8 @@ public class NotificationControllerTest {
         mockMvc.perform(get("/notifications")
                         .header("Authorization", tokenUser))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(1))
-                .andExpect(jsonPath("$[0].message").value("Test message"));
+                .andExpect(jsonPath("$.notifications.size()").value(1))
+                .andExpect(jsonPath("$.notifications[0].message").value("Test message"));
     }
 
     @Test

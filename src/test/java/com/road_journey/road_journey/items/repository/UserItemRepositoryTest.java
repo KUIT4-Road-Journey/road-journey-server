@@ -64,4 +64,24 @@ class UserItemRepositoryTest {
 
         assertEquals(2, armorItems.size());
     }
+
+    @Test
+    void 사용자_장착_아이템_조회_테스트() {
+        userItemRepository.deleteAll();
+        itemRepository.deleteAll();
+        User user = userRepository.save(new User("testUser", "secure_password", "test@mail.com", "nickname", 500L));
+
+        Item item1 = itemRepository.save(new Item(null, "밤하늘", "wallpaper", "암흑 공간을 수놓은 반짝거리는 ...", 2500L, false));
+        Item item2 = itemRepository.save(new Item(null, "노을", "wallpaper", "해질녘 노을...", 150L, false));
+
+        userItemRepository.save(UserItem.builder().userId(user.getUserId()).itemId(item1.getItemId()).isSelected(true).growthPoint(0L).growthLevel(1L).status("active").build());
+        userItemRepository.save(UserItem.builder().userId(user.getUserId()).itemId(item2.getItemId()).isSelected(true).growthPoint(0L).growthLevel(1L).status("active").build());
+
+
+        List<UserItem> selectedItems = userItemRepository.findByUserIdAndIsSelectedTrue(user.getUserId());
+
+
+        assertEquals(2, selectedItems.size());
+        assertEquals(item1.getItemId(), selectedItems.get(0).getItemId());
+    }
 }

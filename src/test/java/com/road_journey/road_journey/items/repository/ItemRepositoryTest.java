@@ -59,4 +59,17 @@ class ItemRepositoryTest {
 
         assertEquals(1, specialItems.size());
     }
+
+    @Test
+    void findRandomItemsByCategory_테스트() {
+        userItemRepository.deleteAll();
+        itemRepository.deleteAll();
+        itemRepository.save(new Item(null, "밤하늘", "wallpaper", "암흑 공간을 수놓은 반짝거리는 ...", 2500L, false));
+        itemRepository.save(new Item(null, "노을", "wallpaper", "해질녘 노을 ...", 2500L, false));
+        itemRepository.save(new Item(null, "새벽하늘", "wallpaper", "아침 새벽의 떠오르는 태양 ...", 2500L, false));
+        List<Item> randomItems = itemRepository.findRandomItemsByCategory("wallpaper", 2);
+
+        assertEquals(2, randomItems.size());
+        randomItems.forEach(item -> assertEquals("wallpaper", item.getCategory()));
+    }
 }
