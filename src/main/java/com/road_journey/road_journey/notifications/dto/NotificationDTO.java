@@ -12,12 +12,14 @@ public class NotificationDTO {
     private String createdAt;
     private String category;
     private Long relatedId;
+    private String imageUrl;
 
-    public NotificationDTO(Notification notification) {
+    public NotificationDTO(Notification notification, String imageUrl) {
         this.notificationId = notification.getNotificationId();
         this.message = notification.getMessage();
         this.createdAt = notification.getCreatedAt().toString();
         this.category = notification.getCategory();
         this.relatedId = notification.getRelatedId();
+        this.imageUrl = imageUrl;
     }
 }

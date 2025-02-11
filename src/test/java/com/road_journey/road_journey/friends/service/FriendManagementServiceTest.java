@@ -6,6 +6,8 @@ import com.road_journey.road_journey.friends.dto.FriendListDTO;
 import com.road_journey.road_journey.friends.entity.Friend;
 import com.road_journey.road_journey.friends.repository.FriendRepository;
 import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
+import com.road_journey.road_journey.notifications.entity.Notification;
+import com.road_journey.road_journey.notifications.repository.NotificationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,9 @@ public class FriendManagementServiceTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     private Long userId1;
     private Long userId2;
@@ -86,19 +91,39 @@ public class FriendManagementServiceTest {
 
     @Test
     public void 친구좋아요_상태변경_성공() {
+        // Arrange: 기존 Friend 데이터 확인
         Friend friend = friendRepository.findByUserIdAndFriendUserIdAndStatus(userId1, userId2, "IS_FRIEND")
                 .orElseThrow(() -> new IllegalStateException("Friend not found."));
 
         assertTrue(friendManagementService.getFriendLikeStatus(userId1, userId2));
 
-
+        // Act: 좋아요 상태를 false로 변경
         UpdateResponseDTO response = friendManagementService.updateFriendLike(friend.getFriendId(), false);
-        assertEquals("success", response.getStatus());
 
+        // Assert: 상태 변경 확인
+        assertEquals("success", response.getStatus());
         Friend updatedFriend = friendRepository.findById(friend.getFriendId())
                 .orElseThrow(() -> new IllegalStateException("Friend not found."));
         assertFalse(updatedFriend.getIsLike());
         assertFalse(friendManagementService.getFriendLikeStatus(userId1, userId2));
+
+        // Act: 다시 좋아요 상태를 true로 변경 (Notification 생성)
+        response = friendManagementService.updateFriendLike(friend.getFriendId(), true);
+
+        // Assert: 좋아요 상태 확인 및 Notification 생성 확인
+        assertEquals("success", response.getStatus());
+        updatedFriend = friendRepository.findById(friend.getFriendId())
+                .orElseThrow(() -> new IllegalStateException("Friend not found."));
+        assertTrue(updatedFriend.getIsLike());
+
+        // Verify: Notification 생성 여부 확인
+        List<Notification> notifications = notificationRepository.findByUserIdAndCategoryAndStatus(userId2, "NOTIFICATION", "active");
+        assertFalse(notifications.isEmpty());  // Notification이 생성되었는지 확인
+
+        Notification notification = notifications.get(0);
+        assertEquals(userId2, notification.getUserId());
+        assertEquals(friend.getUserId(), notification.getRelatedId());
+        assertTrue(notification.getMessage().contains("님이 내 프로필에 좋아요를 눌렀어요!"));
     }
 
     @Test

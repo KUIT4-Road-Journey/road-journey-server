@@ -29,7 +29,7 @@ public class NotificationRepositoryTest {
 
     @Test
     public void 알림_저장_조회_테스트() {
-        notificationRepository.save(new Notification(1L, NOTIFICATION.name(), 100L, "Test message"));
+        notificationRepository.save(new Notification(1L, NOTIFICATION.name(), 1630L, "Test message"));
 
 
         List<Notification> notifications = notificationRepository.findByUserIdAndStatus(1L, "active");

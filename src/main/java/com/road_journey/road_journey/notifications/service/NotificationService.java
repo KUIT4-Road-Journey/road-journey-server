@@ -1,10 +1,12 @@
 package com.road_journey.road_journey.notifications.service;
 
+import com.road_journey.road_journey.auth.dao.UserRepository;
 import com.road_journey.road_journey.notifications.dto.NotificationCategory;
 import com.road_journey.road_journey.notifications.dto.NotificationDTO;
 import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
 import com.road_journey.road_journey.notifications.entity.Notification;
 import com.road_journey.road_journey.notifications.repository.NotificationRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,17 +17,21 @@ import java.util.stream.Collectors;
 import static com.road_journey.road_journey.notifications.dto.NotificationCategory.NOTIFICATION;
 
 @Service
+@RequiredArgsConstructor
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
-
-    public NotificationService(NotificationRepository notificationRepository) {
-        this.notificationRepository = notificationRepository;
-    }
+    private final UserRepository userRepository;
 
     public List<NotificationDTO> getNotifications(Long userId) {
         return notificationRepository.findByUserIdAndCategoryAndStatus(userId, "NOTIFICATION", "active").stream()
-                .map(NotificationDTO::new)
+                .map(notification -> {
+                    String imageUrl = null;
+                    if (notification.getRelatedId() != null) {
+                        imageUrl = userRepository.findProfileImageByUserId(notification.getRelatedId());
+                    }
+                    return new NotificationDTO(notification, imageUrl);
+                })
                 .collect(Collectors.toList());
     }
 
@@ -61,7 +67,13 @@ public class NotificationService {
 
     public List<NotificationDTO> getNotificationsByCategory(Long userId, NotificationCategory category) {
         return notificationRepository.findActiveNotificationsByCategory(userId, category.name()).stream()
-                .map(NotificationDTO::new)
+                .map(notification -> {
+                    String imageUrl = null;
+                    if (notification.getRelatedId() != null) {
+                        imageUrl = userRepository.findProfileImageByUserId(notification.getRelatedId());
+                    }
+                    return new NotificationDTO(notification, imageUrl);
+                })
                 .collect(Collectors.toList());
     }
 

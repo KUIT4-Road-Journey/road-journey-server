@@ -16,4 +16,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.accountId LIKE %:accountId%")
     List<User> findUsersByAccountId(String accountId);
+
+    @Query("SELECT u.profileImage FROM User u WHERE u.userId = :userId AND u.role = 'USER'")
+    String findProfileImageByUserId(Long userId);
 }

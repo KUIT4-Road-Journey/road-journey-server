@@ -6,6 +6,8 @@ import com.road_journey.road_journey.friends.dto.FriendListDTO;
 import com.road_journey.road_journey.friends.entity.Friend;
 import com.road_journey.road_journey.friends.repository.FriendRepository;
 import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
+import com.road_journey.road_journey.notifications.entity.Notification;
+import com.road_journey.road_journey.notifications.repository.NotificationRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class FriendManagementService {
 
     private final FriendRepository friendRepository;
     private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
 
     //친구 목록 조회
     public List<FriendListDTO> getFriends(Long userId, String sortBy) {
@@ -89,6 +92,22 @@ public class FriendManagementService {
         Friend friend = friendOptional.get();
         friend.setIsLike(isLike);
         friendRepository.save(friend);
+
+        if (isLike) {
+            Long relatedUserId = friend.getUserId();
+            User relatedUser = userRepository.findById(relatedUserId).orElse(null);
+
+            if (relatedUser != null) {
+                String message = String.format("%s님이 내 프로필에 좋아요를 눌렀어요!", relatedUser.getNickname());
+                Notification notification = new Notification(
+                        friend.getFriendUserId(),  // 좋아요를 받은 사용자
+                        "NOTIFICATION",           // 카테고리
+                        relatedUserId,            // 관련 사용자 ID
+                        message                   // 알림 메시지
+                );
+                notificationRepository.save(notification);
+            }
+        }
 
         return new UpdateResponseDTO("success", "Friend like status updated.");
     }
