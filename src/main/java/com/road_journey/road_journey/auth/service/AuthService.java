@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -45,9 +46,13 @@ public class AuthService {
             throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
         }
 
-        CustomUserInfoDto info = modelMapper.map(user, CustomUserInfoDto.class);
+        // 로그인 성공 시 lastLoginTime 업데이트
+        user.setLastLoginTime(LocalDateTime.now());
+        userRepository.save(user);
 
+        CustomUserInfoDto info = modelMapper.map(user, CustomUserInfoDto.class);
         String accessToken = jwtUtil.createAccessToken(info);
+
         return accessToken;
     }
 

@@ -4,6 +4,7 @@ package com.road_journey.road_journey.auth.config;
 import com.road_journey.road_journey.auth.domain.CustomUserInfoDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.io.DecodingException;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -83,6 +84,7 @@ public class JwtUtil {
      */
     public boolean validateToken(String token) {
         try {
+            token = normalizeToken(token);
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
@@ -95,6 +97,13 @@ public class JwtUtil {
             log.info("JWT claims string is empty.", e);
         }
         return false;
+    }
+
+    private String normalizeToken(String token) {
+        if (token != null && token.startsWith("Bearer ")) {
+            return token.substring(7);
+        }
+        return token;
     }
 
 
