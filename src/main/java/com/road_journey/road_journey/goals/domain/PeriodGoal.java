@@ -58,6 +58,11 @@ public class PeriodGoal {
     @Column
     private LocalDateTime updatedAt; // 수정일
 
+    public void updatePeriodDate(int repetitionPeriod) {
+        periodStartAt = periodExpireAt;
+        periodExpireAt = periodStartAt.plusDays(repetitionPeriod);
+    }
+
     public void deactivate() {
         status = "deactivated";
     }

@@ -45,14 +45,13 @@ public class GoalController {
     }
 
     @PostMapping("/{goalId}/accept")
-    public String acceptGoal(@PathVariable Long goalId) {
-
-        return "Goal " + goalId + " Accepted";
+    public ResponseStatus acceptGoal(@PathVariable Long goalId) {
+        return goalService.processPendingGoal(goalId, true, true);
     }
 
     @PostMapping("/{goalId}/reject")
-    public String rejectGoal(@PathVariable Long goalId) {
-        return "Goal " + goalId + " Rejected";
+    public ResponseStatus rejectGoal(@PathVariable Long goalId) {
+        return goalService.processPendingGoal(goalId, true, false);
     }
 
     @PostMapping("/{goalId}/edit")
@@ -63,34 +62,33 @@ public class GoalController {
     }
 
     @PostMapping("/{goalId}/edit/accept")
-    public String acceptGoalEdition(@PathVariable Long goalId) {
-        return "Goal " + goalId + " Edition Accepted";
+    public ResponseStatus acceptGoalEdition(@PathVariable Long goalId) {
+        return goalService.processPendingGoal(goalId, false, true);
     }
 
     @PostMapping("/{goalId}/edit/reject")
-    public String rejectGoalEdition(@PathVariable Long goalId) {
-        return "Goal " + goalId + " Edition Rejected";
+    public ResponseStatus rejectGoalEdition(@PathVariable Long goalId) {
+        return goalService.processPendingGoal(goalId, false, false);
     }
 
     @PostMapping("/{goalId}/complete")
-    public String completeGoal(@PathVariable Long goalId) {
-        return "Goal " + goalId + " Completed";
+    public ResponseStatus completeGoal(@PathVariable Long goalId) {
+        return goalService.completeGoal(goalId);
     }
 
     @PostMapping("/{goalId}/fail")
-    public String failGoal(@PathVariable Long goalId) {
-        return "Goal " + goalId + " Failed";
+    public ResponseStatus failGoal(@PathVariable Long goalId) {
+        return goalService.failGoal(goalId);
+    }
+
+    @PostMapping("/{goalId}/reward")
+    public ResponseStatus getReward(@PathVariable Long goalId) {
+        return goalService.getRewardByGoalId(goalId);
     }
 
     @PostMapping("/{goalId}/sub-goals/{subGoalId}/complete")
-    public String completeSubGoal(@PathVariable Long goalId,
+    public ResponseStatus completeSubGoal(@PathVariable Long goalId,
                                   @PathVariable Long subGoalId) {
-        return "Sub-Goal " + subGoalId + " of Goal " + goalId + " Completed";
-    }
-
-    @PostMapping("/{goalId}/sub-goals/{subGoalId}/fail")
-    public String failSubGoal(@PathVariable Long goalId,
-                              @PathVariable Long subGoalId) {
-        return "Sub-Goal " + subGoalId + " of Goal " + goalId + " Failed";
+        return goalService.completeSubGoal(goalId, subGoalId);
     }
 }

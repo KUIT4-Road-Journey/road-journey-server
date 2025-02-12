@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -48,6 +49,9 @@ public class Goal {
 
     @Column
     private boolean isSharedGoal; // 공동목표여부
+
+    @Column
+    private String sharedGoalType; // 공동목표유형
 
     @Column
     private boolean isPublic; // 친구공개여부
@@ -115,8 +119,16 @@ public class Goal {
         return finishType.equals("all") || finishType.equals(progressStatus);
     }
 
+    public boolean isPending() {
+        return sharedStatus.equals("pending");
+    }
+
     public boolean isPendingForEdit() {
         return existingGoalId != null;
+    }
+
+    public boolean isPendingForCreation() {
+        return isPending() && !isPendingForEdit();
     }
 
     public boolean isStarted() {
@@ -135,12 +147,12 @@ public class Goal {
         return Objects.equals(goalId, originalGoalId); // 사용자 본인이 생성한 목표인지 확인
     }
 
-    public boolean isRewarded() {
-        if (rewardCount == 0) {
-            return false;
+    public boolean isRewarded() { // 해당 주기의 보상을 이미 받았는지 확인
+        if (rewardCount == 0) { // 보상 횟수가 0인 경우
+            return false; // 보상 받은 적 없음
         }
         if (category.equals("repeated")) { // 반복 목표인 경우
-            return rewardCount == repeatedGoal.getRepeatedCount();
+            return rewardCount == repeatedGoal.getRepeatedCount(); // 보상 횟수와 반복 횟수가 같으면 보상 이미 받은 것으로 처리
         }
         return true;
     }
@@ -156,6 +168,151 @@ public class Goal {
             }
         }
         return (int)(count / (double)(subGoalList.size() + 1) * 100);
+    }
+
+    public void accept() {
+        setSharedStatus("accepted");
+    }
+
+    public void reject() {
+        setSharedStatus("rejected");
+    }
+
+    public void register() {
+        setSharedStatus("registered");
+    }
+
+    public int getDuration() {
+        return (int) ChronoUnit.DAYS.between(periodGoal.getPeriodStartAt(), periodGoal.getPeriodExpireAt());
+    }
+
+    public double getCategoryCoefficient() {
+        return switch (category) {
+            case "repeated" -> 1.0;
+            case "short-term" -> 1.2;
+            case "long-term" -> 1.5;
+            default -> 0;
+        };
+    }
+
+    public int getGold(boolean isReward) {
+        double gold = difficulty * getDuration() * getCategoryCoefficient() * 500;
+        if (!isReward) {
+            gold /= -5;
+            return (int) gold;
+        }
+        if (!subGoalType.equals("normal")) {
+            gold /= (subGoalList.size() + 1);
+        }
+        return (int) gold;
+    }
+
+    public int getGrowthPoint(boolean isReward) {
+        return (int) ((double)getGold(isReward) / 50);
+    }
+
+    public boolean isCompletable() {
+        if (!sharedStatus.equals("registered")) {
+            System.out.println("등록되지 않은 목표");
+            return false;
+        }
+        if (progressStatus.equals("failed") || progressStatus.equals("completed")) {
+            System.out.println("이미 달성 완료/실패 처리된 목표");
+            return false;
+        }
+        if (isRewarded()) {
+            System.out.println("이미 보상을 수령한 목표");
+            return false;
+        }
+        for (SubGoal subGoal : subGoalList) {
+            if (!subGoal.getProgressStatus().equals("completed")) {
+                System.out.println("하위 목표를 모두 완료하지 않음");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isFailable() {
+        if (!sharedStatus.equals("registered")) {
+            System.out.println("등록되지 않은 목표");
+            return false;
+        }
+        if (!progressStatus.equals("progressing")) {
+            return false;
+        }
+        return !isRewarded();
+    }
+
+    public boolean canGetReward() {
+        if (isRewarded()) {
+            return false;
+        }
+        return progressStatus.equals("completed") || progressStatus.equals("failed");
+    }
+
+    public boolean isSubGoalCompletable(int subGoalIndex) {
+        if (!sharedStatus.equals("registered")) {
+            System.out.println("등록되지 않은 목표");
+            return false;
+        }
+        if (!subGoalList.get(subGoalIndex).getProgressStatus().equals("progressing")) {
+            System.out.println("진행 중인 하위 목표 아님");
+            return false;
+        }
+        if (subGoalType.equals("stepByStep")) {
+            for (int i = 0; i < subGoalIndex; i++) {
+                if (!subGoalList.get(i).getProgressStatus().equals("completed")) {
+                    System.out.println("이전 하위 목표를 먼저 달성해야 함");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public SubGoal getSubGoalById(Long subGoalId) {
+        for (SubGoal subGoal : subGoalList) {
+            if (Objects.equals(subGoal.getSubGoalId(), subGoalId)) {
+                return subGoal;
+            }
+        }
+        return null;
+    }
+
+    public void processCompleteOrFail(boolean isCompleted) {
+        setProgressStatus(isCompleted ? "completed" : "failed"); // 달성 완료 상태로 변경
+
+        if (category.equals("repeated")) { // 반복 목표인 경우
+            repeatedGoal.recordHistory(isCompleted); // repetitionHistory 갱신
+            if (repeatedGoal.isRepetitionRemaining()) { // 다음 반복 주기가 있는 경우
+                resetSubGoalList(); // 하위 목표 진행도 리셋
+            }
+        }
+    }
+
+    public void updatePeriodDate() {
+        periodGoal.updatePeriodDate(repeatedGoal.getRepetitionPeriod()); // 주기 시작일/만료일 갱신
+    }
+
+    public void complete() {
+        if (!isCompletable()) {
+            return;
+        }
+        processCompleteOrFail(true);
+    }
+
+    public void fail() {
+        if (!isFailable()) {
+            return;
+        }
+        processCompleteOrFail(false);
+    }
+
+    public void resetSubGoalList() {
+        for (SubGoal subGoal : subGoalList) {
+            subGoal.setProgressStatus("progressing");
+        }
     }
 
     public void deactivate() { // Goal과 해당 Goal에 연결된 Entity들을 비활성화

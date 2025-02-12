@@ -57,6 +57,18 @@ public class RepeatedGoal {
         return repetitionHistory.length();
     }
 
+    public void recordHistory(boolean isCompleted) {
+        if (isCompleted) {
+            repetitionHistory = repetitionHistory + "1";
+            return;
+        }
+        repetitionHistory = repetitionHistory + "0";
+    }
+
+    public boolean isRepetitionRemaining() {
+        return repetitionNumber > repetitionHistory.length();
+    }
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();

@@ -37,6 +37,7 @@ public class SubGoal {
     @Column
     private int difficulty; // 난이도
 
+    @Setter
     @Column
     private String progressStatus; // 진행상태
 

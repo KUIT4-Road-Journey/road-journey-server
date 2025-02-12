@@ -15,6 +15,7 @@ public class AddGoalRequestDto {
     private String category;
     private String description;
     private boolean sharedGoal;
+    private String sharedGoalType;
     private boolean publicGoal;
     private String subGoalType;
     private DateInfo dateInfo;
