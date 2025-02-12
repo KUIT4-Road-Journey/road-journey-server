@@ -1,7 +1,5 @@
 package com.road_journey.road_journey.archives.controller;
 
-import com.road_journey.road_journey.goals.dto.GoalResponseDto;
-import com.road_journey.road_journey.goals.response.BaseResponse;
 import com.road_journey.road_journey.goals.response.ResponseStatus;
 import com.road_journey.road_journey.goals.service.GoalService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +22,7 @@ public class ArchiveController {
                                              @RequestParam String category,
                                              @RequestParam String subGoalType,
                                              @RequestParam String sortType) {
-        return new BaseResponse<>(goalService.getArchiveListResponse(userId, finishType, category, subGoalType, sortType));
+        return goalService.getArchiveListResponse(userId, finishType, category, subGoalType, sortType);
     }
 
     @GetMapping("/{goalId}")

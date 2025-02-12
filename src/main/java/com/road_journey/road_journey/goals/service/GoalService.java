@@ -396,5 +396,5 @@ public class GoalService {
         goalRepository.save(goal);
     }
 
-    // TODO subGoal - isCompleted / periodGoal - completedAt / repeatedGoal - completedCount, failedCount 필요 없으면 제거
+    // TODO 날짜가 넘어갈 때의 목표들의 상태값 변화 처리하기
 }
