@@ -10,7 +10,7 @@ public class GoalRewardResponseDto {
     private final int growthPoint;
 
     public GoalRewardResponseDto(Goal goal) {
-        this.isReward = !goal.getProgressStatus().equals("failed");
+        this.isReward = goal.isLastPeriodCompleted();
         this.gold = goal.getGold(isReward);
         this.growthPoint = goal.getGrowthPoint(isReward);
     }

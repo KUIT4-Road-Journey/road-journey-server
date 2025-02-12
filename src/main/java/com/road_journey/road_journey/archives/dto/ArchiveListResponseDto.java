@@ -36,8 +36,8 @@ public class ArchiveListResponseDto {
             this.progress = goal.getProgress();
             this.createdAt = LocalDate.from(goal.getCreatedAt());
             this.finishedAt = goal.getFinishedAt() == null ? null : LocalDate.from(goal.getFinishedAt());
-            this.completeCount = goal.isRepeated() ? goal.getRepeatedGoal().getCompletedCount() : -1;
-            this.failedCount = goal.isRepeated() ? goal.getRepeatedGoal().getFailedCount() : -1;
+            this.completeCount = goal.isRepeatedGoal() ? goal.getRepeatedGoal().getCompletedCount() : -1;
+            this.failedCount = goal.isRepeatedGoal() ? goal.getRepeatedGoal().getFailedCount() : -1;
         }
     }
 }

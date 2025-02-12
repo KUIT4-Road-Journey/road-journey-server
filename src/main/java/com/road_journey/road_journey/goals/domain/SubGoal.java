@@ -32,9 +32,6 @@ public class SubGoal {
     private String description; // 내용
 
     @Column
-    private boolean isCompleted; // 달성여부
-
-    @Column
     private int difficulty; // 난이도
 
     @Setter
@@ -49,6 +46,14 @@ public class SubGoal {
 
     @Column
     private LocalDateTime updatedAt; // 수정일
+
+    public boolean isProgressing() { // 달성 완료 여부 확인
+        return getProgressStatus().equals("progressing");
+    }
+
+    public boolean isCompleted() { // 달성 완료 여부 확인
+        return getProgressStatus().equals("completed");
+    }
 
     public void deactivate() {
         status = "deactivated";

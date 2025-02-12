@@ -24,8 +24,6 @@ public class RepeatedGoalService {
                 .goal(goal)
                 .repetitionPeriod(dateInfo.getRepetitionPeriod())
                 .repetitionNumber(dateInfo.getRepetitionNumber())
-                .completedCount(0)
-                .failedCount(0)
                 .repetitionHistory("")
                 .status("activated")
                 .build();
@@ -39,8 +37,6 @@ public class RepeatedGoalService {
                 .goal(goal)
                 .repetitionPeriod(repeatedGoal.getRepetitionPeriod())
                 .repetitionNumber(repeatedGoal.getRepetitionNumber())
-                .completedCount(repeatedGoal.getCompletedCount())
-                .failedCount(repeatedGoal.getFailedCount())
                 .status(repeatedGoal.getStatus())
                 .build();
     }

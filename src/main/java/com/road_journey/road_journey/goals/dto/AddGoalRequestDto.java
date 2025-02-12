@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -24,30 +23,6 @@ public class AddGoalRequestDto {
 
     public boolean isRepeatedGoal() {
         return category.equals("repeated");
-    }
-
-    public boolean isShortTermGoal() {
-        return category.equals("short-term");
-    }
-
-    public boolean isLongTermGoal() {
-        return category.equals("long-term");
-    }
-
-    public LocalDateTime getStartAt() {
-        return getDateInfo().startAt.atStartOfDay();
-    }
-
-    public LocalDateTime getExpireAt() {
-        return getDateInfo().expireAt.atStartOfDay();
-    }
-
-    public int getRepetitionPeriod() {
-        return getDateInfo().repetitionPeriod;
-    }
-
-    public int getRepetitionNumber() {
-        return getDateInfo().repetitionNumber;
     }
 
     @Getter

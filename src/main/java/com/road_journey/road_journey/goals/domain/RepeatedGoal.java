@@ -32,12 +32,6 @@ public class RepeatedGoal {
     private int repetitionNumber; // 반복횟수
 
     @Column
-    private int completedCount; // 성공횟수
-
-    @Column
-    private int failedCount; // 실패횟수
-
-    @Column
     private String repetitionHistory; // 기록
 
     @Column
@@ -57,6 +51,26 @@ public class RepeatedGoal {
         return repetitionHistory.length();
     }
 
+    public int getCompletedCount() {
+        int count = 0;
+        for (int i = 0; i < getRepeatedCount(); i++) {
+            if (repetitionHistory.charAt(i) == '1') {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public int getFailedCount() {
+        int count = 0;
+        for (int i = 0; i < getRepeatedCount(); i++) {
+            if (repetitionHistory.charAt(i) == '0') {
+                count++;
+            }
+        }
+        return count;
+    }
+
     public void recordHistory(boolean isCompleted) {
         if (isCompleted) {
             repetitionHistory = repetitionHistory + "1";
@@ -67,6 +81,11 @@ public class RepeatedGoal {
 
     public boolean isRepetitionRemaining() {
         return repetitionNumber > repetitionHistory.length();
+    }
+
+
+    public boolean isLastPeriodCompleted() {
+        return repetitionHistory.endsWith("1");
     }
 
     @PrePersist

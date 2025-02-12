@@ -36,7 +36,7 @@ public class GoalController {
     @GetMapping("/list/{userId}")
     public ResponseStatus getGoalList(@PathVariable Long userId,
                                       @RequestParam String category) {
-        return new BaseResponse<>(goalService.getGoalListResponse(userId, category));
+        return goalService.getGoalListResponse(userId, category);
     }
 
     @GetMapping("/{goalId}")

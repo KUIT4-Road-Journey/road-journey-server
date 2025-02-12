@@ -47,9 +47,6 @@ public class PeriodGoal {
     private LocalDate periodExpireAt; // 주기 종료일
 
     @Column
-    private LocalDateTime completedAt; // 달성일
-
-    @Column
     private String status; // 상태
 
     @Column(updatable = false)

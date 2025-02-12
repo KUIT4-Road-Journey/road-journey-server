@@ -33,7 +33,6 @@ public class SubGoalService {
                 .goal(goal)
                 .subGoalIndex(subGoalRequest.getIndex())
                 .description(subGoalRequest.getDescription())
-                .isCompleted(false)
                 .difficulty(subGoalRequest.getDifficulty())
                 .progressStatus("progressing") // TODO 상태값 수정 필요
                 .status("activated")
@@ -53,7 +52,6 @@ public class SubGoalService {
                 .goal(goal)
                 .subGoalIndex(subGoal.getSubGoalIndex())
                 .description(subGoal.getDescription())
-                .isCompleted(subGoal.isCompleted())
                 .difficulty(subGoal.getDifficulty())
                 .progressStatus(subGoal.getProgressStatus())
                 .status(subGoal.getStatus())

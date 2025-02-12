@@ -5,6 +5,7 @@ import com.road_journey.road_journey.goals.domain.*;
 import com.road_journey.road_journey.goals.dto.*;
 import com.road_journey.road_journey.goals.repository.GoalRepository;
 import com.road_journey.road_journey.goals.response.*;
+import com.road_journey.road_journey.goals.util.GoalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,13 +36,14 @@ public class GoalService {
         if (addGoalRequest.isSharedGoal()) { // 친구 사용자들의 목표 생성
             for (AddGoalRequestDto.Friend friend : addGoalRequest.getFriendList()) {
                 createGoalOfUser(addGoalRequest, friend.getUserId(), userGoalId);
+                // TODO 공동목표 생성에 대한 수락 요청 메세지 전송
             }
         }
         return new BaseResponse<>("Goals added.");
     }
 
     private Long createGoalOfUser(AddGoalRequestDto addGoalRequest, Long userId, Long originalGoalId) {
-        Goal goal = createGoalByRequest(userId, addGoalRequest, originalGoalId);
+        Goal goal = GoalUtil.createGoalByRequest(userId, addGoalRequest, originalGoalId);
 
         goal.setPeriodGoal(periodGoalService.createPeriodGoal(goal, addGoalRequest.getDateInfo()));
         goal.setRepeatedGoal(repeatedGoalService.createRepeatedGoal(goal, addGoalRequest));
@@ -50,133 +52,82 @@ public class GoalService {
         return saveGoalWithOriginalGoalId(goal, originalGoalId); // 생성한 목표 아이디 반환
     }
 
-    private String getInitialSharedStatus(AddGoalRequestDto addGoalRequest, Long originalGoalId) {
-        if (originalGoalId == null) { // 사용자 본인이 생성한 목표
-            if (addGoalRequest.isSharedGoal()) { // 공유 목표인 경우
-                return "accepted"; // 수락
-            }
-            return "registered"; // 등록
-        }
-        // 공동 목표 요청을 받은 경우
-        return "pending"; // 대기중
-    }
-
     private Long saveGoalWithOriginalGoalId(Goal goal, Long OriginalGoalId) {
-        if (OriginalGoalId == null) { // 자기 자신이 원본
-            goal = goalRepository.save(goal);
-            OriginalGoalId = goal.getGoalId();
+        // 생성된 목표 아이디를 원본 목표 아이디에 적용하여 다시 저장
+
+        if (OriginalGoalId == null) { // 자기 자신이 원본인 경우
+            goal = goalRepository.save(goal); // 일단 원본 목표 아이디 없이 저장
+            OriginalGoalId = goal.getGoalId(); // 저장 후 생성된 자신의 아이디를 원본 목표 아이디로 사용
         }
-        // 원본이 따로 존재하는 경우
         goal.setOriginalGoalId(OriginalGoalId);
         goalRepository.save(goal);
 
         return goal.getGoalId();
     }
 
-    private Goal createGoalByRequest(Long userId, AddGoalRequestDto addGoalRequest, Long originalGoalId) {
-        return Goal.builder()
-                .userId(userId)
-                .originalGoalId(null)
-                .existingGoalId(null)
-                .title(addGoalRequest.getTitle())
-                .difficulty(addGoalRequest.getDifficulty())
-                .description(addGoalRequest.getDescription())
-                .category(addGoalRequest.getCategory())
-                .isSharedGoal(addGoalRequest.isSharedGoal())
-                .sharedGoalType(addGoalRequest.getSharedGoalType())
-                .isPublic(addGoalRequest.isPublicGoal())
-                .subGoalType(addGoalRequest.getSubGoalType())
-                .rewardCount(0)
-                .sharedStatus(this.getInitialSharedStatus(addGoalRequest, originalGoalId))
-                .progressStatus("progressing") // TODO 상태값 수정 필요
-                .finishedAt(null)
-                .status("activated") // TODO 문자열 하드코딩 처리
-                .build();
-    }
-
-    public GoalResponseDto getGoalResponseByGoalId(Long goalId) {
-        Optional<Goal> goal = getGoalById(goalId);
-        return goal.map(this::getGoalResponse).orElse(null); // 목표를 찾지 못하면 null 반환
+    public ResponseStatus getGoalResponseByGoalId(Long goalId) {
+        Optional<Goal> optionalGoal = getGoalById(goalId);
+        if (optionalGoal.isEmpty()) {
+            return new BaseErrorResponse(ResponseStatusType.NOT_FOUND);
+        }
+        return new BaseResponse<>(getGoalResponse(optionalGoal.get()));
     }
 
     public GoalResponseDto getGoalResponse(Goal goal) {
-        List<Long> friendIdList = getFriendIdList(goal.getOriginalGoalId());
-        return GoalResponseDto.from(goal, friendIdList);
+        return GoalResponseDto.from(goal, getFriendIdList(goal.getOriginalGoalId()));
     }
 
-    public List<Goal> getAllGoals() {
-        return goalRepository.findAll();
-    }
+    public ResponseStatus getGoalListResponse(Long userId, String category) {
+        // TODO 본인이거나, 친구가 아닌 userId이면 바로 리턴
 
-    public Optional<Goal> getGoalById(Long id) {
-        return goalRepository.findById(id);
-    }
-
-    public List<Goal> getSharedGoalList(Long originalGoalId) {
-        return goalRepository.findGoalsByOriginalGoalId(originalGoalId);
-    }
-
-    public List<Long> getFriendIdList(Long originalGoalId) {
-        List<Goal> goalList = goalRepository.findGoalsByOriginalGoalId(originalGoalId);
-        List<Long> friendIdList = new ArrayList<>();
-
-        for (Goal goal : goalList) {
-            friendIdList.add(goal.getUserId());
-        }
-        return friendIdList;
-    }
-
-    public GoalListResponseDto getGoalListResponse(Long userId, String category) {
         List<Goal> goalList = goalRepository.findGoalsByUserIdAndCategoryAndStatus(userId, category, "activated");
-        goalList.removeIf(goal -> !goal.isIncludedInGoalList()); // 리스트에 출력할 목표들만 남기기
-        // TODO 본인 목표인지, 친구 목표인지, 공개 여부 등 반영
-        return new GoalListResponseDto(goalList);
+        goalList.removeIf(goal -> !goal.isIncludedInGoalList()); // 목표 리스트에 출력할 목표들만 남기기
+        // TODO 친구의 목표 리스트를 조회하는 경우, 공개 설정하지 않은 목표도 리스트에서 제거
+
+        return new BaseResponse<>(new GoalListResponseDto(goalList));
     }
 
-    public ArchiveListResponseDto getArchiveListResponse(Long userId, String finishType, String category, String subGoalType, String sortType) {
+    public ResponseStatus getArchiveListResponse(Long userId, String finishType, String category, String subGoalType, String sortType) {
         List<Goal> goalList = goalRepository.findGoalsByUserIdAndCategoryAndSubGoalTypeAndStatus(userId, category, subGoalType, "activated");
-        goalList.removeIf(goal -> !goal.isIncludedInArchiveList(finishType)); // 리스트에 출력할 목표들만 남기기
+        goalList.removeIf(goal -> !goal.isIncludedInArchiveList(finishType)); // 기록 리스트에 출력할 목표들만 남기기
 
-        if (sortType.equals("lastCreated")) {
+        if (sortType.equals("lastCreated")) { // 정렬 기준에 따라 정렬
             goalList.sort(Comparator.comparing(Goal::getCreatedAt).reversed());
         } else {
             goalList.sort(Comparator.comparing(Goal::getFinishedAt).reversed());
         }
-        return new ArchiveListResponseDto(goalList);
+        return new BaseResponse<>(new ArchiveListResponseDto(goalList));
     }
 
 
     public ResponseStatus editGoals(Long goalId, AddGoalRequestDto addGoalRequest) {
-        Optional<Goal> optionalGoal = goalRepository.findById(goalId);
-        if (optionalGoal.isEmpty()) {
-            return new BaseErrorResponse(ResponseStatusType.NOT_FOUND, "No goal with goalId");
+        Goal goal = getAuthorizedGoal(goalId);
+        if (goal == null) {
+            return new BaseErrorResponse(ResponseStatusType.NOT_FOUND);
         }
-        Goal goal = optionalGoal.get();
-
         if (!goal.isMadeByUser()) { // 사용자 본인이 생성한 목표인지 확인
-            return new BaseErrorResponse(ResponseStatusType.BAD_REQUEST, "Not the owner of the goal");
+            return new BaseErrorResponse(ResponseStatusType.BAD_REQUEST, "Not the owner of the goal.");
         }
         if (goal.getExistingGoalId() != null) { // 원본 목표가 아닌 경우 (수정승인 대기중)
-            return new BaseErrorResponse(ResponseStatusType.BAD_REQUEST, "Edit pending goal");
+            return new BaseErrorResponse(ResponseStatusType.BAD_REQUEST, "Edit pending goal.");
         }
 
         Long userGoalId = editGoalOfUser(goal, addGoalRequest, null);
         for (Goal sharedGoal : getSharedGoalList((goal.getOriginalGoalId()))) {
             if (goal != sharedGoal) {
                 editGoalOfUser(sharedGoal, addGoalRequest, userGoalId);
+                // TODO 공동목표 수정에 대한 수락 요청 메세지 전송
             }
         }
         return new BaseResponse<>("Goals edited.");
     }
 
     private Long editGoalOfUser(Goal goal, AddGoalRequestDto addGoalRequest, Long originalGoalId) {
-        List<Goal> editPendingGoalList = getEditPendingGoal(goal.getGoalId());
-        for (Goal editPendingGoal : editPendingGoalList) {
-            editPendingGoal.deactivate(); // 기존에 수정 승인 대기 중인 목표를 찾아 비활성화
-            goalRepository.save(editPendingGoal);
+        for (Goal editPendingGoal : getEditPendingGoal(goal.getGoalId())) {
+            deactivateAndSave(editPendingGoal); // 기존에 수정 승인 대기 중인 목표를 찾아 모두 비활성화
         }
 
-        Goal editedGoal = editGoalByRequest(goal, addGoalRequest, originalGoalId);
+        Goal editedGoal = GoalUtil.editGoalByRequest(goal, addGoalRequest, originalGoalId); // 수정본 객체 생성
 
         PeriodGoal periodGoal;
         RepeatedGoal repeatedGoal;
@@ -197,50 +148,11 @@ public class GoalService {
         return saveGoalWithOriginalGoalId(editedGoal, originalGoalId); // 생성한 목표 아이디 반환
     }
 
-    private Goal editGoalByRequest(Goal goal, AddGoalRequestDto addGoalRequest, Long originalGoalId) {
-        Goal editedGoal = Goal.builder()
-                .userId(goal.getUserId())
-                .originalGoalId(null)
-                .existingGoalId(goal.getGoalId())
-                .title(addGoalRequest.getTitle())
-                .difficulty(addGoalRequest.getDifficulty())
-                .description(addGoalRequest.getDescription())
-                .category(addGoalRequest.getCategory())
-                .isSharedGoal(addGoalRequest.isSharedGoal())
-                .sharedGoalType(addGoalRequest.getSharedGoalType())
-                .isPublic(addGoalRequest.isPublicGoal())
-                .subGoalType(addGoalRequest.getSubGoalType())
-                .rewardCount(goal.getRewardCount())
-                .sharedStatus(this.getInitialSharedStatus(addGoalRequest, originalGoalId))
-                .progressStatus("progressing") // TODO 상태값 수정 필요
-                .finishedAt(null)
-                .status("activated") // TODO 문자열 하드코딩 처리
-                .build();
-
-        if (goal.isStarted()) {
-            editedGoal.setCategory(goal.getCategory());
-            editedGoal.setSharedGoal(goal.isSharedGoal());
-            editedGoal.setSharedGoalType(goal.getSharedGoalType());
-            editedGoal.setSubGoalType(goal.getSubGoalType());
-            editedGoal.setProgressStatus(goal.getProgressStatus());
-        }
-        return editedGoal;
-    }
-
-    private List<Goal> getEditPendingGoal(Long existingGoalId) {
-        return goalRepository.findGoalsByExistingGoalId(existingGoalId);
-    }
-
-
-    public ResponseStatus processPendingGoal(Long goalId, boolean isCreation, boolean isAccept) {
-        Optional <Goal> optionalGoal = getGoalById(goalId);
-        if (optionalGoal.isEmpty()) {
+    public ResponseStatus processPendingGoal(Long goalId, boolean isCreation, boolean isAccept) { // 승인 or 거절 수행
+        Goal goal = getAuthorizedGoal(goalId);
+        if (goal == null) {
             return new BaseErrorResponse(ResponseStatusType.NOT_FOUND);
         }
-        Goal goal = optionalGoal.get();
-
-        // TODO 본인의 목표가 맞는지 확인
-
         if (!goal.isPending()) { // 승인 대기 중인 목표가 아닌 경우
             return new BaseErrorResponse(ResponseStatusType.BAD_REQUEST);
         }
@@ -252,44 +164,23 @@ public class GoalService {
     }
 
     private BaseResponse<Object> acceptGoal(Goal goal, boolean isCreation) {
-        goal.accept(); // 공동 상태를 '수락'으로 변경
-        goalRepository.save(goal);
+        acceptAndSave(goal); // 공동 상태를 '수락'으로 변경
 
         // 공동 목표들을 확인하여 모두 수락되어 있으면 공동 상태를 '등록'으로 변경
         List<Goal> sharedGoalList = getSharedGoalList(goal.getOriginalGoalId());
-        if (isAllAccepted(sharedGoalList)) {
+        if (GoalUtil.isAllAccepted(sharedGoalList)) {
             registerSharedGoals(sharedGoalList);
         }
-
-        if (isCreation) {
-            return new BaseResponse<>("Goal " + goal.getGoalId() + " accepted");
-        }
-        return new BaseResponse<>("Goal edition " + goal.getGoalId() + " accepted");
+        return new BaseResponse<>("Goal " + (isCreation ? "" : "edition ") + goal.getGoalId() + " accepted.");
     }
 
     private ResponseStatus rejectGoal(Goal goal, boolean isCreation) {
-        goal.reject();
-        goalRepository.save(goal);
+        rejectAndSave(goal); // 공동 상태를 '거절'으로 변경
 
-        // 공동 목표들을 확인하여 모두 비활성화
-        List<Goal> sharedGoalList = getSharedGoalList(goal.getOriginalGoalId());
-        for (Goal sharedGoal : sharedGoalList) {
-            sharedGoal.deactivate();
-            goalRepository.save(sharedGoal);
+        for (Goal sharedGoal : getSharedGoalList(goal.getOriginalGoalId())) {
+            deactivateAndSave(sharedGoal); // 공동 목표들을 찾아 모두 비활성화
         }
-        if (isCreation) {
-            return new BaseResponse<>("Goal " + goal.getGoalId() + " rejected");
-        }
-        return new BaseResponse<>("Goal edition " + goal.getGoalId() + " rejected");
-    }
-
-    private boolean isAllAccepted(List<Goal> sharedGoalList) {
-        for (Goal sharedGoal : sharedGoalList) {
-            if (!sharedGoal.getSharedStatus().equals("accepted")){
-                return false;
-            }
-        }
-        return true; // 모든 공동 목표들이 수락되어 있는지 확인
+        return new BaseResponse<>("Goal " + (isCreation ? "" : "edition ") + goal.getGoalId() + " rejected.");
     }
 
     private void registerSharedGoals(List<Goal> sharedGoalList) {
@@ -297,169 +188,212 @@ public class GoalService {
             if (sharedGoal.isPendingForEdit()) { // 수정 대기 중인 경우
                 deactivateExistingGoal(sharedGoal); // 수정 전 원본 목표를 비활성화
             }
-            sharedGoal.register();
-            goalRepository.save(sharedGoal);
+            registerAndSave(sharedGoal);
         }
     }
 
-    private void deactivateExistingGoal(Goal sharedGoal) {
-        Optional<Goal> optionalExistingGoal = getGoalById(sharedGoal.getExistingGoalId());
-        if (optionalExistingGoal.isPresent()){
-            Goal existingGoal = optionalExistingGoal.get();
-            existingGoal.deactivate(); // 수정 전 원본 목표를 찾아 비활성화
-            goalRepository.save(existingGoal);
-        }
-        sharedGoal.setExistingGoalId(null);
+    private void deactivateExistingGoal(Goal goal) {
+        Optional<Goal> optionalExistingGoal = getGoalById(goal.getExistingGoalId());
+        optionalExistingGoal.ifPresent(this::deactivateAndSave); // 수정 전 원본 목표를 찾아 비활성화
+        goal.setExistingGoalId(null);
+        goalRepository.save(goal);
     }
-
 
     public ResponseStatus completeGoal(Long goalId) {
-        Optional <Goal> optionalGoal = getGoalById(goalId);
-        if (optionalGoal.isEmpty()) {
+        Goal goal = getAuthorizedGoal(goalId);
+        if (goal == null) {
             return new BaseErrorResponse(ResponseStatusType.NOT_FOUND);
         }
-        Goal goal = optionalGoal.get();
-
-        // TODO 본인의 목표가 맞는지 확인
-
         if (!goal.isCompletable()) {
             return new BaseErrorResponse(ResponseStatusType.BAD_REQUEST);
         }
 
-        if (!goal.isSharedGoal()) { // 혼자 하는 목표
-            goal.complete(); // 바로 달성 완료 처리
-            goalRepository.save(goal);
+        if (!goal.isSharedGoal()) { // 혼자 하는 목표인 경우
+            completeAndSave(goal); // 바로 달성 완료 처리
         }
         else { // 공동 목표인 경우
-            if (goal.getSharedGoalType().equals("competitive")) { // 경쟁 목표인 경우
+            if (goal.isCompetitive()) { // 경쟁 목표인 경우
                 for (Goal sharedGoal : getSharedGoalList(goal.getOriginalGoalId())) {
                     if (sharedGoal != goal) {
-                        sharedGoal.fail(); // 나머지 공동 목표들은 모두 실패 처리
-                        goalRepository.save(sharedGoal);
+                        failAndSave(sharedGoal); // 나머지 공동 목표들은 모두 실패 처리
                     }
                 }
-                goal.complete(); // 바로 달성 완료 처리
-                goalRepository.save(goal);
+                completeAndSave(goal); // 바로 달성 완료 처리
             }
             else { // 협동 목표인 경우
-                goal.setProgressStatus("complete-pending"); // 달성 대기 중으로 변경
-                goalRepository.save(goal);
-
+                completePendAndSave(goal); // 달성 대기 중으로 변경
                 List<Goal> sharedGoal = getSharedGoalList(goal.getOriginalGoalId());
-                if (isAllCompletePending(sharedGoal)) { // 모두 달성 대기 중인 경우
-                    completeSharedGoals(sharedGoal); // 모두 달성 완료 상태로 변경
+                if (GoalUtil.isAllCompletePending(sharedGoal)) { // 공동목표들이 모두 달성 대기 중인 경우
+                    completeSharedGoals(sharedGoal); // 전부 달성 완료 상태로 변경
                 }
             }
         }
 
-        if (goal.getProgressStatus().equals("completed")) {
-            return getRewardOfGoal(goal);
+        if (goal.isCompleted()) { // 목표가 최종적으로 달성 완료 상태인 경우
+            return getRewardOfGoal(goal, false); // 즉시 보상 수령
         }
-
         return new BaseResponse<>("Goal " + goalId + " completed");
     }
 
-    public boolean isAllCompletePending(List<Goal> sharedGoalList) {
-        // 모든 공동 목표가 달성 완료 대기 중인지 확인
-        for (Goal sharedGoal : sharedGoalList) {
-            if (!sharedGoal.getProgressStatus().equals("complete-pending")) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public void completeSharedGoals(List<Goal> sharedGoalList) {
-        // 모든 공동 목표를 달성 완료 처리
         for (Goal sharedGoal : sharedGoalList) {
-            sharedGoal.complete();
-            goalRepository.save(sharedGoal);
+            completeAndSave(sharedGoal); // 모든 공동 목표들을 달성 완료 처리
         }
     }
 
     public ResponseStatus failGoal(Long goalId) {
-        Optional <Goal> optionalGoal = getGoalById(goalId);
-        if (optionalGoal.isEmpty()) {
+        Goal goal = getAuthorizedGoal(goalId);
+        if (goal == null) {
             return new BaseErrorResponse(ResponseStatusType.NOT_FOUND);
         }
-        Goal goal = optionalGoal.get();
-
-        // TODO 본인의 목표가 맞는지 확인
-
         if (!goal.isFailable()) {
             return new BaseErrorResponse(ResponseStatusType.BAD_REQUEST);
         }
 
-        if (!goal.isSharedGoal()) { // 혼자 하는 목표
-            goal.fail(); // 바로 달성 실패 처리
-            goalRepository.save(goal);
+        if (!goal.isSharedGoal()) { // 혼자 하는 목표인 경우
+            failAndSave(goal); // 바로 달성 실패 처리
         }
         else { // 공동 목표인 경우
-            if (goal.getSharedGoalType().equals("competitive")) { // 경쟁 목표인 경우
-                goal.fail(); // 바로 달성 실패 처리
-                goalRepository.save(goal);
+            if (goal.isCompetitive()) { // 경쟁 목표인 경우
+                failAndSave(goal); // 바로 달성 실패 처리
             }
             else { // 협동 목표인 경우
-                List<Goal> sharedGoal = getSharedGoalList(goal.getOriginalGoalId());
-                failSharedGoals(sharedGoal);
+                failSharedGoals(getSharedGoalList(goal.getOriginalGoalId())); // 모든 공동목표들을 달성 실패 처리
             }
         }
-        return getRewardOfGoal(goal);
+        return getRewardOfGoal(goal, false); // 달성 실패 페널티 획득
     }
 
     public void failSharedGoals(List<Goal> sharedGoalList) {
-        // 모든 공동 목표를 달성 실패 처리
         for (Goal sharedGoal : sharedGoalList) {
-            sharedGoal.fail();
-            goalRepository.save(sharedGoal);
+            failAndSave(sharedGoal); // 모든 공동 목표를 달성 실패 처리
         }
     }
 
     public ResponseStatus completeSubGoal(Long goalId, Long subGoalId) {
-        Optional <Goal> optionalGoal = getGoalById(goalId);
-        if (optionalGoal.isEmpty()) {
+        Goal goal = getAuthorizedGoal(goalId);
+        if (goal == null) {
             return new BaseErrorResponse(ResponseStatusType.NOT_FOUND);
         }
-        Goal goal = optionalGoal.get();
         SubGoal subGoal = goal.getSubGoalById(subGoalId);
         if (subGoal == null) {
             return new BaseErrorResponse(ResponseStatusType.NOT_FOUND);
         }
 
-        // TODO 본인의 목표가 맞는지 확인
-
         if (!goal.isSubGoalCompletable(subGoal.getSubGoalIndex())) { // 달성 처리 가능한지 확인
             return new BaseErrorResponse(ResponseStatusType.BAD_REQUEST);
         }
-        subGoal.setProgressStatus("completed"); // 하위 목표를 달성 처리
-        goalRepository.save(goal);
+        completeSubGoalAndSave(goal, subGoal); // 하위목표를 달성 완료 처리
+        return getRewardOfGoal(goal, true); // 하위 목표에 대한 보상 수령
+    }
+
+
+
+    public ResponseStatus getRewardByGoalId(Long goalId) {
+        Goal goal = getAuthorizedGoal(goalId);
+        if (goal == null) {
+            return new BaseErrorResponse(ResponseStatusType.NOT_FOUND);
+        }
+
+        return getRewardOfGoal(goal, false);
+    }
+
+    public ResponseStatus getRewardOfGoal(Goal goal, boolean isForSubGoal) {
+        if (!isForSubGoal) { // 전체 목표에 해당하는 보상을 수령하는 경우
+            if (!goal.canGetReward()) { // 목표에 대한 보상을 수령 가능한지 확인
+                return new BaseErrorResponse(ResponseStatusType.BAD_REQUEST);
+            }
+            finishPeriodAndSave(goal); // 목표의 현재 주기를 종료
+        }
+
         // TODO 사용자의 골드 /성장도 반영 필요
         return new BaseResponse<>(new GoalRewardResponseDto(goal));
     }
 
-    public ResponseStatus getRewardByGoalId(Long goalId) {
+
+
+    private Optional<Goal> getGoalById(Long id) {
+        return goalRepository.findById(id);
+    }
+
+    private List<Goal> getSharedGoalList(Long originalGoalId) {
+        return goalRepository.findGoalsByOriginalGoalId(originalGoalId);
+    }
+
+    private List<Long> getFriendIdList(Long originalGoalId) {
+        // 공동목표의 모든 참가자의 사용자 아이디 리스트 반환
+        List<Goal> goalList = goalRepository.findGoalsByOriginalGoalId(originalGoalId);
+        List<Long> friendIdList = new ArrayList<>();
+
+        for (Goal goal : goalList) {
+            friendIdList.add(goal.getUserId());
+        }
+        return friendIdList;
+    }
+
+    private List<Goal> getEditPendingGoal(Long existingGoalId) {
+        return goalRepository.findGoalsByExistingGoalId(existingGoalId);
+    }
+
+    private Goal getAuthorizedGoal(Long goalId) {
         Optional <Goal> optionalGoal = getGoalById(goalId);
         if (optionalGoal.isEmpty()) {
-            return new BaseErrorResponse(ResponseStatusType.NOT_FOUND);
+            return null;
         }
         Goal goal = optionalGoal.get();
 
         // TODO 본인의 목표가 맞는지 확인
-
-        return getRewardOfGoal(goal);
+        return goal;
     }
 
-    public ResponseStatus getRewardOfGoal(Goal goal) {
-        if (!goal.canGetReward()) {
-            return new BaseErrorResponse(ResponseStatusType.BAD_REQUEST);
-        }
-        goal.setProgressStatus("progressing");
-        goal.setRewardCount(goal.getRewardCount() + 1);
-        goal.setFinishedAt(LocalDateTime.now());
-        goal.updatePeriodDate();
+    private void deactivateAndSave(Goal goal) {
+        goal.deactivate();
         goalRepository.save(goal);
-        // TODO 사용자의 골드 /성장도 반영 필요
-        return new BaseResponse<>(new GoalRewardResponseDto(goal));
+    }
+
+    private void acceptAndSave(Goal goal) {
+        goal.accept();
+        goalRepository.save(goal);
+    }
+
+    private void rejectAndSave(Goal goal) {
+        goal.reject();
+        goalRepository.save(goal);
+    }
+
+    private void registerAndSave(Goal goal) {
+        goal.register();
+        goalRepository.save(goal);
+    }
+
+    private void completeAndSave(Goal goal) {
+        goal.complete();
+        goalRepository.save(goal);
+    }
+
+    private void failAndSave(Goal goal) {
+        goal.fail();
+        goalRepository.save(goal);
+    }
+
+    private void completePendAndSave(Goal goal) {
+        goal.setProgressStatus("complete-pending");
+        goalRepository.save(goal);
+    }
+
+    private void completeSubGoalAndSave(Goal goal, SubGoal subGoal) {
+        subGoal.setProgressStatus("completed"); // 하위 목표를 달성 처리
+        goalRepository.save(goal);
+    }
+
+    private void finishPeriodAndSave(Goal goal) {
+        goal.setFinishedAt(LocalDateTime.now());
+        goal.setRewardCount(goal.getRewardCount() + 1);
+        if (goal.isRepetitionRemaining()) { // 반복 주기가 남은 경우
+            goal.setProgressStatus("progressing");
+            goal.updatePeriodDate();
+        }
+        goalRepository.save(goal);
     }
 
     // TODO subGoal - isCompleted / periodGoal - completedAt / repeatedGoal - completedCount, failedCount 필요 없으면 제거

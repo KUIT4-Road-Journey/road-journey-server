@@ -44,7 +44,6 @@ public class PeriodGoalService {
                 .expireAt(expireAt)
                 .periodStartAt(periodStartAt)
                 .periodExpireAt(periodExpireAt)
-                .completedAt(null)
                 .status("activated")
                 .build();
     }
@@ -56,7 +55,6 @@ public class PeriodGoalService {
                 .expireAt(periodGoal.getExpireAt())
                 .periodStartAt(periodGoal.getPeriodStartAt())
                 .periodExpireAt(periodGoal.getPeriodExpireAt())
-                .completedAt(periodGoal.getCompletedAt())
                 .status(periodGoal.getStatus())
                 .build();
     }
