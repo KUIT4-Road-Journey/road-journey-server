@@ -7,6 +7,7 @@ import com.road_journey.road_journey.goals.repository.GoalRepository;
 import com.road_journey.road_journey.goals.response.*;
 import com.road_journey.road_journey.goals.util.GoalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -308,6 +309,29 @@ public class GoalService {
 
         // TODO 사용자의 골드 /성장도 반영 필요
         return new BaseResponse<>(new GoalRewardResponseDto(goal));
+    }
+
+    @Scheduled
+    public void processDailyRoutine() {
+        // TODO 날짜 변경될 때마다 처리해야 하는 사항 수행
+
+
+    }
+
+    public int getCompletedGoalCountOfUser(Long userId) {
+        int count = 0;
+        List<Goal> goalList = goalRepository.findGoalsByUserIdAndStatus(userId, "activated");
+        for (Goal goal : goalList) { // 사용자의 모든 목표에 대해서
+            if (goal.isRepeatedGoal()) { // 반복 목표인 경우
+                count += goal.getRepeatedGoal().getCompletedCount();
+            }
+            else { // 반복 목표가 아닌 경우
+                if (goal.isCompleted()) {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
 
