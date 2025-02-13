@@ -1,17 +1,32 @@
 package com.road_journey.road_journey.main.service;
 
+import com.road_journey.road_journey.friends.repository.FriendRepository;
+import com.road_journey.road_journey.goals.response.BaseErrorResponse;
 import com.road_journey.road_journey.goals.response.BaseResponse;
 import com.road_journey.road_journey.goals.response.ResponseStatus;
+import com.road_journey.road_journey.goals.response.ResponseStatusType;
+import com.road_journey.road_journey.goals.util.UserUtil;
+import com.road_journey.road_journey.items.entity.UserItem;
+import com.road_journey.road_journey.items.repository.UserItemRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class MainService {
 
-    public ResponseStatus getMain(Long userId) {
-        // TODO 본인이거나, 친구가 아닌 userId이면 바로 리턴
+    @Autowired
+    private FriendRepository friendRepository;
+    @Autowired
+    private UserItemRepository userItemRepository;
 
-        // TODO 사용자가 장착 중인 아이템들의 리스트 반환
+    public ResponseStatus getMain(Long myUserId, Long userId) {
+        if (!UserUtil.isMeOrMyFriend(myUserId, userId, friendRepository.findFriendsByUserId(myUserId))) {
+            return new BaseErrorResponse(ResponseStatusType.BAD_REQUEST); // 본인이거나, 친구가 아닌 userId이면 바로 리턴
+        }
 
-        return new BaseResponse<>("itemList");
+        List<UserItem> selectedUserItemList = userItemRepository.findByUserIdAndIsSelectedTrue(userId);
+        return new BaseResponse<>(selectedUserItemList);
     }
 }

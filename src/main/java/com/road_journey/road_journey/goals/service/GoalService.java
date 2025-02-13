@@ -106,7 +106,11 @@ public class GoalService {
         return new BaseResponse<>(new GoalListResponseDto(goalList));
     }
 
-    public ResponseStatus getArchiveListResponse(Long userId, String finishType, String category, String subGoalType, String sortType) {
+    public ResponseStatus getArchiveListResponse(Long myUserId, Long userId, String finishType, String category, String subGoalType, String sortType) {
+        if (!UserUtil.isMeOrMyFriend(myUserId, userId, friendRepository.findFriendsByUserId(myUserId))) {
+            return new BaseErrorResponse(ResponseStatusType.BAD_REQUEST); // 본인이거나, 친구가 아닌 userId이면 바로 리턴
+        }
+
         List<Goal> goalList = goalRepository.findGoalsByUserIdAndCategoryAndSubGoalTypeAndStatus(userId, category, subGoalType, "activated");
         goalList.removeIf(goal -> !goal.isIncludedInArchiveList(finishType)); // 기록 리스트에 출력할 목표들만 남기기
 
