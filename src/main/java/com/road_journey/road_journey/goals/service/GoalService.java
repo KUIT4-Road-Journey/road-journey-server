@@ -1,13 +1,22 @@
 package com.road_journey.road_journey.goals.service;
 
 import com.road_journey.road_journey.archives.dto.ArchiveListResponseDto;
+import com.road_journey.road_journey.auth.dao.UserRepository;
+import com.road_journey.road_journey.auth.domain.User;
+import com.road_journey.road_journey.friends.repository.FriendRepository;
 import com.road_journey.road_journey.goals.domain.*;
 import com.road_journey.road_journey.goals.dto.*;
 import com.road_journey.road_journey.goals.repository.GoalRepository;
 import com.road_journey.road_journey.goals.response.*;
 import com.road_journey.road_journey.goals.util.GoalUtil;
+import com.road_journey.road_journey.goals.util.UserUtil;
+import com.road_journey.road_journey.items.entity.UserItem;
+import com.road_journey.road_journey.items.repository.UserItemRepository;
+import com.road_journey.road_journey.notifications.entity.Notification;
+import com.road_journey.road_journey.notifications.repository.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,6 +30,14 @@ public class GoalService {
 
     @Autowired
     private GoalRepository goalRepository;
+    @Autowired
+    private FriendRepository friendRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private NotificationRepository notificationRepository;
+    @Autowired
+    private UserItemRepository userItemRepository;
 
     @Autowired
     private SubGoalService subGoalService;
@@ -29,15 +46,14 @@ public class GoalService {
     @Autowired
     private PeriodGoalService periodGoalService;
 
-    public ResponseStatus createGoals(AddGoalRequestDto addGoalRequest) {
-        Long userId = 12345L; // TODO 실제 사용자 아이디로 변경
 
-        Long userGoalId = createGoalOfUser(addGoalRequest, userId, null); // 사용자 본인의 목표 생성
+    public ResponseStatus createGoals(Long myUserId, AddGoalRequestDto addGoalRequest) {
+        Long userGoalId = createGoalOfUser(addGoalRequest, myUserId, null); // 사용자 본인의 목표 생성
 
         if (addGoalRequest.isSharedGoal()) { // 친구 사용자들의 목표 생성
             for (AddGoalRequestDto.Friend friend : addGoalRequest.getFriendList()) {
-                createGoalOfUser(addGoalRequest, friend.getUserId(), userGoalId);
-                // TODO 공동목표 생성에 대한 수락 요청 메세지 전송
+                Long friendGoalId = createGoalOfUser(addGoalRequest, friend.getUserId(), userGoalId);
+                sendAcceptanceRequestMessage(myUserId, friend.getUserId(), friendGoalId, true); // 공동목표 생성에 대한 수락 요청 메세지 전송
             }
         }
         return new BaseResponse<>("Goals added.");
@@ -55,7 +71,6 @@ public class GoalService {
 
     private Long saveGoalWithOriginalGoalId(Goal goal, Long OriginalGoalId) {
         // 생성된 목표 아이디를 원본 목표 아이디에 적용하여 다시 저장
-
         if (OriginalGoalId == null) { // 자기 자신이 원본인 경우
             goal = goalRepository.save(goal); // 일단 원본 목표 아이디 없이 저장
             OriginalGoalId = goal.getGoalId(); // 저장 후 생성된 자신의 아이디를 원본 목표 아이디로 사용
@@ -66,25 +81,28 @@ public class GoalService {
         return goal.getGoalId();
     }
 
-    public ResponseStatus getGoalResponseByGoalId(Long goalId) {
-        Optional<Goal> optionalGoal = getGoalById(goalId);
-        if (optionalGoal.isEmpty()) {
-            return new BaseErrorResponse(ResponseStatusType.NOT_FOUND);
+    public ResponseStatus getGoalResponseByGoalId(Long myUserId, Long goalId) {
+        Goal goal = getReadableGoal(myUserId, goalId);
+        if (goal == null) {
+            return new BaseErrorResponse(ResponseStatusType.BAD_REQUEST);
         }
-        return new BaseResponse<>(getGoalResponse(optionalGoal.get()));
+        return new BaseResponse<>(getGoalResponse(goal));
     }
 
     public GoalResponseDto getGoalResponse(Goal goal) {
         return GoalResponseDto.from(goal, getFriendIdList(goal.getOriginalGoalId()));
     }
 
-    public ResponseStatus getGoalListResponse(Long userId, String category) {
-        // TODO 본인이거나, 친구가 아닌 userId이면 바로 리턴
+    public ResponseStatus getGoalListResponse(Long myUserId, Long userId, String category) {
+        if (!UserUtil.isMeOrMyFriend(myUserId, userId, friendRepository.findFriendsByUserId(myUserId))) {
+            return new BaseErrorResponse(ResponseStatusType.BAD_REQUEST); // 본인이거나, 친구가 아닌 userId이면 바로 리턴
+        }
 
         List<Goal> goalList = goalRepository.findGoalsByUserIdAndCategoryAndStatus(userId, category, "activated");
         goalList.removeIf(goal -> !goal.isIncludedInGoalList()); // 목표 리스트에 출력할 목표들만 남기기
-        // TODO 친구의 목표 리스트를 조회하는 경우, 공개 설정하지 않은 목표도 리스트에서 제거
-
+        if (!UserUtil.isMe(myUserId, userId)) { // 본인의 목표 리스트가 아닌 경우
+            goalList.removeIf(goal -> !goal.isPublic()); // 비공개 목표들은 리스트에서 제거
+        }
         return new BaseResponse<>(new GoalListResponseDto(goalList));
     }
 
@@ -101,8 +119,8 @@ public class GoalService {
     }
 
 
-    public ResponseStatus editGoals(Long goalId, AddGoalRequestDto addGoalRequest) {
-        Goal goal = getAuthorizedGoal(goalId);
+    public ResponseStatus editGoals(Long myUserId, Long goalId, AddGoalRequestDto addGoalRequest) {
+        Goal goal = getWritableGoal(myUserId, goalId);
         if (goal == null) {
             return new BaseErrorResponse(ResponseStatusType.NOT_FOUND);
         }
@@ -116,8 +134,8 @@ public class GoalService {
         Long userGoalId = editGoalOfUser(goal, addGoalRequest, null);
         for (Goal sharedGoal : getSharedGoalList((goal.getOriginalGoalId()))) {
             if (goal != sharedGoal) {
-                editGoalOfUser(sharedGoal, addGoalRequest, userGoalId);
-                // TODO 공동목표 수정에 대한 수락 요청 메세지 전송
+                Long friendGoalId = editGoalOfUser(sharedGoal, addGoalRequest, userGoalId);
+                sendAcceptanceRequestMessage(myUserId, sharedGoal.getUserId(), friendGoalId, false); // 공동목표 수정에 대한 수락 요청 메세지 전송
             }
         }
         return new BaseResponse<>("Goals edited.");
@@ -149,8 +167,8 @@ public class GoalService {
         return saveGoalWithOriginalGoalId(editedGoal, originalGoalId); // 생성한 목표 아이디 반환
     }
 
-    public ResponseStatus processPendingGoal(Long goalId, boolean isCreation, boolean isAccept) { // 승인 or 거절 수행
-        Goal goal = getAuthorizedGoal(goalId);
+    public ResponseStatus processPendingGoal(Long myUserId, Long goalId, boolean isCreation, boolean isAccept) { // 승인 or 거절 수행
+        Goal goal = getWritableGoal(myUserId, goalId);
         if (goal == null) {
             return new BaseErrorResponse(ResponseStatusType.NOT_FOUND);
         }
@@ -200,8 +218,8 @@ public class GoalService {
         goalRepository.save(goal);
     }
 
-    public ResponseStatus completeGoal(Long goalId) {
-        Goal goal = getAuthorizedGoal(goalId);
+    public ResponseStatus completeGoal(Long myUserId, Long goalId) {
+        Goal goal = getWritableGoal(myUserId, goalId);
         if (goal == null) {
             return new BaseErrorResponse(ResponseStatusType.NOT_FOUND);
         }
@@ -242,8 +260,8 @@ public class GoalService {
         }
     }
 
-    public ResponseStatus failGoal(Long goalId) {
-        Goal goal = getAuthorizedGoal(goalId);
+    public ResponseStatus failGoal(Long myUserId, Long goalId) {
+        Goal goal = getWritableGoal(myUserId, goalId);
         if (goal == null) {
             return new BaseErrorResponse(ResponseStatusType.NOT_FOUND);
         }
@@ -271,8 +289,8 @@ public class GoalService {
         }
     }
 
-    public ResponseStatus completeSubGoal(Long goalId, Long subGoalId) {
-        Goal goal = getAuthorizedGoal(goalId);
+    public ResponseStatus completeSubGoal(Long myUserId, Long goalId, Long subGoalId) {
+        Goal goal = getWritableGoal(myUserId, goalId);
         if (goal == null) {
             return new BaseErrorResponse(ResponseStatusType.NOT_FOUND);
         }
@@ -290,12 +308,11 @@ public class GoalService {
 
 
 
-    public ResponseStatus getRewardByGoalId(Long goalId) {
-        Goal goal = getAuthorizedGoal(goalId);
+    public ResponseStatus getRewardByGoalId(Long myUserId, Long goalId) {
+        Goal goal = getWritableGoal(myUserId, goalId);
         if (goal == null) {
             return new BaseErrorResponse(ResponseStatusType.NOT_FOUND);
         }
-
         return getRewardOfGoal(goal, false);
     }
 
@@ -306,9 +323,26 @@ public class GoalService {
             }
             finishPeriodAndSave(goal); // 목표의 현재 주기를 종료
         }
+        return new BaseResponse<>(applyGoalReward(goal));
+    }
 
-        // TODO 사용자의 골드 /성장도 반영 필요
-        return new BaseResponse<>(new GoalRewardResponseDto(goal));
+    private GoalRewardResponseDto applyGoalReward(Goal goal) {
+        GoalRewardResponseDto goalReward = new GoalRewardResponseDto(goal);
+        Long userId = goal.getUserId();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저가 없습니다."));
+        user.setGold(goalReward.getGold());
+        userRepository.save(user);
+
+        List<UserItem> characterList = userItemRepository.findByUserIdAndCategory(userId, "character");
+        for (UserItem character : characterList) {
+            if (character.isSelected()) {
+                character.addGrowthPoint(goalReward.getGrowthPoint());
+                userItemRepository.save(character);
+            }
+        }
+        return goalReward;
     }
 
     @Scheduled
@@ -359,14 +393,35 @@ public class GoalService {
         return goalRepository.findGoalsByExistingGoalId(existingGoalId);
     }
 
-    private Goal getAuthorizedGoal(Long goalId) {
+    private Goal getFoundedGoal(Long goalId) {
         Optional <Goal> optionalGoal = getGoalById(goalId);
-        if (optionalGoal.isEmpty()) {
+        return optionalGoal.orElse(null);
+    }
+
+    private Goal getWritableGoal(Long myUserId, Long goalId) {
+        Goal goal = getFoundedGoal(goalId);
+        if (goal == null) {
             return null;
         }
-        Goal goal = optionalGoal.get();
+        if (!goal.isMine(myUserId)) { // 본인의 목표인지 확인
+            return null;
+        }
+        return goal;
+    }
 
-        // TODO 본인의 목표가 맞는지 확인
+    private Goal getReadableGoal(Long myUserId, Long goalId) {
+        Goal goal = getFoundedGoal(goalId);
+        if (goal == null) {
+            return null;
+        }
+        if (!UserUtil.isMeOrMyFriend(myUserId, goal.getUserId(), friendRepository.findFriendsByUserId(myUserId))) {
+            return null; // 본인이거나, 친구가 아닌 userId인 경우, 바로 리턴
+        }
+        if (!goal.isMine(myUserId)) {
+            if (!goal.isPublic()) {
+                return null; // 친구의 목표인데 비공개 상태인 경우, 바로 리턴
+            }
+        }
         return goal;
     }
 
@@ -420,5 +475,11 @@ public class GoalService {
         goalRepository.save(goal);
     }
 
-    // TODO 날짜가 넘어갈 때의 목표들의 상태값 변화 처리하기
+    private void sendAcceptanceRequestMessage(Long goalCreatorUserId, Long friendUserId, Long friendGoalId, boolean isCreation) {
+        User goalCreator = userRepository.findById(goalCreatorUserId)
+                .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저가 없습니다."));
+        String messageFormat = isCreation ? "%s님이 공동 목표를 요청했어요!" : "%s님이 공동 목표 수정을 요청했어요!";
+        String message = String.format(messageFormat, goalCreator.getNickname());
+        notificationRepository.save(new Notification(friendUserId, "SHARED_GOAL", friendGoalId, message));
+    }
 }

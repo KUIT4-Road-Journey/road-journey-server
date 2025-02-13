@@ -1,5 +1,6 @@
 package com.road_journey.road_journey.goals.domain;
 
+import com.road_journey.road_journey.goals.util.GoalUtil;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -154,19 +155,19 @@ public class Goal {
         };
     }
 
-    public int getGold(boolean isReward) {
+    public long getGold(boolean isReward) {
         double gold = difficulty * getDuration() * getCategoryCoefficient() * 500;
         if (!isReward) {
-            return (int) (gold / -5);
+            return (long) (gold / -5);
         }
         if (!subGoalType.equals("normal")) {
             gold /= (subGoalList.size() + 1);
         }
-        return (int) gold;
+        return (long) gold;
     }
 
-    public int getGrowthPoint(boolean isReward) {
-        return (int) ((double)getGold(isReward) / 50);
+    public long getGrowthPoint(boolean isReward) {
+        return (long) ((double)getGold(isReward) / 50);
     }
 
     public boolean isCompletable() {
@@ -295,6 +296,10 @@ public class Goal {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public boolean isMine(Long myUserId) {
+        return Objects.equals(this.userId, myUserId);
     }
 
     public boolean isPending() {

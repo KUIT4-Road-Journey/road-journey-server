@@ -1,5 +1,7 @@
 package com.road_journey.road_journey.goals.util;
 
+import com.road_journey.road_journey.auth.domain.User;
+import com.road_journey.road_journey.friends.entity.Friend;
 import com.road_journey.road_journey.goals.domain.Goal;
 import com.road_journey.road_journey.goals.dto.AddGoalRequestDto;
 
@@ -89,5 +91,9 @@ public class GoalUtil {
             }
         }
         return true;
+    }
+
+    public static boolean isGoalOfMyFriend(Long myUserId, Goal goal, List<Friend> friendList) {
+        return UserUtil.isMyFriend(myUserId, goal.getUserId(), friendList);
     }
 }

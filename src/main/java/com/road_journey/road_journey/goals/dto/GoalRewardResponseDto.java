@@ -6,8 +6,8 @@ import lombok.Getter;
 @Getter
 public class GoalRewardResponseDto {
     private final boolean isReward;
-    private final int gold;
-    private final int growthPoint;
+    private final Long gold;
+    private final Long growthPoint;
 
     public GoalRewardResponseDto(Goal goal) {
         this.isReward = goal.isLastPeriodCompleted();
