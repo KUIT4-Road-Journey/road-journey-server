@@ -1,16 +1,85 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이메일 인증 코드</title>
+    <style>
+        /* Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .sub-header {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .code-box {
+            display: inline-block;
+            background-color: #629DFE;
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            padding: 15px 30px;
+            border-radius: 5px;
+            letter-spacing: 2px;
+            margin-top: 20px;
+        }
+
+        .footer {
+            font-size: 14px;
+            color: #999;
+            margin-top: 30px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            .code-box {
+                font-size: 24px;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
 <body>
-<div style="margin:120px">
-    <div style="margin-bottom: 10px">
-        <h1>인증 코드 메일입니다.</h1>
-        <br/>
-        <h3 style="text-align: center;"> 아래 코드를 사이트에 입력해주십시오</h3>
+<div class="container">
+    <div class="header">📩 이메일 인증 코드</div>
+    <div class="sub-header">아래 코드를 입력하여 본인 인증을 완료하세요.</div>
+
+    <div class="code-box" th:text="${code}"></div>
+
+    <div class="footer">
+        이 코드는 <strong>30분</strong> 동안만 유효합니다.
     </div>
-    <div style="text-align: center;">
-        <h2 style="color: crimson;" th:text="${code}"></h2>
-    </div>
-    <br/>
 </div>
 </body>
 </html>
