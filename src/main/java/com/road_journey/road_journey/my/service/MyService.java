@@ -23,7 +23,7 @@ public class MyService {
         response.put("status", "success");
 
         Map<String, String> data = new LinkedHashMap<>();
-        data.put("accountId", user.getUserId().toString());
+        data.put("accountId", user.getAccountId());
         data.put("email", user.getEmail());
         data.put("nickname", user.getNickname());
         data.put("profileImage", user.getProfileImage());
