@@ -1,6 +1,8 @@
 package com.road_journey.road_journey.goals.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -38,9 +40,14 @@ public class AddGoalRequestDto {
     }
 
     @Getter
-    @AllArgsConstructor
     public static class Friend {
         private Long userId;
+        public Friend() {}
+
+        @JsonCreator
+        public Friend(@JsonProperty("userId") Long userId) {
+            this.userId = userId;
+        }
 
         // Getters and Setters
     }
