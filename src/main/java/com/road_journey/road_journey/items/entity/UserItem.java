@@ -43,6 +43,10 @@ public class UserItem {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    public void addGrowthPoint(Long growthPoint) {
+        this.growthPoint += growthPoint;
+    }
+
     // 엔티티가 저장될 때 자동으로 실행
     @PrePersist
     protected void onCreate() {

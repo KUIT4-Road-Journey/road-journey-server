@@ -1,14 +1,14 @@
 package com.road_journey.road_journey.goals.controller;
 
+import com.road_journey.road_journey.auth.domain.CustomUserDetails;
 import com.road_journey.road_journey.goals.dto.AddGoalRequestDto;
-import com.road_journey.road_journey.goals.dto.GoalListResponseDto;
-import com.road_journey.road_journey.goals.dto.GoalResponseDto;
 import com.road_journey.road_journey.goals.response.BaseResponse;
 import com.road_journey.road_journey.goals.response.ResponseStatus;
 import com.road_journey.road_journey.goals.service.GoalService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,10 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @RequestMapping("/goals")
+@SecurityRequirement(name = "bearerAuth")
+@PreAuthorize("hasRole('ROLE_USER')")
 @RestController
 public class GoalController {
 
@@ -28,67 +27,79 @@ public class GoalController {
     private GoalService goalService;
 
     @PostMapping("")
-    public ResponseStatus addGoal(@RequestBody AddGoalRequestDto addGoalRequest) {
-        return goalService.createGoals(addGoalRequest);
+    public ResponseStatus addGoal(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                  @RequestBody AddGoalRequestDto addGoalRequest) {
+        return goalService.createGoals(Long.valueOf(userDetails.getUsername()), addGoalRequest);
         // TODO 요청 실패 시 처리
     }
 
     @GetMapping("/list/{userId}")
-    public ResponseStatus getGoalList(@PathVariable Long userId,
+    public ResponseStatus getGoalList(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                      @PathVariable Long userId,
                                       @RequestParam String category) {
-        return goalService.getGoalListResponse(userId, category);
+        return goalService.getGoalListResponse(Long.valueOf(userDetails.getUsername()), userId, category);
     }
 
     @GetMapping("/{goalId}")
-    public ResponseStatus getGoalList(@PathVariable Long goalId) {
-        return new BaseResponse<>(goalService.getGoalResponseByGoalId(goalId)); // TODO null 반환할 경우 처리
+    public ResponseStatus getGoal(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                  @PathVariable Long goalId) {
+        return new BaseResponse<>(goalService.getGoalResponseByGoalId(Long.valueOf(userDetails.getUsername()), goalId));
     }
 
     @PostMapping("/{goalId}/accept")
-    public ResponseStatus acceptGoal(@PathVariable Long goalId) {
-        return goalService.processPendingGoal(goalId, true, true);
+    public ResponseStatus acceptGoal(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                     @PathVariable Long goalId) {
+        return goalService.processPendingGoal(Long.valueOf(userDetails.getUsername()), goalId, true, true);
     }
 
     @PostMapping("/{goalId}/reject")
-    public ResponseStatus rejectGoal(@PathVariable Long goalId) {
-        return goalService.processPendingGoal(goalId, true, false);
+    public ResponseStatus rejectGoal(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                     @PathVariable Long goalId) {
+        return goalService.processPendingGoal(Long.valueOf(userDetails.getUsername()), goalId, true, false);
     }
 
     @PostMapping("/{goalId}/edit")
-    public ResponseStatus editGoal(@PathVariable Long goalId,
-                           @RequestBody AddGoalRequestDto addGoalRequest) {
+    public ResponseStatus editGoal(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                   @PathVariable Long goalId,
+                                   @RequestBody AddGoalRequestDto addGoalRequest) {
 
-        return goalService.editGoals(goalId, addGoalRequest);
+        return goalService.editGoals(Long.valueOf(userDetails.getUsername()), goalId, addGoalRequest);
     }
 
     @PostMapping("/{goalId}/edit/accept")
-    public ResponseStatus acceptGoalEdition(@PathVariable Long goalId) {
-        return goalService.processPendingGoal(goalId, false, true);
+    public ResponseStatus acceptGoalEdition(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                            @PathVariable Long goalId) {
+        return goalService.processPendingGoal(Long.valueOf(userDetails.getUsername()), goalId, false, true);
     }
 
     @PostMapping("/{goalId}/edit/reject")
-    public ResponseStatus rejectGoalEdition(@PathVariable Long goalId) {
-        return goalService.processPendingGoal(goalId, false, false);
+    public ResponseStatus rejectGoalEdition(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                            @PathVariable Long goalId) {
+        return goalService.processPendingGoal(Long.valueOf(userDetails.getUsername()), goalId, false, false);
     }
 
     @PostMapping("/{goalId}/complete")
-    public ResponseStatus completeGoal(@PathVariable Long goalId) {
-        return goalService.completeGoal(goalId);
+    public ResponseStatus completeGoal(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                       @PathVariable Long goalId) {
+        return goalService.completeGoal(Long.valueOf(userDetails.getUsername()), goalId);
     }
 
     @PostMapping("/{goalId}/fail")
-    public ResponseStatus failGoal(@PathVariable Long goalId) {
-        return goalService.failGoal(goalId);
+    public ResponseStatus failGoal(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                   @PathVariable Long goalId) {
+        return goalService.failGoal(Long.valueOf(userDetails.getUsername()), goalId);
     }
 
     @PostMapping("/{goalId}/reward")
-    public ResponseStatus getReward(@PathVariable Long goalId) {
-        return goalService.getRewardByGoalId(goalId);
+    public ResponseStatus getReward(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                    @PathVariable Long goalId) {
+        return goalService.getRewardByGoalId(Long.valueOf(userDetails.getUsername()), goalId);
     }
 
     @PostMapping("/{goalId}/sub-goals/{subGoalId}/complete")
-    public ResponseStatus completeSubGoal(@PathVariable Long goalId,
-                                  @PathVariable Long subGoalId) {
-        return goalService.completeSubGoal(goalId, subGoalId);
+    public ResponseStatus completeSubGoal(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                          @PathVariable Long goalId,
+                                          @PathVariable Long subGoalId) {
+        return goalService.completeSubGoal(Long.valueOf(userDetails.getUsername()), goalId, subGoalId);
     }
 }

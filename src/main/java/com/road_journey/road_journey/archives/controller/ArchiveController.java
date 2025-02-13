@@ -1,8 +1,10 @@
 package com.road_journey.road_journey.archives.controller;
 
+import com.road_journey.road_journey.auth.domain.CustomUserDetails;
 import com.road_journey.road_journey.goals.response.ResponseStatus;
 import com.road_journey.road_journey.goals.service.GoalService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,8 +28,9 @@ public class ArchiveController {
     }
 
     @GetMapping("/{goalId}")
-    public ResponseStatus getArchive(@PathVariable Long goalId) {
-        return goalService.getGoalResponseByGoalId(goalId);
+    public ResponseStatus getArchive(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                     @PathVariable Long goalId) {
+        return goalService.getGoalResponseByGoalId(Long.valueOf(userDetails.getUsername()), goalId);
     }
 
 }
