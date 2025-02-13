@@ -87,7 +87,7 @@ public class FriendManagementService {
 
         if (friend.isPresent()) {
             result.put("friendStatus", IS_FRIEND.name());
-            result.put("activeStatus", friend.get().getIsLike() ? "active" : "not active"); //todo 접근 여부 설정
+            result.put("activeStatus", true ? "active" : "not active"); //todo 접근 여부 설정 (임시 무조건 접근 가능)
 
             if (notificationId != null) {
                 notificationService.deleteNotification(notificationId);
