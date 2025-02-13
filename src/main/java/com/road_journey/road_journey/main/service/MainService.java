@@ -8,6 +8,7 @@ import com.road_journey.road_journey.goals.response.ResponseStatusType;
 import com.road_journey.road_journey.goals.util.UserUtil;
 import com.road_journey.road_journey.items.entity.UserItem;
 import com.road_journey.road_journey.items.repository.UserItemRepository;
+import com.road_journey.road_journey.main.dto.MainResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,6 @@ public class MainService {
         }
 
         List<UserItem> selectedUserItemList = userItemRepository.findByUserIdAndIsSelectedTrue(userId);
-        return new BaseResponse<>(selectedUserItemList);
+        return new BaseResponse<>(new MainResponseDto(selectedUserItemList));
     }
 }
