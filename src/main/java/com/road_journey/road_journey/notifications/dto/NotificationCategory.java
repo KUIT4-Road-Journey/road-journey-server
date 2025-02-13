@@ -1,6 +1,7 @@
 package com.road_journey.road_journey.notifications.dto;
 
 public enum NotificationCategory {
-    NOTIFICATION, FRIEND_LIKE
+    FRIEND_LIKE, NOTIFICATION, SHARED_GOAL
+
 }
 

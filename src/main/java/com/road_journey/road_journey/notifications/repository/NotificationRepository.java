@@ -37,5 +37,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     @Query("SELECT n FROM Notification n WHERE n.userId = :userId AND n.category IN :categories AND n.status = 'active'")
     List<Notification> findFriendMessages(Long userId, List<String> categories);
+
+    List<Notification> findByUserIdAndCategoryInAndStatus(Long userId, List<String> category, String status);
 }
 

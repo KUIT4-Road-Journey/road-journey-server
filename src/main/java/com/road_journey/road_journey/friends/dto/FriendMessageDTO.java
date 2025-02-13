@@ -11,5 +11,5 @@ public class FriendMessageDTO {
     private String message;
     private String createdAt;
     private String category;
-    private Object detail;  // 공유 목표 상세 정보 or FriendUserId
+    private Long relatedId;
 }

@@ -8,18 +8,17 @@ import com.road_journey.road_journey.friends.repository.FriendRepository;
 import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
 import com.road_journey.road_journey.notifications.entity.Notification;
 import com.road_journey.road_journey.notifications.repository.NotificationRepository;
+import com.road_journey.road_journey.notifications.service.NotificationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.road_journey.road_journey.friends.dto.FriendStatus.IS_FRIEND;
+import static com.road_journey.road_journey.friends.dto.FriendStatus.IS_NOT_FRIEND;
 import static com.road_journey.road_journey.notifications.dto.NotificationCategory.FRIEND_LIKE;
 import static com.road_journey.road_journey.notifications.dto.NotificationCategory.NOTIFICATION;
 
@@ -31,6 +30,8 @@ public class FriendManagementService {
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
 
+    private final NotificationService notificationService;
+
     //친구 목록 조회
     public List<FriendListDTO> getFriends(Long userId, String sortBy) {
         List<Friend> friends = friendRepository.findFriendsByUserId(userId);
@@ -38,7 +39,7 @@ public class FriendManagementService {
         if (friends.isEmpty()) {
             return Collections.emptyList();
         }
-        // todo 친구의 메인화면 접근 설정 여부도 가져와야 함
+
         List<FriendListDTO> friendList = friends.stream()
                 .map(friend -> {
                     User user = userRepository.findById(friend.getFriendUserId())
@@ -77,9 +78,26 @@ public class FriendManagementService {
         return userId.intValue();
     }
 
-    public Optional<Object> getFriendMain() {
-        //todo : 개별 친구 프로필 접근 (main 쪽 완성되면 땡겨서 사용하면 될듯?)
-        return Optional.empty();
+
+    @Transactional
+    public Map<String, String> validateFriendshipAndDeactivateNotification(Long userId, Long friendId, Long notificationId) {
+        Map<String, String> result = new HashMap<>();
+
+        Optional<Friend> friend = friendRepository.findByUserIdAndFriendUserIdAndStatus(userId, friendId, IS_FRIEND.name());
+
+        if (friend.isPresent()) {
+            result.put("friendStatus", IS_FRIEND.name());
+            result.put("activeStatus", true ? "active" : "not active"); //todo 접근 여부 설정 (임시 무조건 접근 가능)
+
+            if (notificationId != null) {
+                notificationService.deleteNotification(notificationId);
+            }
+        } else {
+            result.put("friendStatus", IS_NOT_FRIEND.name());
+            result.put("activeStatus", "N/A");
+        }
+
+        return result;
     }
 
     //친구 좋아요 상태 변경
