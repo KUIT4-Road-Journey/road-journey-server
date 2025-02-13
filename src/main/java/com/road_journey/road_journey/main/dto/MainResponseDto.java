@@ -7,9 +7,11 @@ import java.util.List;
 
 @Getter
 public class MainResponseDto {
+    private final String nickName;
     private final List<UserItem> selectedUserItemList;
 
-    public MainResponseDto(List<UserItem> selectedUserItemList) {
+    public MainResponseDto(String nickName, List<UserItem> selectedUserItemList) {
+        this.nickName = nickName;
         this.selectedUserItemList = selectedUserItemList;
     }
 }
