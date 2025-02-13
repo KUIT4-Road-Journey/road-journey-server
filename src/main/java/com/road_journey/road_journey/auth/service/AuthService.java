@@ -6,6 +6,13 @@ import com.road_journey.road_journey.auth.domain.CustomUserInfoDto;
 import com.road_journey.road_journey.auth.domain.LoginRequestDto;
 import com.road_journey.road_journey.auth.domain.SignupRequestDto;
 import com.road_journey.road_journey.auth.domain.User;
+import com.road_journey.road_journey.my.dao.AchievementRepository;
+import com.road_journey.road_journey.my.dao.SettingRepository;
+import com.road_journey.road_journey.my.dao.UserAchievementRepository;
+import com.road_journey.road_journey.my.dao.UserSettingRepository;
+import com.road_journey.road_journey.my.domain.Achievement;
+import com.road_journey.road_journey.my.domain.UserAchievement;
+import com.road_journey.road_journey.my.domain.UserSetting;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -16,8 +23,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +37,10 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
     private final ModelMapper modelMapper;
+    private final UserSettingRepository userSettingRepository;
+    private final SettingRepository settingRepository;
+    private final UserAchievementRepository userAchievementRepository;
+    private final AchievementRepository achievementRepository;
 
     /**
      * 로그인 기능: accountId와 password로 로그인하고, 성공하면 JWT AccessToken 발급
@@ -85,6 +98,10 @@ public class AuthService {
         user.setStatusMessage(request.getStatusMessage());
 
         userRepository.save(user);
+
+        createDefaultSettings(user);
+        createDefaultAchievements(user);
+
         return "Registration successful";
     }
 
@@ -92,6 +109,29 @@ public class AuthService {
     private boolean isValidPassword(String password) {
         String passwordPattern = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{10,}$";
         return Pattern.matches(passwordPattern, password);
+    }
+
+    private void createDefaultSettings(User user) {
+        List<UserSetting> defaultSettings = List.of(
+                new UserSetting(user, settingRepository.findById(1L).get(), "DISABLED"),
+                new UserSetting(user, settingRepository.findById(2L).get(), "DISABLED"),
+                new UserSetting(user, settingRepository.findById(3L).get(), "DISABLED")
+        );
+
+        userSettingRepository.saveAll(defaultSettings);
+    }
+
+    private void createDefaultAchievements(User user) {
+        // Achievement 테이블에 존재하는 모든 업적 가져오기
+        List<Achievement> allAchievements = achievementRepository.findAll();
+
+        // UserAchievement 객체로 변환
+        List<UserAchievement> defaultAchievements = allAchievements.stream()
+                .map(achievement -> new UserAchievement(user, achievement))
+                .collect(Collectors.toList());
+
+        // 저장
+        userAchievementRepository.saveAll(defaultAchievements);
     }
 
     /**

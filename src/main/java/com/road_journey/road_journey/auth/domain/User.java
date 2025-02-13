@@ -1,7 +1,6 @@
 package com.road_journey.road_journey.auth.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,7 +14,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class User {
 
     @Id
@@ -23,13 +21,13 @@ public class User {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "account_id", unique = true, nullable = false, length = 50)
+    @Column(name = "account_id", nullable = false, unique = true)
     private String accountId;
 
-    @Column(name = "account_pw", nullable = false, length = 200)
+    @Column(name = "account_pw", nullable = false)
     private String accountPw;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false, length = 50)
@@ -66,5 +64,5 @@ public class User {
         this.nickname = nickname;
         this.gold = gold;
     }
-}
 
+}
