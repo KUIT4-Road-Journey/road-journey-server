@@ -1,0 +1,132 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.springframework.boot",
+    "module": "spring-boot-starter-data-jdbc",
+    "version": "3.4.1",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.11.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-starter-jdbc",
+          "version": {
+            "requires": "3.4.1"
+          }
+        },
+        {
+          "group": "org.springframework.data",
+          "module": "spring-data-jdbc",
+          "version": {
+            "requires": "3.4.1"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "spring-boot-starter-data-jdbc-3.4.1.jar",
+          "url": "spring-boot-starter-data-jdbc-3.4.1.jar",
+          "size": 4748,
+          "sha512": "3784cc3f57bb70cd8b2fe558c08a3a55ccfe45806bf60e4b0fa1a8ea9a4e11c135b5bac79efcb1661d652b620c66092c34edd9c3690dc8367d1772e54c454d61",
+          "sha256": "7605617fe50bd9b49e8820b79a04e71d736dcff689859e84aa95350d75ed2e9a",
+          "sha1": "dc948b158297df0027de3f4201fc36580c261b92",
+          "md5": "92aca82742034e976cbd317ef2920266"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-starter-jdbc",
+          "version": {
+            "requires": "3.4.1"
+          }
+        },
+        {
+          "group": "org.springframework.data",
+          "module": "spring-data-jdbc",
+          "version": {
+            "requires": "3.4.1"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "spring-boot-starter-data-jdbc-3.4.1.jar",
+          "url": "spring-boot-starter-data-jdbc-3.4.1.jar",
+          "size": 4748,
+          "sha512": "3784cc3f57bb70cd8b2fe558c08a3a55ccfe45806bf60e4b0fa1a8ea9a4e11c135b5bac79efcb1661d652b620c66092c34edd9c3690dc8367d1772e54c454d61",
+          "sha256": "7605617fe50bd9b49e8820b79a04e71d736dcff689859e84aa95350d75ed2e9a",
+          "sha1": "dc948b158297df0027de3f4201fc36580c261b92",
+          "md5": "92aca82742034e976cbd317ef2920266"
+        }
+      ]
+    },
+    {
+      "name": "javadocElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "spring-boot-starter-data-jdbc-3.4.1-javadoc.jar",
+          "url": "spring-boot-starter-data-jdbc-3.4.1-javadoc.jar",
+          "size": 4748,
+          "sha512": "3784cc3f57bb70cd8b2fe558c08a3a55ccfe45806bf60e4b0fa1a8ea9a4e11c135b5bac79efcb1661d652b620c66092c34edd9c3690dc8367d1772e54c454d61",
+          "sha256": "7605617fe50bd9b49e8820b79a04e71d736dcff689859e84aa95350d75ed2e9a",
+          "sha1": "dc948b158297df0027de3f4201fc36580c261b92",
+          "md5": "92aca82742034e976cbd317ef2920266"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "spring-boot-starter-data-jdbc-3.4.1-sources.jar",
+          "url": "spring-boot-starter-data-jdbc-3.4.1-sources.jar",
+          "size": 4748,
+          "sha512": "3784cc3f57bb70cd8b2fe558c08a3a55ccfe45806bf60e4b0fa1a8ea9a4e11c135b5bac79efcb1661d652b620c66092c34edd9c3690dc8367d1772e54c454d61",
+          "sha256": "7605617fe50bd9b49e8820b79a04e71d736dcff689859e84aa95350d75ed2e9a",
+          "sha1": "dc948b158297df0027de3f4201fc36580c261b92",
+          "md5": "92aca82742034e976cbd317ef2920266"
+        }
+      ]
+    }
+  ]
+}
