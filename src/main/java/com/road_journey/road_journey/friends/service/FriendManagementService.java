@@ -8,6 +8,7 @@ import com.road_journey.road_journey.friends.repository.FriendRepository;
 import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
 import com.road_journey.road_journey.notifications.entity.Notification;
 import com.road_journey.road_journey.notifications.repository.NotificationRepository;
+import com.road_journey.road_journey.notifications.service.NotificationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,8 @@ public class FriendManagementService {
     private final FriendRepository friendRepository;
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
+
+    private final NotificationService notificationService;
 
     //친구 목록 조회
     public List<FriendListDTO> getFriends(Long userId, String sortBy) {
@@ -77,9 +80,15 @@ public class FriendManagementService {
         return userId.intValue();
     }
 
-    public Optional<Object> getFriendMain() {
-        //todo : 개별 친구 프로필 접근 (main 쪽 완성되면 땡겨서 사용하면 될듯?)
-        return Optional.empty();
+    @Transactional
+    public void validateFriendshipAndDeactivateNotification(Long userId, Long friendId, Long notificationId) {
+        if (!friendRepository.findByUserIdAndFriendUserIdAndStatus(userId, friendId, IS_FRIEND.name()).isPresent()) {
+            throw new IllegalArgumentException("Unauthorized access.");
+        }
+
+        if (notificationId != null) {
+            notificationService.deleteNotification(notificationId);
+        }
     }
 
     //친구 좋아요 상태 변경

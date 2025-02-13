@@ -1,11 +1,9 @@
 package com.road_journey.road_journey.friends.controller;
 
-import com.road_journey.road_journey.auth.config.JwtUtil;
 import com.road_journey.road_journey.auth.domain.CustomUserDetails;
 import com.road_journey.road_journey.friends.dto.FriendDTO;
 import com.road_journey.road_journey.friends.service.FriendRequestService;
 import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
-import com.road_journey.road_journey.utils.TokenValidatorUtil;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +22,6 @@ import java.util.Map;
 public class FriendRequestController {
 
     private final FriendRequestService friendRequestService;
-    private final JwtUtil jwtUtil;
 
     // 친구 요청 목록 조회 (`status = 'pending'`)
     @GetMapping
