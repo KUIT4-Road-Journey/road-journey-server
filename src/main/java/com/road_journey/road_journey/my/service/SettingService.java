@@ -16,7 +16,7 @@ public class SettingService {
     private final UserSettingRepository userSettingRepository;
 
     public List<SettingDto> getUserSettings(Long userId) {
-        List<UserSetting> userSettings = userSettingRepository.findByUserId(userId);
+        List<UserSetting> userSettings = userSettingRepository.findByUser_UserId(userId);
 
         return userSettings.stream()
                 .map(SettingDto::from)
@@ -24,7 +24,7 @@ public class SettingService {
     }
 
     public boolean toggleUserSetting(Long settingId, Long userId) {
-        UserSetting userSetting = userSettingRepository.findByUserIdAndSettingId(userId, settingId)
+        UserSetting userSetting = userSettingRepository.findByUser_UserIdAndSettingId(userId, settingId)
                 .orElseThrow(() -> new RuntimeException("설정을 찾을 수 없습니다."));
 
         boolean isCurrentlyEnabled = userSetting.getStatus().equals("ENABLED");

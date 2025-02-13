@@ -9,8 +9,8 @@ import java.util.Optional;
 public interface UserSettingRepository extends JpaRepository<UserSetting, Long> {
 
     // 특정 사용자의 모든 설정 가져오기
-    List<UserSetting> findByUserId(Long userId);
+    List<UserSetting> findByUser_UserId(Long userId);
 
     // 특정 사용자의 특정 설정 가져오기
-    Optional<UserSetting> findByUserIdAndSettingId(Long userId, Long settingId);
+    Optional<UserSetting> findByUser_UserIdAndSettingId(Long userId, Long settingId);
 }

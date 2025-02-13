@@ -9,11 +9,11 @@ import java.util.Optional;
 public interface UserAchievementRepository extends JpaRepository<UserAchievement, Long> {
 
     // 특정 사용자의 모든 업적 조회
-    List<UserAchievement> findByUserId(Long userId);
+    List<UserAchievement> findByUser_UserId(Long userId);
 
     // 특정 사용자의 특정 업적 조회
-    Optional<UserAchievement> findByUserIdAndAchievementId(Long userId, Long achievementId);
+    Optional<UserAchievement> findByUser_UserIdAndAchievementId(Long userId, Long achievementId);
 
     // 특정 카테고리의 업적 조회
-    List<UserAchievement> findByUserIdAndAchievementCategory(Long userId, String category);
+    List<UserAchievement> findByUser_UserIdAndAchievementCategory(Long userId, String category);
 }

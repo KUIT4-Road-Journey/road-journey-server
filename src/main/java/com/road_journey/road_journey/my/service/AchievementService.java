@@ -20,9 +20,9 @@ public class AchievementService {
 
         // TODO: 진행도 확인 및 업데이트
         if ("all".equalsIgnoreCase(category)) {
-            userAchievements = userAchievementRepository.findByUserId(userId);
+            userAchievements = userAchievementRepository.findByUser_UserId(userId);
         } else {
-            userAchievements = userAchievementRepository.findByUserIdAndAchievementCategory(userId, category);
+            userAchievements = userAchievementRepository.findByUser_UserIdAndAchievementCategory(userId, category);
         }
 
         return userAchievements.stream()
@@ -31,7 +31,7 @@ public class AchievementService {
     }
 
     public boolean acceptReward(Long achievementId, Long userId) {
-        UserAchievement userAchievement = userAchievementRepository.findByUserIdAndAchievementId(userId, achievementId)
+        UserAchievement userAchievement = userAchievementRepository.findByUser_UserIdAndAchievementId(userId, achievementId)
                 .orElseThrow(() -> new RuntimeException("해당 업적을 찾을 수 없습니다."));
 
         // 이미 보상을 받았는지 체크
