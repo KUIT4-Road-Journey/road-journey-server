@@ -43,7 +43,7 @@ public class GoalController {
     @GetMapping("/{goalId}")
     public ResponseStatus getGoal(@AuthenticationPrincipal CustomUserDetails userDetails,
                                   @PathVariable Long goalId) {
-        return new BaseResponse<>(goalService.getGoalResponseByGoalId(Long.valueOf(userDetails.getUsername()), goalId));
+        return goalService.getGoalResponseByGoalId(Long.valueOf(userDetails.getUsername()), goalId);
     }
 
     @PostMapping("/{goalId}/accept")
