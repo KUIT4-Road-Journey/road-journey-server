@@ -37,18 +37,17 @@ public class FriendManagementController {
         return ResponseEntity.ok(Map.of("friends", FriendListDTOs));
     }
 
-    @GetMapping("/{friendId}/main")
-    public ResponseEntity<Map<String, String>> getFriendMain(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                             @PathVariable Long friendId,
-                                                             @RequestBody(required = false) Map<String, Long> request) {
+    @GetMapping("/{friendUserId}/main")
+    public ResponseEntity<Map<String, String>> getFriendMain(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long friendUserId,
+            @RequestParam(required = false) Long notificationId) {
         Long userId = Long.parseLong(userDetails.getUsername());
-        Long notificationId = (request != null && request.containsKey("notificationId"))
-                ? request.get("notificationId")
-                : null;
 
-        Map<String, String> validationResult = friendManagementService.validateFriendshipAndDeactivateNotification(userId, friendId, notificationId);
+        Map<String, String> validationResult = friendManagementService.validateFriendshipAndDeactivateNotification(userId, friendUserId, notificationId);
         return ResponseEntity.ok(validationResult);
     }
+
 
 
     //친구 좋아요 상태 변경

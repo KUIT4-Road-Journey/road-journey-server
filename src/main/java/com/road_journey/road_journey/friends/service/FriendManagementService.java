@@ -103,14 +103,14 @@ public class FriendManagementService {
 
 
     @Transactional
-    public Map<String, String> validateFriendshipAndDeactivateNotification(Long userId, Long friendId, Long notificationId) {
+    public Map<String, String> validateFriendshipAndDeactivateNotification(Long userId, Long friendUserId, Long notificationId) {
         Map<String, String> result = new HashMap<>();
 
-        Optional<Friend> friend = friendRepository.findByUserIdAndFriendUserIdAndStatus(userId, friendId, IS_FRIEND.name());
+        Optional<Friend> friend = friendRepository.findByUserIdAndFriendUserIdAndStatus(userId, friendUserId, IS_FRIEND.name());
 
         if (friend.isPresent()) {
             result.put("friendStatus", IS_FRIEND.name());
-            String activeStatus = userSettingRepository.findByUser_UserIdAndSettingId(friendId, 2L)
+            String activeStatus = userSettingRepository.findByUser_UserIdAndSettingId(friendUserId, 2L)
                     .map(UserSetting::getStatus)
                     .orElse("ENABLED");
             result.put("activeStatus", activeStatus);
