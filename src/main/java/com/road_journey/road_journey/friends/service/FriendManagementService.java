@@ -77,7 +77,7 @@ public class FriendManagementService {
     }
 
     private int getAchievementCount(Long userId) {
-        // todo : 목표 테이블에서 해당 유저의 달성 목표 수 조회
+        // todo : 목표 테이블에서 유저의 달성 목표 수 조회
         return userId.intValue();
     }
 
