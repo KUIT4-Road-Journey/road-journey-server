@@ -5,6 +5,7 @@ import com.road_journey.road_journey.auth.domain.User;
 import com.road_journey.road_journey.friends.dto.FriendListDTO;
 import com.road_journey.road_journey.friends.entity.Friend;
 import com.road_journey.road_journey.friends.repository.FriendRepository;
+import com.road_journey.road_journey.goals.service.GoalService;
 import com.road_journey.road_journey.my.dao.UserSettingRepository;
 import com.road_journey.road_journey.my.domain.UserSetting;
 import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
@@ -36,6 +37,7 @@ public class FriendManagementService {
     private final UserSettingRepository userSettingRepository;
 
     private final NotificationService notificationService;
+    private final GoalService goalService;
 
     //친구 목록 조회
     public List<FriendListDTO> getFriends(Long userId, String sortBy) {
@@ -96,8 +98,7 @@ public class FriendManagementService {
     }
 
     private int getAchievementCount(Long userId) {
-        // todo : 목표 테이블에서 유저의 달성 목표 수 조회
-        return userId.intValue();
+        return goalService.getCompletedGoalCountOfUser(userId);
     }
 
 
