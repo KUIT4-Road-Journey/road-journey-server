@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -24,11 +25,16 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<String> getUserProfile(
+    public ResponseEntity<Map<String, Object>> getUserProfile(
             @Valid @RequestBody LoginRequestDto request
     ) {
         String token = this.authService.login(request);
-        return ResponseEntity.status(HttpStatus.OK).body(token);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("status", "success");
+        response.put("data", Map.of("accessToken", token));
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/signup")
