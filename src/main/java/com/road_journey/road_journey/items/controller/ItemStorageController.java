@@ -43,9 +43,9 @@ public class ItemStorageController {
     @GetMapping("/equipped")
     public ResponseEntity<Map<String, Object>> getEquippedItems(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestParam(required = false) Long friendId) {
+            @RequestParam(required = false) Long friendUserId) {
         Long userId = Long.parseLong(userDetails.getUsername());
-        userId = (friendId != null) ? friendId : userId;
+        userId = (friendUserId != null) ? friendUserId : userId;
 
         return ResponseEntity.ok(itemStorageService.getEquippedItems(userId));
     }

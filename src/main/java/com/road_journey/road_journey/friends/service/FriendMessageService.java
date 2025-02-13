@@ -28,10 +28,10 @@ public class FriendMessageService {
             }
             return new FriendMessageDTO(
                     notification.getNotificationId(),
+                    imageUrl,
                     notification.getMessage(),
                     notification.getCreatedAt().toString(),
                     notification.getCategory(),
-                    imageUrl,
                     notification.getRelatedId()
             );
         }).collect(Collectors.toList());
