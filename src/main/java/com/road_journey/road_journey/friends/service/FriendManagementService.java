@@ -5,6 +5,8 @@ import com.road_journey.road_journey.auth.domain.User;
 import com.road_journey.road_journey.friends.dto.FriendListDTO;
 import com.road_journey.road_journey.friends.entity.Friend;
 import com.road_journey.road_journey.friends.repository.FriendRepository;
+import com.road_journey.road_journey.my.dao.UserSettingRepository;
+import com.road_journey.road_journey.my.domain.UserSetting;
 import com.road_journey.road_journey.notifications.dto.UpdateResponseDTO;
 import com.road_journey.road_journey.notifications.entity.Notification;
 import com.road_journey.road_journey.notifications.repository.NotificationRepository;
@@ -29,6 +31,7 @@ public class FriendManagementService {
     private final FriendRepository friendRepository;
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
+    private final UserSettingRepository userSettingRepository;
 
     private final NotificationService notificationService;
 
@@ -74,7 +77,7 @@ public class FriendManagementService {
     }
 
     private int getAchievementCount(Long userId) {
-        // todo : 목표 테이블에서 해당 유저의 달성 목표 수 조회
+        // todo : 목표 테이블에서 유저의 달성 목표 수 조회
         return userId.intValue();
     }
 
@@ -87,7 +90,10 @@ public class FriendManagementService {
 
         if (friend.isPresent()) {
             result.put("friendStatus", IS_FRIEND.name());
-            result.put("activeStatus", true ? "active" : "not active"); //todo 접근 여부 설정 (임시 무조건 접근 가능)
+            String activeStatus = userSettingRepository.findByUser_UserIdAndSettingId(friendId, 2L)
+                    .map(UserSetting::getStatus)
+                    .orElse("ENABLED");
+            result.put("activeStatus", activeStatus);
 
             if (notificationId != null) {
                 notificationService.deleteNotification(notificationId);
