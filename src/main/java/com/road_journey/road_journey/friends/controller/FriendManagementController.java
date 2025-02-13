@@ -38,21 +38,16 @@ public class FriendManagementController {
     }
 
     @GetMapping("/{friendId}/main")
-    public ResponseEntity<Object> getFriendMain(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                @PathVariable Long friendId,
-                                                @RequestBody(required = false) Map<String, Long> request) {
+    public ResponseEntity<Map<String, String>> getFriendMain(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                             @PathVariable Long friendId,
+                                                             @RequestBody(required = false) Map<String, Long> request) {
         Long userId = Long.parseLong(userDetails.getUsername());
-
         Long notificationId = (request != null && request.containsKey("notificationId"))
                 ? request.get("notificationId")
                 : null;
 
-        //친구 관계 확인 및 알림 상태 업데이트
-        friendManagementService.validateFriendshipAndDeactivateNotification(userId, friendId, notificationId);
-
-        //리다이렉션 응답 반환 // todo 목표 리스트까지 반환해야 함, 메인화면 api를 둘로 분리해놨는데 어캄?
-        URI redirectUri = URI.create(String.format("/main/%d", friendId));
-        return ResponseEntity.status(HttpStatus.FOUND).location(redirectUri).build();
+        Map<String, String> validationResult = friendManagementService.validateFriendshipAndDeactivateNotification(userId, friendId, notificationId);
+        return ResponseEntity.ok(validationResult);
     }
 
 

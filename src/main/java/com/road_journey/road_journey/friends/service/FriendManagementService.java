@@ -14,13 +14,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.road_journey.road_journey.friends.dto.FriendStatus.IS_FRIEND;
+import static com.road_journey.road_journey.friends.dto.FriendStatus.IS_NOT_FRIEND;
 import static com.road_journey.road_journey.notifications.dto.NotificationCategory.FRIEND_LIKE;
 import static com.road_journey.road_journey.notifications.dto.NotificationCategory.NOTIFICATION;
 
@@ -41,7 +39,7 @@ public class FriendManagementService {
         if (friends.isEmpty()) {
             return Collections.emptyList();
         }
-        // todo 친구의 메인화면 접근 설정 여부도 가져와야 함
+
         List<FriendListDTO> friendList = friends.stream()
                 .map(friend -> {
                     User user = userRepository.findById(friend.getFriendUserId())
@@ -80,15 +78,26 @@ public class FriendManagementService {
         return userId.intValue();
     }
 
+
     @Transactional
-    public void validateFriendshipAndDeactivateNotification(Long userId, Long friendId, Long notificationId) {
-        if (!friendRepository.findByUserIdAndFriendUserIdAndStatus(userId, friendId, IS_FRIEND.name()).isPresent()) {
-            throw new IllegalArgumentException("Unauthorized access.");
+    public Map<String, String> validateFriendshipAndDeactivateNotification(Long userId, Long friendId, Long notificationId) {
+        Map<String, String> result = new HashMap<>();
+
+        Optional<Friend> friend = friendRepository.findByUserIdAndFriendUserIdAndStatus(userId, friendId, IS_FRIEND.name());
+
+        if (friend.isPresent()) {
+            result.put("friendStatus", IS_FRIEND.name());
+            result.put("activeStatus", friend.get().getIsLike() ? "active" : "not active"); //todo 접근 여부 설정
+
+            if (notificationId != null) {
+                notificationService.deleteNotification(notificationId);
+            }
+        } else {
+            result.put("friendStatus", IS_NOT_FRIEND.name());
+            result.put("activeStatus", "N/A");
         }
 
-        if (notificationId != null) {
-            notificationService.deleteNotification(notificationId);
-        }
+        return result;
     }
 
     //친구 좋아요 상태 변경
