@@ -24,14 +24,29 @@ public class ItemStorageService {
     }
 
     public Map<String, Object> getUserItems(Long userId, String category) {
-        List<UserItemDto> items = userItemRepository.findByUserIdAndCategory(userId, category)
-                .stream()
-                .map(userItem -> {
-                    Item item = itemRepository.findById(userItem.getItemId())
-                            .orElseThrow(() -> new IllegalArgumentException("아이템 정보 없음"));
-                    return new UserItemDto(userItem, item);
-                })
-                .collect(Collectors.toList());
+        List<UserItemDto> items;
+
+        if ("all".equalsIgnoreCase(category)) {
+            // 모든 userItem 검색
+            items = userItemRepository.findByUserId(userId)
+                    .stream()
+                    .map(userItem -> {
+                        Item item = itemRepository.findById(userItem.getItemId())
+                                .orElseThrow(() -> new IllegalArgumentException("아이템 정보 없음"));
+                        return new UserItemDto(userItem, item);
+                    })
+                    .collect(Collectors.toList());
+        } else {
+            // 특정 category의 userItem 검색
+            items = userItemRepository.findByUserIdAndCategory(userId, category)
+                    .stream()
+                    .map(userItem -> {
+                        Item item = itemRepository.findById(userItem.getItemId())
+                                .orElseThrow(() -> new IllegalArgumentException("아이템 정보 없음"));
+                        return new UserItemDto(userItem, item);
+                    })
+                    .collect(Collectors.toList());
+        }
 
         return Map.of("items", items);
     }

@@ -16,6 +16,9 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import static com.road_journey.road_journey.friends.dto.FriendStatus.IS_FRIEND;
@@ -78,7 +81,25 @@ public class FriendManagementServiceTest {
 
         assertFalse(friends.isEmpty());
         assertEquals(2, friends.size());
-        assertTrue(friends.get(0).getLastLoginTime() >= friends.get(1).getLastLoginTime());
+
+        LocalDateTime firstLoginTime = parseLocalDateTime(friends.get(0).getLastLoginTime());
+        LocalDateTime secondLoginTime = parseLocalDateTime(friends.get(1).getLastLoginTime());
+
+        assertNotNull(firstLoginTime);
+        assertNotNull(secondLoginTime);
+
+        assertTrue(firstLoginTime.isAfter(secondLoginTime) || firstLoginTime.isEqual(secondLoginTime));
+    }
+
+    private LocalDateTime parseLocalDateTime(String dateTime) {
+        if ("N/A".equals(dateTime) || dateTime == null) {
+            return LocalDateTime.MIN;  // 변환 실패 시 최소값 반환
+        }
+        try {
+            return LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        } catch (DateTimeParseException e) {
+            return LocalDateTime.MIN;  // 변환 실패 시 최소값 반환
+        }
     }
 
     @Test

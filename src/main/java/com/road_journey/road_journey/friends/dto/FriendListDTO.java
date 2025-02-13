@@ -14,10 +14,10 @@ public class FriendListDTO {
     private String nickname;
     private String profileImage;
     private String statusMessage;
-    private Long lastLoginTime;
+    private String lastLoginTime;
     private int achievementCount;
 
-    public FriendListDTO(User user, Long lastLoginTime, int achievementCount) {
+    public FriendListDTO(User user, String lastLoginTime, int achievementCount) {
         this.userId = user.getUserId();
         this.accountId = user.getAccountId();
         this.nickname = user.getNickname();

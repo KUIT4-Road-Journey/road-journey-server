@@ -15,7 +15,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.ZoneId;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -45,16 +47,19 @@ public class FriendManagementService {
 
         List<FriendListDTO> friendList = friends.stream()
                 .map(friend -> {
-                    User user = userRepository.findById(friend.getFriendUserId())
-                            .orElse(null);
+                    User user = userRepository.findById(friend.getFriendUserId()).orElse(null);
 
-                    long lastLoginMillis = Optional.ofNullable(user)
-                            .map(User::getLastLoginTime)
-                            .map(time -> time.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli())
-                            .orElse(0L);
+                    if (user == null) {
+                        return null;
+                    }
 
-                    return new FriendListDTO(user, lastLoginMillis, getAchievementCount(user.getUserId()));
+                    String lastLoginTime = Optional.ofNullable(user.getLastLoginTime())
+                            .map(time -> time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                            .orElse("N/A");
+
+                    return new FriendListDTO(user, lastLoginTime, getAchievementCount(user.getUserId()));
                 })
+                .filter(Objects::nonNull)  // null 제거
                 .collect(Collectors.toList());
 
         return sortFriendsByCategory(friendList, sortBy);
@@ -63,7 +68,10 @@ public class FriendManagementService {
     private List<FriendListDTO> sortFriendsByCategory(List<FriendListDTO> friends, String sortBy) {
         switch (sortBy) {
             case "lastLogin":
-                friends.sort(Comparator.comparing(FriendListDTO::getLastLoginTime, Comparator.nullsLast(Comparator.reverseOrder())));
+                friends.sort(Comparator.comparing(
+                        friend -> parseLocalDateTime(friend.getLastLoginTime()),
+                        Comparator.nullsLast(Comparator.reverseOrder())
+                ));
                 break;
             case "goals":
                 friends.sort(Comparator.comparingInt(FriendListDTO::getAchievementCount).reversed());
@@ -74,6 +82,17 @@ public class FriendManagementService {
                 break;
         }
         return friends;
+    }
+
+    private LocalDateTime parseLocalDateTime(String dateTime) {
+        if ("N/A".equals(dateTime) || dateTime == null) {
+            return null;
+        }
+        try {
+            return LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        } catch (DateTimeParseException e) {
+            return null;
+        }
     }
 
     private int getAchievementCount(Long userId) {

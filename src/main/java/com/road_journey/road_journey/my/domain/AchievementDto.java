@@ -14,7 +14,7 @@ public class AchievementDto {
     private int growthPoint;
     private int progress;
     @JsonProperty("isRewardAccepted")
-    private boolean isRewardAccepted;
+    private boolean rewardAccepted;
 
     public static AchievementDto from(UserAchievement userAchievement) {
         return new AchievementDto(
