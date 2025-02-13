@@ -29,7 +29,6 @@ public class FriendMessagesController {
     public ResponseEntity<List<FriendMessageDTO>> getFriendMessages(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = Long.parseLong(userDetails.getUsername());
 
-        // todo 받은 메세지 생성 로직이 없음 > relatedId 에 goalId 또는 friendId 저장
         return ResponseEntity.ok(friendMessageService.getFriendMessages(userId));
     }
 
