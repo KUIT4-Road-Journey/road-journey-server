@@ -13,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/friends/messages")
@@ -26,10 +27,11 @@ public class FriendMessagesController {
 
     //받은 메시지 목록 조회
     @GetMapping
-    public ResponseEntity<List<FriendMessageDTO>> getFriendMessages(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<Map<String, List<FriendMessageDTO>>> getFriendMessages(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = Long.parseLong(userDetails.getUsername());
 
-        return ResponseEntity.ok(friendMessageService.getFriendMessages(userId));
+        List<FriendMessageDTO> friendsMessagesDTOs = friendMessageService.getFriendMessages(userId);
+        return ResponseEntity.ok(Map.of("messages", friendsMessagesDTOs));
     }
 
     //개별 메시지 삭제
