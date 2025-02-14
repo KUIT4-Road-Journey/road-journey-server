@@ -1,6 +1,7 @@
 package com.road_journey.road_journey.auth.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.road_journey.road_journey.auth.config.RedisUtil;
 import com.road_journey.road_journey.auth.dao.UserRepository;
@@ -135,7 +136,7 @@ public class EmailService {
         try {
             String jsonData = redisUtil.getData(email);
             if (jsonData != null) {
-                return objectMapper.readValue(jsonData, Map.class);
+                return objectMapper.readValue(jsonData, new TypeReference<Map<String, Object>>() {});
             }
         } catch (JsonProcessingException e) {
             log.error("Redis 데이터 역직렬화 실패: {}", e.getMessage());
