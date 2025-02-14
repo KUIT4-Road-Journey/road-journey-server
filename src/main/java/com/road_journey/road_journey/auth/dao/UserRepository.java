@@ -22,4 +22,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u.nickname FROM User u WHERE u.userId = :userId AND u.role = 'USER'")
     String findNicknameByUserId(Long userId);
+
+    @Query("SELECT u.gold FROM User u WHERE u.userId = :userId")
+    Long findGoldByUserId(Long userId);
 }
