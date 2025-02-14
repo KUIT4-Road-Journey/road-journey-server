@@ -1,10 +1,13 @@
 package com.road_journey.road_journey.my.service;
 
 import com.road_journey.road_journey.auth.dao.UserRepository;
+import com.road_journey.road_journey.auth.domain.User;
 import com.road_journey.road_journey.goals.service.GoalService;
+import com.road_journey.road_journey.items.entity.UserItem;
 import com.road_journey.road_journey.items.repository.ItemRepository;
 import com.road_journey.road_journey.items.repository.UserItemRepository;
 import com.road_journey.road_journey.my.dao.UserAchievementRepository;
+import com.road_journey.road_journey.my.domain.Achievement;
 import com.road_journey.road_journey.my.domain.AchievementDto;
 import com.road_journey.road_journey.my.domain.UserAchievement;
 import jakarta.transaction.Transactional;
@@ -57,11 +60,25 @@ public class AchievementService {
             throw new IllegalStateException("업적을 완료하지 않았습니다. 진행도를 100%로 채우세요.");
         }
 
+        Achievement achievement = userAchievement.getAchievement();
+
+        // 장착된 캐릭터 경험치 증가
+        List<UserItem> selectedCharacterItems = userItemRepository.findSelectedCharacterItems(userId);
+        for (UserItem item : selectedCharacterItems) {
+            item.setGrowthPoint(item.getGrowthPoint() + achievement.getGrowthPoint());
+            userItemRepository.save(item);
+        }
+
+        // 골드 증가
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        user.setGold(user.getGold() + achievement.getGold());
+        userRepository.save(user);
+
         // 보상을 수락
         userAchievement.setRewardAccepted(true);
         userAchievementRepository.save(userAchievement);
 
-        // TODO: 경험치, 골드 업데이트 로직 추가
         return true;
     }
 

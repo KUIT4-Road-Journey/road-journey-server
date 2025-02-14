@@ -31,4 +31,9 @@ public interface UserItemRepository extends JpaRepository<UserItem, Long> {
     // 사용자가 보유한 장식품 (ornament) 카테고리 아이템 개수 조회
     @Query("SELECT COUNT(ui) FROM UserItem ui JOIN Item i ON ui.itemId = i.itemId WHERE ui.userId = :userId AND i.category = 'ornament' AND i.isSpecial = false")
     Long countUserOrnamentItems(@Param("userId") Long userId);
+
+    @Query("SELECT ui FROM UserItem ui " +
+            "JOIN Item i ON ui.itemId = i.itemId " +
+            "WHERE ui.userId = :userId AND ui.isSelected = true AND i.category = 'character'")
+    List<UserItem> findSelectedCharacterItems(@Param("userId") Long userId);
 }
