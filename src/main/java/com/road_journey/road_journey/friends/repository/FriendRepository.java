@@ -32,4 +32,6 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
     // 모든 친구 관계 조회 (active, pending 모두 포함)
     @Query("SELECT f FROM Friend f WHERE f.userId = :userId AND f.friendUserId = :friendUserId AND f.status != 'DELETED'")
     Optional<Friend> findFriendByUserIdAndFriendUserId(Long userId, Long friendUserId);
+
+    List<Friend> findAllByStatus(String status);
 }
