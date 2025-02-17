@@ -1,12 +1,12 @@
 package com.road_journey.road_journey.auth.api;
 
 import com.road_journey.road_journey.auth.domain.LoginRequestDto;
+import com.road_journey.road_journey.auth.domain.LoginResponseDto;
 import com.road_journey.road_journey.auth.domain.SignupRequestDto;
 import com.road_journey.road_journey.auth.domain.User;
 import com.road_journey.road_journey.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,11 +24,20 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<String> getUserProfile(
+    public ResponseEntity<Map<String, Object>> getUserProfile(
             @Valid @RequestBody LoginRequestDto request
     ) {
-        String token = this.authService.login(request);
-        return ResponseEntity.status(HttpStatus.OK).body(token);
+        LoginResponseDto response = this.authService.login(request);
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "status", "success",
+                        "data", Map.of(
+                                "accessToken", response.getAccessToken(),
+                                "userId", response.getUserId()
+                        )
+                )
+        );
     }
 
     @PostMapping("/signup")
