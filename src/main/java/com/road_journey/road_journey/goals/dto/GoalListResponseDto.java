@@ -23,7 +23,7 @@ public class GoalListResponseDto {
         private final Long goalId;
         private final String title;
         private final int difficulty;
-        private final String progressStutus;
+        private final String progressStatus;
         private final int progress;
         private final LocalDate expireAt;
 
@@ -31,7 +31,7 @@ public class GoalListResponseDto {
             this.goalId = goal.getGoalId();
             this.title = goal.getTitle();
             this.difficulty = goal.getDifficulty();
-            this.progressStutus = goal.getProgressStatus();
+            this.progressStatus = goal.getProgressStatus();
             this.progress = goal.getProgress();
             this.expireAt = goal.getPeriodGoal().getExpireAt();
         }
