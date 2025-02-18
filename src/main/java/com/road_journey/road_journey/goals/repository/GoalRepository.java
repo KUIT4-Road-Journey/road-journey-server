@@ -8,6 +8,9 @@ import java.util.List;
 
 public interface GoalRepository extends JpaRepository<Goal, Long> {
     @EntityGraph(attributePaths = {"periodGoal", "repeatedGoal", "subGoalList"})
+    List<Goal> findGoalsByStatus(String status);
+
+    @EntityGraph(attributePaths = {"periodGoal", "repeatedGoal", "subGoalList"})
     List<Goal> findGoalsByOriginalGoalId(Long originalGoalId);
 
     @EntityGraph(attributePaths = {"periodGoal", "repeatedGoal", "subGoalList"})

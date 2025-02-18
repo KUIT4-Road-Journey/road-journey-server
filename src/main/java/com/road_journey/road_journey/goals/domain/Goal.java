@@ -179,10 +179,6 @@ public class Goal {
             System.out.println("이미 달성 완료/실패 처리된 목표");
             return false;
         }
-//        if (isRewarded()) {
-//            System.out.println("이미 보상을 수령한 목표");
-//            return false;
-//        }
         for (SubGoal subGoal : subGoalList) {
             if (!subGoal.isCompleted()) {
                 System.out.println("하위 목표를 모두 완료하지 않음");
@@ -201,7 +197,6 @@ public class Goal {
             System.out.println("이미 달성 완료/실패 상태인 목표");
             return false;
         }
-        // return !isRewarded();
         return true;
     }
 
@@ -340,6 +335,10 @@ public class Goal {
 
     public boolean isStarted() {
         return !periodGoal.getStartAt().isAfter(LocalDate.now()); // 목표가 시작되었는지 확인
+    }
+
+    public boolean isExpired() {
+        return !periodGoal.getPeriodExpireAt().isAfter(LocalDate.now()); // 목표가 만료되었는지 확인
     }
 
     public boolean isPeriodStarted() {

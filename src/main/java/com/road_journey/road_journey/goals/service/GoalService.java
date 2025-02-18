@@ -349,11 +349,24 @@ public class GoalService {
         return goalReward;
     }
 
-    @Scheduled
+    @Scheduled(cron = "0 0 0 * * *") // 매일 자정 (00:00:00)에 실행
     public void processDailyRoutine() {
         // TODO 날짜 변경될 때마다 처리해야 하는 사항 수행
+        failExpiredAndUnfinishedGoals(); // 만료된 미완료 목표들을 실패 처리
+    }
 
-
+    private void failExpiredAndUnfinishedGoals() {
+        List<Goal> goalList = goalRepository.findGoalsByStatus("activated");
+        for (Goal goal : goalList) { // 활성화되어 있는 모든 목표를 찾음
+            if (goal.isExpired()) { // 만료된 목표인 경우
+                if (!(goal.isCompleted() || goal.isFailed())) { // 아직 완료되지 않은 목표인 경우
+                    goal.fail(); // 실패 처리
+                }
+                if (!goal.isRewarded()) { // 아직 보상을 받지 않은 목표인 경우
+                    getRewardOfGoal(goal, false); // 보상 수령 처리
+                }
+            }
+        }
     }
 
     public int getCompletedGoalCountOfUser(Long userId) {
