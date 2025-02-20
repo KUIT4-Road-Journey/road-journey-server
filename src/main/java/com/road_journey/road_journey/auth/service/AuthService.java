@@ -128,7 +128,6 @@ public class AuthService {
     }
 
     private void createDefaultAchievements(User user) {
-        // Achievement 테이블에 존재하는 모든 업적 가져오기
         List<Achievement> allAchievements = achievementRepository.findAll();
 
         // UserAchievement 객체로 변환
