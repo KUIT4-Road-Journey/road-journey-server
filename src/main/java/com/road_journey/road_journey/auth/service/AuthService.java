@@ -128,7 +128,6 @@ public class AuthService {
     }
 
     private void createDefaultAchievements(User user) {
-        // Achievement 테이블에 존재하는 모든 업적 가져오기
         List<Achievement> allAchievements = achievementRepository.findAll();
 
         // UserAchievement 객체로 변환
@@ -160,8 +159,8 @@ public class AuthService {
 
     private void addDefaultItemsToUser(Long userId) {
         List<UserItem> defaultItems = List.of(
-                new UserItem(null, userId, 1L, false, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now()),
-                new UserItem(null, userId, 15L, false, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now())
+                new UserItem(null, userId, 1L, true, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now()),
+                new UserItem(null, userId, 15L, true, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now())
         );
 
         userItemRepository.saveAll(defaultItems);
