@@ -1,6 +1,8 @@
 package com.road_journey.road_journey.items.repository;
 
+import com.road_journey.road_journey.items.dto.UserItemInfoDto;
 import com.road_journey.road_journey.items.entity.UserItem;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,4 +17,8 @@ public interface UserItemRepository extends JpaRepository<UserItem, Long> {
     List<UserItem> findByUserId(Long userId);
 
     List<UserItem> findByUserIdAndIsSelectedTrue(Long userId);
+
+    @Query("SELECT new com.road_journey.road_journey.items.dto.UserItemInfoDto(ui.userItemId, i.itemId, i.itemName, i.category, ui.growthPoint, ui.growthLevel, ui.isSelected) " +
+            "FROM UserItem ui JOIN Item i ON ui.itemId = i.itemId WHERE ui.userId = :userId AND ui.isSelected = true")
+    List<UserItemInfoDto> findUserItemsWithItemDetails(@Param("userId") Long userId);
 }

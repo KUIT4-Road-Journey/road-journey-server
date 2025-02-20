@@ -1,6 +1,5 @@
 package com.road_journey.road_journey.goals.domain;
 
-import com.road_journey.road_journey.goals.util.GoalUtil;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

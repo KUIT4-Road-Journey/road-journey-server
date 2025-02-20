@@ -8,6 +8,7 @@ import com.road_journey.road_journey.goals.response.BaseResponse;
 import com.road_journey.road_journey.goals.response.ResponseStatus;
 import com.road_journey.road_journey.goals.response.ResponseStatusType;
 import com.road_journey.road_journey.goals.util.UserUtil;
+import com.road_journey.road_journey.items.dto.UserItemInfoDto;
 import com.road_journey.road_journey.items.entity.UserItem;
 import com.road_journey.road_journey.items.repository.UserItemRepository;
 import com.road_journey.road_journey.main.dto.MainResponseDto;
@@ -33,7 +34,7 @@ public class MainService {
         }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저가 없습니다."));
-        List<UserItem> selectedUserItemList = userItemRepository.findByUserIdAndIsSelectedTrue(userId);
+        List<UserItemInfoDto> selectedUserItemList = userItemRepository.findUserItemsWithItemDetails(userId);
         return new BaseResponse<>(new MainResponseDto(user.getNickname(), selectedUserItemList));
     }
 }
