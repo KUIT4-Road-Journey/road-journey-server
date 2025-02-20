@@ -352,6 +352,7 @@ public class GoalService {
     @Scheduled(cron = "0 0 0 * * *") // 매일 자정 (00:00:00)에 실행
     public void processDailyRoutine() {
         // TODO 날짜 변경될 때마다 처리해야 하는 사항 수행
+        System.out.println("Daily Routine");
         failExpiredAndUnfinishedGoals(); // 만료된 미완료 목표들을 실패 처리
     }
 
