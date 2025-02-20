@@ -87,7 +87,9 @@ public class ItemSpecialService {
                     "status", "success",
                     "message", "이미 보유한 아이템이 선택되었습니다. 골드만 차감됩니다.",
                     "availableGold", user.getGold(),
-                    "selectedItemId", selectedItem.getItemId()
+                    "selectedItemId", selectedItem.getItemId(),
+                    "itemName", selectedItem.getItemName(),
+                    "description", selectedItem.getDescription()
             );
         }
 
@@ -114,7 +116,9 @@ public class ItemSpecialService {
                 "status", "success",
                 "message", "새로운 특별 아이템이 지급되었습니다.",
                 "availableGold", user.getGold(),
-                "selectedItemId", selectedItem.getItemId()
+                "selectedItemId", selectedItem.getItemId(),
+                "itemName", selectedItem.getItemName(),
+                "description", selectedItem.getDescription()
         );
     }
 

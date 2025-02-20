@@ -14,6 +14,7 @@ import com.road_journey.road_journey.notifications.repository.NotificationReposi
 import com.road_journey.road_journey.notifications.service.NotificationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -159,5 +160,16 @@ public class FriendManagementService {
         }
 
         return friendOptional.get().getIsLike();
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 0 0 * * *")
+    public void resetIsLikeForAllFriends() {
+        List<Friend> friends = friendRepository.findAllByStatus("IS_FRIEND");
+
+        if (!friends.isEmpty()) {
+            friends.forEach(friend -> friend.setIsLike(false));
+            friendRepository.saveAll(friends);
+        }
     }
 }

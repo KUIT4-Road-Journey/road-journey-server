@@ -65,6 +65,15 @@ public class ItemShopService {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new IllegalArgumentException("아이템 없음"));
 
+        boolean alreadyOwned = userItemRepository.existsByUserIdAndItemId(userId, itemId);
+        if (alreadyOwned) {
+            return Map.of(
+                    "status", "failed",
+                    "message", "보유한 아이템입니다.",
+                    "availableGold", user.getGold()
+            );
+        }
+
         if (user.getGold() < item.getGold()) {
             return Map.of(
                     "status", "failed",
