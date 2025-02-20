@@ -7,6 +7,8 @@ import com.road_journey.road_journey.auth.domain.LoginRequestDto;
 import com.road_journey.road_journey.auth.domain.LoginResponseDto;
 import com.road_journey.road_journey.auth.domain.SignupRequestDto;
 import com.road_journey.road_journey.auth.domain.User;
+import com.road_journey.road_journey.items.entity.UserItem;
+import com.road_journey.road_journey.items.repository.UserItemRepository;
 import com.road_journey.road_journey.my.dao.AchievementRepository;
 import com.road_journey.road_journey.my.dao.SettingRepository;
 import com.road_journey.road_journey.my.dao.UserAchievementRepository;
@@ -41,6 +43,7 @@ public class AuthService {
     private final SettingRepository settingRepository;
     private final UserAchievementRepository userAchievementRepository;
     private final AchievementRepository achievementRepository;
+    private final UserItemRepository userItemRepository;
 
     /**
      * 로그인 기능: accountId와 password로 로그인하고, 성공하면 JWT AccessToken 발급
@@ -101,6 +104,7 @@ public class AuthService {
 
         userRepository.save(user);
 
+        addDefaultItemsToUser(user.getUserId());
         createDefaultSettings(user);
         createDefaultAchievements(user);
 
@@ -152,5 +156,14 @@ public class AuthService {
      */
     public Optional<User> findByAccountId(String accountId) {
         return userRepository.findByAccountId(accountId);
+    }
+
+    private void addDefaultItemsToUser(Long userId) {
+        List<UserItem> defaultItems = List.of(
+                new UserItem(null, userId, 1L, false, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now()),
+                new UserItem(null, userId, 15L, false, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now())
+        );
+
+        userItemRepository.saveAll(defaultItems);
     }
 }
