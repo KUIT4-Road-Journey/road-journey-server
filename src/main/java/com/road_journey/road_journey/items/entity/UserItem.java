@@ -6,6 +6,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
+@EntityListeners(UserItemListener.class)
 @Table(name = "user_item")
 @Getter
 @Setter
