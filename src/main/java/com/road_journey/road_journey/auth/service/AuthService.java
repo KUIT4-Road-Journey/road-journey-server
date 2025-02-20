@@ -160,8 +160,8 @@ public class AuthService {
 
     private void addDefaultItemsToUser(Long userId) {
         List<UserItem> defaultItems = List.of(
-                new UserItem(null, userId, 1L, false, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now()),
-                new UserItem(null, userId, 15L, false, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now())
+                new UserItem(null, userId, 1L, true, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now()),
+                new UserItem(null, userId, 15L, true, 0L, 1L, "active", LocalDateTime.now(), LocalDateTime.now())
         );
 
         userItemRepository.saveAll(defaultItems);
